@@ -3,31 +3,33 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
-
+using HyperStoreServiceAPP;
 namespace HyperStoreService.Models
 {
     public class CustomerOrder
     {
         public Guid CustomerOrderId { get; set; }
+        [Required]
         public string CustomerOrderNo { get; set; }
+        
         public DateTime OrderDate { get; set; }
 
-        public float BillAmount { get; set; }
-        public float DiscountedAmount { get; set; }
+        public decimal BillAmount { get; set; }
+        public decimal DiscountedAmount { get; set; }
 
         // PayingNow = DiscountedBillAmount + AddingMoneyToWallet - UsingWalletAmount
-        public bool IsPaidNow { get; set; }
-        public float PayingNow { get; set; }
-        public float AddingMoneyToWallet { get; set; }
+        public bool IsPayingNow { get; set; }
+        public bool IsUsingWallet { get; set; }
+        public decimal PayingAmount { get; set; }
+        public decimal UsingWalletAmount { get; set; }
+        
+        public CustomerOrder()
+        {
+            this.CustomerOrderId = Guid.NewGuid();
+            this.CustomerOrderNo = Utility.GenerateCustomerOrderNo();
+            this.OrderDate = DateTime.Now;
+        }
 
-        public bool IsUseWallet { get; set; }
-        public float UsingWalletAmount { get; set; }
-
-        // DiscountedBillAmt = PartiallyPaid + PayingLater
-        public float PartiallyPaid { get; set; }
-        public float PayingLater { get; set; }
-
-        public CustomerOrder() { }
 
         [Required]
         public Nullable<Guid> CustomerId;

@@ -11,7 +11,7 @@ namespace HyperStoreService.Models
         public Guid CustomerOrderProductId { get; set; }
         public float DiscountPerSnapShot { get; set; }
         public float DisplayCostSnapShot { get; set; }
-        public int QuantityPurchased { get; set; }
+        public float QuantityPurchased { get; set; }
 
         public CustomerOrderProduct() { }
 

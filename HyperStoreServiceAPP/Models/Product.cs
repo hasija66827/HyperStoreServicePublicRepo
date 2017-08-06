@@ -19,7 +19,7 @@ namespace HyperStoreService.Models
         public Int32 RefillTime { get; set; }
         public float SGSTPer { get; set; }
         public Int32 Threshold { get; set; }
-        public Int32 TotalQuantity { get; set; }
+        public float TotalQuantity { get; set; }
         
         public Product() {
             this.ProductId = Guid.NewGuid();

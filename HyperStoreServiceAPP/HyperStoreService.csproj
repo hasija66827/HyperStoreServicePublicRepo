@@ -208,6 +208,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\CustomAPI\PlaceCustomerOrderController.cs" />
     <Compile Include="Controllers\CustomerOrderProductsController.cs" />
     <Compile Include="Controllers\CustomerOrdersController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
@@ -239,6 +240,14 @@
     <Compile Include="Migrations\201708061350243_Third1.Designer.cs">
       <DependentUpon>201708061350243_Third1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708061617406_Fourth.cs" />
+    <Compile Include="Migrations\201708061617406_Fourth.Designer.cs">
+      <DependentUpon>201708061617406_Fourth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708062030401_Fifth.cs" />
+    <Compile Include="Migrations\201708062030401_Fifth.Designer.cs">
+      <DependentUpon>201708062030401_Fifth.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -254,6 +263,7 @@
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utility\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -309,7 +319,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Controllers\CustomAPI\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -338,6 +347,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708061350243_Third1.resx">
       <DependentUpon>201708061350243_Third1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708061617406_Fourth.resx">
+      <DependentUpon>201708061617406_Fourth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708062030401_Fifth.resx">
+      <DependentUpon>201708062030401_Fifth.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -15,7 +15,7 @@ namespace HyperStoreService.Models
         public string MobileNo { get; set; }
         [Required]
         public string Name { get; set; }
-        public float WalletBalance { get; set; }
+        public decimal WalletBalance { get; set; }
 
         public Customer()
         {
