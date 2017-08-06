@@ -13,7 +13,15 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class CustomersController : ApiController
+    interface CustomerContInt {
+        IQueryable<Customer> GetCustomers();
+        Task<IHttpActionResult> GetCustomer(Guid id);
+        Task<IHttpActionResult> PutCustomer(Guid id, Customer customer);
+        Task<IHttpActionResult> PostCustomer(Customer customer);
+        Task<IHttpActionResult> DeleteCustomer(Guid id);
+    }
+
+    public class CustomersController : ApiController, CustomerContInt
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

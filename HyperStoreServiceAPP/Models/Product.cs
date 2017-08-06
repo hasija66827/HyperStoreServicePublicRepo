@@ -9,19 +9,31 @@ namespace HyperStoreService.Models
     public class Product
     {
         public Guid ProductId { get; set; }
-        public string Name { get; set; }
-        public string BarCode { get; set; }
-        public string UserDefinedCode { get; set; }
-        public bool IsInventoryItem { get; set; }
-        public Int32 Threshold { get; set; }
-        public Int32 RefillTime { get; set; }
+        public float CGSTPer { get; set; }
+        [Required]
+        public string Code { get; set; }
         public float DisplayPrice { get; set; }
         public float DiscountPer { get; set; }
-        public Int32 TotalQuantity { get; set; }
+        [Required]
+        public string Name { get; set; }
+        public Int32 RefillTime { get; set; }
         public float SGSTPer { get; set; }
-        public float CGSTPer { get; set; }
-
-        public Product() { }
+        public Int32 Threshold { get; set; }
+        public Int32 TotalQuantity { get; set; }
+        
+        public Product() {
+            this.ProductId = Guid.NewGuid();
+            this.CGSTPer = 0;
+            this.Code = null;
+            this.DisplayPrice = 0;
+            this.DiscountPer = 0;
+            this.Name = null;
+            this.RefillTime = 0;
+            this.SGSTPer = 0;
+            this.Threshold = 0;
+            this.TotalQuantity = 0;
+            this.SupplierId = null;
+        }
 
         public List<SupplierOrderProduct> SupplierOrderProducts { get; set; }
         public List<CustomerOrderProduct> CustomerOrderProducts { get; set; }

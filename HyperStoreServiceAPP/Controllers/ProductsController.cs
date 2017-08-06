@@ -13,7 +13,16 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class ProductsController : ApiController
+    interface ProductContInt
+    {
+        IQueryable<Product> GetProducts();
+        Task<IHttpActionResult> GetProduct(Guid id);
+        Task<IHttpActionResult> PutProduct(Guid id, Product product);
+        Task<IHttpActionResult> PostProduct(Product product);
+        Task<IHttpActionResult> DeleteProduct(Guid id);
+
+    }
+    public class ProductsController : ApiController, ProductContInt
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

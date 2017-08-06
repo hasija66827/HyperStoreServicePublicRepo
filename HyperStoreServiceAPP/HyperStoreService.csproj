@@ -231,6 +231,14 @@
     <Compile Include="Migrations\201708060906296_second.Designer.cs">
       <DependentUpon>201708060906296_second.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708061308570_Third.cs" />
+    <Compile Include="Migrations\201708061308570_Third.Designer.cs">
+      <DependentUpon>201708061308570_Third.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708061350243_Third1.cs" />
+    <Compile Include="Migrations\201708061350243_Third1.Designer.cs">
+      <DependentUpon>201708061350243_Third1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -301,6 +309,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Controllers\CustomAPI\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -323,6 +332,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708060906296_second.resx">
       <DependentUpon>201708060906296_second.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708061308570_Third.resx">
+      <DependentUpon>201708061308570_Third.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708061350243_Third1.resx">
+      <DependentUpon>201708061350243_Third1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
