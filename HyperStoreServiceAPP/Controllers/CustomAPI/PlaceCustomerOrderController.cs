@@ -27,7 +27,12 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         public List<ProductConsumed> ProductsConsumed;
         [Required]
         public CustomerOrder CustomerOrder;
-        public OrderDetails() { }
+        public OrderDetails(Guid? customerId, List<ProductConsumed> productsConsumed, CustomerOrder customerOrder)
+        {
+            this.CustomerId = customerId;
+            this.ProductsConsumed = productsConsumed;
+            this.CustomerOrder = customerOrder;
+        }
     }
 
     public class PlaceCustomerOrderController : ApiController
@@ -42,9 +47,9 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             try
             {
                 await UpdateProductStockAsync(orderDetails.ProductsConsumed);
+                orderDetails.CustomerOrder.UsingWalletAmount = await UpdateWalletBalanceOfCustomer(orderDetails.CustomerId, orderDetails.CustomerOrder);
                 CreateNewCustomerOrder(orderDetails.CustomerOrder);
                 await AddIntoCustomerOrderProductAsync(orderDetails.ProductsConsumed, orderDetails.CustomerOrder.CustomerOrderId);
-                await UpdateWalletBalanceOfCustomer(orderDetails.CustomerId, orderDetails.CustomerOrder);
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -56,14 +61,31 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        private async Task<Boolean> UpdateWalletBalanceOfCustomer(Guid? customerId,CustomerOrder customerOrder)
+        private async Task<Boolean> UpdateProductStockAsync(List<ProductConsumed> productsConsumed)
         {
+            try
+            {
+                foreach (var productConsumed in productsConsumed)
+                {
+                    var x = await UpdateProductStock(productConsumed);
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            return true;
+        }
+
+        private async Task<decimal> UpdateWalletBalanceOfCustomer(Guid? customerId, CustomerOrder customerOrder)
+        {
+            decimal walletAmountToBeDeducted = 0;
             try
             {
                 var customer = await db.Customers.FindAsync(customerId);
                 if (customer == null)
                     throw new Exception(String.Format("Customer {0} not found", customerId));
-                decimal walletAmountToBeDeducted = 0;
+
                 decimal walletAmountToBeAdded = 0;
                 if (customerOrder.IsPayingNow)
                 {
@@ -72,8 +94,8 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                     else
                         walletAmountToBeDeducted = 0;
                     var remainingAmount = customerOrder.DiscountedAmount - walletAmountToBeDeducted;
-                    if (customerOrder.PayingAmount< remainingAmount)
-                        throw new Exception(String.Format("Customers {0} payment {1} cannot be less than remaining payment {2}", customerId, customerOrder.PayingAmount, remainingAmount));
+                    if (customerOrder.PayingAmount < remainingAmount)
+                        throw new Exception(String.Format("Customer {0} payment {1} cannot be less than remaining payment {2}", customer.Name, customerOrder.PayingAmount, remainingAmount));
                     walletAmountToBeAdded = customerOrder.PayingAmount - remainingAmount;
                 }
                 else
@@ -90,14 +112,13 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             {
                 throw e;
             }
-            return true;
+            return walletAmountToBeDeducted;
         }
 
         private void CreateNewCustomerOrder(CustomerOrder customerOrder)
         {
             db.CustomerOrders.Add(customerOrder);
         }
-
 
         private async Task<Boolean> AddIntoCustomerOrderProductAsync(List<ProductConsumed> productsConsumed, Guid customerOrderId)
         {
@@ -126,22 +147,6 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return true;
         }
 
-        private async Task<Boolean> UpdateProductStockAsync(List<ProductConsumed> productsConsumed)
-        {
-            try
-            {
-                foreach (var productConsumed in productsConsumed)
-                {
-                    var x = await UpdateProductStock(productConsumed);
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            return true;
-        }
-
         private async Task<Boolean> UpdateProductStock(ProductConsumed productConsumed)
         {
             try
@@ -149,7 +154,10 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
                 var product = await db.Products.FindAsync(productConsumed.ProductId);
                 if (product == null)
-                    throw new Exception(String.Format("Product {0} not found", productConsumed.ProductId));
+                    throw new Exception(String.Format("Product with id {1} not found", productConsumed.ProductId));
+                if (product.TotalQuantity < productConsumed.QuantityConsumed)
+                    throw new Exception(string.Format("Product {0} is deficient by {1} units in stock," +
+                        " please update the product in stock", product.Name, productConsumed.QuantityConsumed - product.TotalQuantity));
                 product.TotalQuantity -= productConsumed.QuantityConsumed;
                 db.Entry(product).State = EntityState.Modified;
             }

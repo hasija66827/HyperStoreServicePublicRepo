@@ -21,7 +21,7 @@ namespace HyperStoreService.Models
         public bool IsPayingNow { get; set; }
         public bool IsUsingWallet { get; set; }
         public decimal PayingAmount { get; set; }
-        public decimal UsingWalletAmount { get; set; }
+        public decimal UsingWalletAmount { get; set; }// TODO: Should not be set by the customer. Use DTO
         
         public CustomerOrder()
         {
@@ -29,7 +29,6 @@ namespace HyperStoreService.Models
             this.CustomerOrderNo = Utility.GenerateCustomerOrderNo();
             this.OrderDate = DateTime.Now;
         }
-
 
         [Required]
         public Nullable<Guid> CustomerId;
