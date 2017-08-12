@@ -61,11 +61,11 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
     }
 
     public class CustomerOrderFilterCriteria
-        {
+    {
         public Customer Customer;
         public string CustomerOrderNo;
         public FilterOrderDateRange DateRange;
-      }
+    }
 
     interface PlaceCustomerOrderInt
     {
@@ -96,8 +96,8 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                                     order.CustomerOrder.OrderDate.Date <= selectedDateRange.EndDate.Date)
                                 .OrderByDescending(order => order.CustomerOrder.OrderDate);
 
-            IQueryable<OrderDetails> query=commonQuery;
-            if (selectedCustomer!= null)
+            IQueryable<OrderDetails> query = commonQuery;
+            if (selectedCustomer != null)
             {
                 query = commonQuery.Where(order => order.CustomerId == selectedCustomer.CustomerId);
             }
@@ -151,6 +151,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         private async Task<decimal> UpdateWalletBalanceOfCustomer(Guid? customerId, CustomerOrder customerOrder)
         {
             decimal walletAmountToBeDeducted = 0;
+
             try
             {
                 var customer = await db.Customers.FindAsync(customerId);
@@ -158,22 +159,22 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                     throw new Exception(String.Format("Customer {0} not found", customerId));
 
                 decimal walletAmountToBeAdded = 0;
-                if (customerOrder.IsPayingNow)
+                if (customerOrder.IsPayingNow == true)
                 {
-                    if (customerOrder.IsUsingWallet)
-                        walletAmountToBeDeducted = Math.Min(customerOrder.DiscountedAmount, customer.WalletBalance);
+                    if (customerOrder.IsUsingWallet == true)
+                        walletAmountToBeDeducted = Math.Min((decimal)customerOrder.DiscountedAmount, customer.WalletBalance);
                     else
                         walletAmountToBeDeducted = 0;
                     var remainingAmount = customerOrder.DiscountedAmount - walletAmountToBeDeducted;
                     if (customerOrder.PayingAmount < remainingAmount)
                         throw new Exception(String.Format("Customer {0} payment {1} cannot be less than remaining payment {2}", customer.Name, customerOrder.PayingAmount, remainingAmount));
-                    walletAmountToBeAdded = customerOrder.PayingAmount - remainingAmount;
+                    walletAmountToBeAdded = (decimal)(customerOrder.PayingAmount - remainingAmount);
                 }
                 else
                 {
                     if (customerOrder.PayingAmount > customerOrder.DiscountedAmount)
                         throw new Exception(String.Format("Customer {0} paying {1} cannot be greater than discountedBillAmount {2} in Pay Later Mode ", customerId, customerOrder.PayingAmount, customerOrder.DiscountedAmount));
-                    walletAmountToBeDeducted = customerOrder.DiscountedAmount - customerOrder.PayingAmount;
+                    walletAmountToBeDeducted = (decimal)customerOrder.DiscountedAmount - (decimal)customerOrder.PayingAmount;
                 }
                 customer.WalletBalance -= walletAmountToBeDeducted;
                 customer.WalletBalance += walletAmountToBeAdded;
@@ -191,7 +192,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             db.CustomerOrders.Add(customerOrder);
         }
 
-        private async Task<Boolean> AddIntoCustomerOrderProductAsync(List<ProductConsumed> productsConsumed, Guid customerOrderId)
+        private async Task<Boolean> AddIntoCustomerOrderProductAsync(List<ProductConsumed> productsConsumed, Guid? customerOrderId)
         {
             try
             {

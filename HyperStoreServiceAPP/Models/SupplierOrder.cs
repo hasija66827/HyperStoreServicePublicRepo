@@ -3,26 +3,34 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
-
+using HyperStoreServiceAPP;
 namespace HyperStoreService.Models
 {
     public class SupplierOrder
     {
-
-        public Guid SupplierOrderId { get; set; }
+        [Required]
+        public Guid? SupplierOrderId { get; set; }
+        [Required]
         public string SupplierOrderNo { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime DueDate { get; set; }
-        public float BillAmount { get; set; }
-        public float PaidAmount { get; set; }
+        [Required]
+        public float? BillAmount { get; set; }
+        [Required]
+        public float? PaidAmount { get; set; }
 
-        public SupplierOrder() { }
+        public SupplierOrder() {
+            this.OrderDate = DateTime.Now;
+            this.DueDate = DateTime.Now;
+        }
+
+        public void SetDefaultValue() {
+            this.SupplierOrderId = Guid.NewGuid();
+            this.SupplierOrderNo = Utility.GenerateSupplierOrderNo();
+        }
 
         [Required]
-        public Guid SupplierId;
-        public Supplier Supplier;
-
-        public List<SupplierOrderProduct> SupplierOrderProducts { get; set; }
-        public List<SupplierOrderTransaction> SupplierOrderTransactions { get; set; }
+        public Guid SupplierId { get; set; }
+        public Supplier Supplier { get; set; }
     }
 }

@@ -8,18 +8,22 @@ namespace HyperStoreService.Models
 {
     public class SupplierOrderTransaction
     {
-        public Guid SupplierOrderTransactionId { get; set; }
-        public float PaidAmount { get; set; }
-        public bool IsPaymentComplete { get; set; }
+        [Required]
+        public Guid? SupplierOrderTransactionId { get; set; }
+        [Required]
+        public float? PaidAmount { get; set; }
+        [Required]
+        public bool? IsPaymentComplete { get; set; }
 
-        public SupplierOrderTransaction() { }
+        public SupplierOrderTransaction() {
+        }
 
         [Required]
-        public Guid TransactionId;
-        public Transaction Transaction;
+        public Guid? TransactionId { get; set; }
+        public Transaction Transaction { get; set; }
 
         [Required]
-        public Guid SupplierOrderId;
-        public SupplierOrder SupplierOrder;
+        public Guid? SupplierOrderId { get; set; }
+        public SupplierOrder SupplierOrder { get; set; }
     }
 }

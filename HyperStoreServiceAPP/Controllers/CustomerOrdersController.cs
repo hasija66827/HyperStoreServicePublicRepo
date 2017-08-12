@@ -20,7 +20,7 @@ namespace HyperStoreServiceAPP.Controllers
         // GET: api/CustomerOrders
         public IQueryable<CustomerOrder> GetCustomerOrders()
         {
-            return db.CustomerOrders;
+            return db.CustomerOrders.Include(co => co.Customer);
         }
 
         // GET: api/CustomerOrders/5
@@ -126,7 +126,7 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool CustomerOrderExists(Guid id)
+        private bool CustomerOrderExists(Guid? id)
         {
             return db.CustomerOrders.Count(e => e.CustomerOrderId == id) > 0;
         }

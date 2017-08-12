@@ -126,7 +126,7 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool TagExists(Guid id)
+        private bool TagExists(Guid? id)
         {
             return db.Tags.Count(e => e.TagId == id) > 0;
         }

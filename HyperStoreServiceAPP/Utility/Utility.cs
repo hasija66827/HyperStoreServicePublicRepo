@@ -19,7 +19,7 @@ namespace HyperStoreServiceAPP
             return s;
         }
 
-        public static string GenerateWholeSellerTransactionNo(int? length = null)
+        public static string GenerateSupplierTransactionNo(int? length = null)
         {
             if (length == null)
                 length = 7;
@@ -31,7 +31,7 @@ namespace HyperStoreServiceAPP
             return s;
         }
 
-        public static string GenerateWholeSellerOrderNo(int? length = null)
+        public static string GenerateSupplierOrderNo(int? length = null)
         {
             if (length == null)
                 length = 7;

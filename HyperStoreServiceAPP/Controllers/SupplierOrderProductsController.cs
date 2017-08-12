@@ -126,7 +126,7 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool SupplierOrderProductExists(Guid id)
+        private bool SupplierOrderProductExists(Guid? id)
         {
             return db.SupplierOrderProducts.Count(e => e.SupplierOrderProductId == id) > 0;
         }

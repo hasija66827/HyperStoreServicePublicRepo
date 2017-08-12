@@ -8,11 +8,13 @@ namespace HyperStoreService.Models
 {
     public class Product
     {
-        public Guid ProductId { get; set; }
+        [Required]
+        public Guid? ProductId { get; set; }
         public float CGSTPer { get; set; }
         [Required]
         public string Code { get; set; }
-        public float DisplayPrice { get; set; }
+        [Required]
+        public float? DisplayPrice { get; set; }
         public float DiscountPer { get; set; }
         [Required]
         public string Name { get; set; }
@@ -22,25 +24,17 @@ namespace HyperStoreService.Models
         public float TotalQuantity { get; set; }
         
         public Product() {
-            this.ProductId = Guid.NewGuid();
             this.CGSTPer = 0;
-            this.Code = null;
-            this.DisplayPrice = 0;
             this.DiscountPer = 0;
-            this.Name = null;
             this.RefillTime = 0;
             this.SGSTPer = 0;
             this.Threshold = 0;
             this.TotalQuantity = 0;
-            this.SupplierId = null;
         }
 
-        public List<SupplierOrderProduct> SupplierOrderProducts { get; set; }
-        public List<CustomerOrderProduct> CustomerOrderProducts { get; set; }
-        public List<ProductTag> ProductTags { get; set; }
 
         //SupplierId is used by Retailer to mark the product to be prurchased from Wholeseller.
-        public Guid? SupplierId;
-        public Supplier Supplier;
+        public Guid? SupplierId { get; set; }
+        public Supplier Supplier { get; set; }
     }
 }

@@ -8,7 +8,8 @@ namespace HyperStoreService.Models
 {
     public class Customer
     {
-        public Guid CustomerId { get; set; }
+        [Required]
+        public Guid? CustomerId { get; set; }
         public string Address { get; set; }
         public string GSTIN { get; set; }
         [Required]
@@ -19,15 +20,8 @@ namespace HyperStoreService.Models
 
         public Customer()
         {
-            CustomerId = Guid.NewGuid();
-            Address = "";
-            GSTIN = "";
-            MobileNo = "";
-            Name = "";
-            WalletBalance = 0;
+            this.WalletBalance = 0;
         }
-
-        public List<CustomerOrder> CustomerOrders { get; set; }
-        
+     
     }
 }

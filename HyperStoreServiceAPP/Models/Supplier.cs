@@ -8,7 +8,8 @@ namespace HyperStoreService.Models
 {
     public class Supplier
     {
-        public Guid SupplierId { get; set; }
+        [Required]
+        public Guid? SupplierId { get; set; }
         public string Address { get; set; }
         public string GSTIN { get; set; }
         [Required]
@@ -17,11 +18,8 @@ namespace HyperStoreService.Models
         public string Name { get; set; }
         public float WalletBalance { get; set; }
 
-        public Supplier() { }
-
-        public List<SupplierOrder> SupplierOrders { get; set; }
-        //This is used by Retailer to mark the product to be prurchased from Wholeseller.
-        public List<Product> Products { get; set; }
-        public List<Transaction> Transactions { get; set; }
+        public Supplier() {
+            this.WalletBalance = 0;
+        }
     }
 }

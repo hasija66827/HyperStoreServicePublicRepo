@@ -8,18 +8,22 @@ namespace HyperStoreService.Models
 {
     public class SupplierOrderProduct
     {
-        public Guid SupplierOrderProductId { get; set; }
-        public int QuantityPurchased { get; set; }
-        public float PurchasePrice { get; set; }
+        [Required]
+        public Guid? SupplierOrderProductId { get; set; }
+        [Required]
+        public int? QuantityPurchased { get; set; }
+        [Required]
+        public float? PurchasePrice { get; set; }
 
-        public SupplierOrderProduct() { }
+        public SupplierOrderProduct() {
+        }
 
         [Required]
-        public Guid SupplierOrderId;
-        public SupplierOrder SupplierOrder;
+        public Guid? SupplierOrderId { get; set; }
+        public SupplierOrder SupplierOrder { get; set; }
 
         [Required]
-        public Guid ProductId;
-        public virtual Product Product { get; set; }
+        public Guid? ProductId { get; set; }
+        public Product Product { get; set; }
     }
 }
