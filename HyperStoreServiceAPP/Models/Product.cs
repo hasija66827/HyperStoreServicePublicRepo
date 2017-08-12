@@ -40,7 +40,6 @@ namespace HyperStoreService.Models
         public List<ProductTag> ProductTags { get; set; }
 
         //SupplierId is used by Retailer to mark the product to be prurchased from Wholeseller.
-        [Required]
         public Guid? SupplierId;
         public Supplier Supplier;
     }

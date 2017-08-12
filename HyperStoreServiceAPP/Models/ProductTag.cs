@@ -11,11 +11,11 @@ namespace HyperStoreService.Models
         public Guid ProductTagId { get; set; }
 
         [Required]
-        public Nullable<Guid> ProductId { get; set; }
+        public Guid ProductId { get; set; }
         public Product Product;
 
         [Required]
-        public Nullable<Guid> TagId { get; set; }
+        public Guid TagId { get; set; }
         public Tag Tag;
     }
 }

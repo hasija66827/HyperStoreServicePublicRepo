@@ -16,11 +16,11 @@ namespace HyperStoreService.Models
         public CustomerOrderProduct() { }
 
         [Required]
-        public Nullable<Guid> CustomerOrderId;
+        public Guid CustomerOrderId;
         public CustomerOrder CustomerOrder;
 
         [Required]
-        public Nullable<Guid> ProductId;
+        public Guid ProductId;
         public Product Product;
     }
 }

@@ -31,7 +31,7 @@ namespace HyperStoreService.Models
         }
 
         [Required]
-        public Nullable<Guid> CustomerId;
+        public Guid CustomerId;
         public Customer Customer;
         public List<CustomerOrderProduct> CustomerOrderProducts { get; set; }
     }

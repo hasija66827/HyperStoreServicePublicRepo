@@ -19,7 +19,7 @@ namespace HyperStoreService.Models
         public SupplierOrder() { }
 
         [Required]
-        public Nullable<Guid> SupplierId;
+        public Guid SupplierId;
         public Supplier Supplier;
 
         public List<SupplierOrderProduct> SupplierOrderProducts { get; set; }

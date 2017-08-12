@@ -224,30 +224,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201708060854005_InitialMigration.cs" />
-    <Compile Include="Migrations\201708060854005_InitialMigration.Designer.cs">
-      <DependentUpon>201708060854005_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708060906296_second.cs" />
-    <Compile Include="Migrations\201708060906296_second.Designer.cs">
-      <DependentUpon>201708060906296_second.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708061308570_Third.cs" />
-    <Compile Include="Migrations\201708061308570_Third.Designer.cs">
-      <DependentUpon>201708061308570_Third.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708061350243_Third1.cs" />
-    <Compile Include="Migrations\201708061350243_Third1.Designer.cs">
-      <DependentUpon>201708061350243_Third1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708061617406_Fourth.cs" />
-    <Compile Include="Migrations\201708061617406_Fourth.Designer.cs">
-      <DependentUpon>201708061617406_Fourth.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708062030401_Fifth.cs" />
-    <Compile Include="Migrations\201708062030401_Fifth.Designer.cs">
-      <DependentUpon>201708062030401_Fifth.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -334,26 +310,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\jquery-1.10.2.min.map" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201708060854005_InitialMigration.resx">
-      <DependentUpon>201708060854005_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708060906296_second.resx">
-      <DependentUpon>201708060906296_second.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708061308570_Third.resx">
-      <DependentUpon>201708061308570_Third.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708061350243_Third1.resx">
-      <DependentUpon>201708061350243_Third1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708061617406_Fourth.resx">
-      <DependentUpon>201708061617406_Fourth.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708062030401_Fifth.resx">
-      <DependentUpon>201708062030401_Fifth.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

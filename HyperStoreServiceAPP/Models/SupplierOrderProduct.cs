@@ -15,11 +15,11 @@ namespace HyperStoreService.Models
         public SupplierOrderProduct() { }
 
         [Required]
-        public Nullable<Guid> SupplierOrderId;
+        public Guid SupplierOrderId;
         public SupplierOrder SupplierOrder;
 
         [Required]
-        public Nullable<Guid> ProductId;
+        public Guid ProductId;
         public virtual Product Product { get; set; }
     }
 }
