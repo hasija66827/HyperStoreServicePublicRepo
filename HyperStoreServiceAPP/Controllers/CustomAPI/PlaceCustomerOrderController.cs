@@ -35,9 +35,78 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         }
     }
 
-    public class PlaceCustomerOrderController : ApiController
+    public class FilterOrderDateRange
+    {
+        [Required]
+        private DateTime _startDate;
+        public DateTime StartDate
+        {
+            get { return this._startDate; }
+            set { this._startDate = value; }
+        }
+
+        [Required]
+        private DateTime _endDate;
+        public DateTime EndDate
+        {
+            get { return this._endDate; }
+            set { this._endDate = value; }
+        }
+
+        public FilterOrderDateRange(DateTime startDate, DateTime endDate)
+        {
+            _startDate = startDate;
+            _endDate = endDate;
+        }
+    }
+
+    public class CustomerOrderFilterCriteria
+        {
+        public Customer Customer;
+        public string CustomerOrderNo;
+        public FilterOrderDateRange DateRange;
+      }
+
+    interface PlaceCustomerOrderInt
+    {
+        Task<IHttpActionResult> PlaceCustomerOrder(OrderDetails orderDetails);
+        Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria);
+    }
+
+    public class PlaceCustomerOrderController : ApiController, PlaceCustomerOrderInt
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
+
+        [HttpGet]
+        public async Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria)
+        {
+            var selectedCustomer = customerOrderFilterCriteria.Customer;
+            var selectedCustomerOrderNo = customerOrderFilterCriteria.CustomerOrderNo;
+            var selectedDateRange = customerOrderFilterCriteria.DateRange;
+
+            if (selectedDateRange == null)
+                throw new Exception("A Date Range cannot be null");
+
+            var commonQuery = db.Customers
+                                .Join(db.CustomerOrders,
+                                customer => customer.CustomerId,
+                                customerOrder => customerOrder.CustomerId,
+                                (customer, customerOrder) => new OrderDetails(customer.CustomerId, null, customerOrder))
+                                .Where(order => order.CustomerOrder.OrderDate.Date >= selectedDateRange.StartDate.Date &&
+                                                    order.CustomerOrder.OrderDate.Date <= selectedDateRange.EndDate.Date)
+                                .OrderByDescending(order => order.CustomerOrder.OrderDate);
+
+            IQueryable<OrderDetails> query=commonQuery;
+            if (selectedCustomer!= null)
+            {
+                query = commonQuery.Where(order => order.CustomerId == selectedCustomer.CustomerId);
+            }
+            if (selectedCustomerOrderNo != null)
+            {
+                query = commonQuery.Where(order => order.CustomerOrder.CustomerOrderNo == selectedCustomerOrderNo);
+            }
+            return Ok(await query.ToListAsync());
+        }
 
         [HttpPut]
         public async Task<IHttpActionResult> PlaceCustomerOrder(OrderDetails orderDetails)
@@ -60,6 +129,8 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             { throw e; }
             return StatusCode(HttpStatusCode.NoContent);
         }
+
+
 
         private async Task<Boolean> UpdateProductStockAsync(List<ProductConsumed> productsConsumed)
         {
@@ -154,7 +225,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
                 var product = await db.Products.FindAsync(productConsumed.ProductId);
                 if (product == null)
-                    throw new Exception(String.Format("Product with id {1} not found", productConsumed.ProductId));
+                    throw new Exception(String.Format("Product with id {0} not found", productConsumed.ProductId));
                 if (product.TotalQuantity < productConsumed.QuantityConsumed)
                     throw new Exception(string.Format("Product {0} is deficient by {1} units in stock," +
                         " please update the product in stock", product.Name, productConsumed.QuantityConsumed - product.TotalQuantity));
