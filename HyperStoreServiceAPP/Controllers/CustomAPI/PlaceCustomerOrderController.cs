@@ -47,17 +47,16 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
-
         [HttpPut]
         public async Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDetails orderDetails)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             if (orderDetails == null)
-                throw new Exception("OrderDetails should not have been null while placing the customer order");
+                return BadRequest("OrderDetails should not have been null while placing the customer order");
             if (orderDetails.BillAmount < orderDetails.DiscountedAmount)
-                throw new Exception(string.Format("Bill Amount {0} cannot be less than Discounted Amount {1}",
-                    orderDetails.BillAmount, orderDetails.DiscountedAmount));
+                return BadRequest(string.Format("Bill Amount {0} cannot be less than Discounted Amount {1}",
+                                                    orderDetails.BillAmount, orderDetails.DiscountedAmount));
             //TODO: Verify bill amount, if it is given else assign it to bill amount.
             try
             {

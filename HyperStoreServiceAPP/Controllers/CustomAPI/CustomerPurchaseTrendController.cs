@@ -47,7 +47,8 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             if (parameter == null)
-                throw new Exception("CustomerPurchaseTrend parameter should not have been null");
+                return BadRequest("CustomerPurchaseTrend parameter should not have been null");
+
             IEnumerable<CustomerPurchaseTrend> queryResult;
             try
             {
@@ -63,8 +64,8 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                             Product = cop.Product
                         }
                         );
-                var groupByQuery = await query.GroupBy(c => c.Product.ProductId).ToListAsync();
-                queryResult = groupByQuery.Select(c => AggregateQuantity(c));
+                var groupByQueryResult = await query.GroupBy(c => c.Product.ProductId).ToListAsync();
+                queryResult = groupByQueryResult.Select(c => AggregateQuantity(c));
             }
             catch (Exception e)
             { throw e; }
