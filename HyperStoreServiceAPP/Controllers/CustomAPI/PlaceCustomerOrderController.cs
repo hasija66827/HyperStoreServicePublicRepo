@@ -20,7 +20,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         public float? QuantityConsumed;
     }
 
-    public class OrderDetails
+    public class CustomerOrderDetails
     {
         [Required]
         public List<ProductConsumed> ProductsConsumed;
@@ -40,7 +40,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
     interface PlaceCustomerOrderInt
     {
-        Task<IHttpActionResult> PlaceCustomerOrder(OrderDetails orderDetails);
+        Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDetails orderDetails);
     }
 
     public class PlaceCustomerOrderController : ApiController, PlaceCustomerOrderInt
@@ -49,13 +49,16 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
 
         [HttpPut]
-        public async Task<IHttpActionResult> PlaceCustomerOrder(OrderDetails orderDetails)
+        public async Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDetails orderDetails)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if (orderDetails == null)
+                throw new Exception("OrderDetails should not have been null while placing the customer order");
             if (orderDetails.BillAmount < orderDetails.DiscountedAmount)
                 throw new Exception(string.Format("Bill Amount {0} cannot be less than Discounted Amount {1}",
                     orderDetails.BillAmount, orderDetails.DiscountedAmount));
+            //TODO: Verify bill amount, if it is given else assign it to bill amount.
             try
             {
                 await UpdateProductStockAsync(orderDetails.ProductsConsumed);
@@ -102,7 +105,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return true;
         }
 
-        private async Task<decimal> UpdateWalletBalanceOfCustomer(OrderDetails orderDetails)
+        private async Task<decimal> UpdateWalletBalanceOfCustomer(CustomerOrderDetails orderDetails)
         {
             decimal walletAmountToBeDeducted = 0;
 
@@ -121,7 +124,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                         walletAmountToBeDeducted = 0;
                     var remainingAmount = orderDetails.DiscountedAmount - walletAmountToBeDeducted;
                     if (orderDetails.PayingAmount < remainingAmount)
-                        throw new Exception(String.Format("Customer {0} payment {1} cannot be less than remaining payment {2}", customer.Name, orderDetails.PayingAmount, remainingAmount));
+                        throw new Exception(String.Format("Customer {0} payment {1} cannot be less than payment {2}", customer.Name, orderDetails.PayingAmount, remainingAmount));
                     walletAmountToBeAdded = (decimal)(orderDetails.PayingAmount - remainingAmount);
                 }
                 else
