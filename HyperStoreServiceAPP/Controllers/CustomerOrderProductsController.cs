@@ -24,17 +24,26 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         // GET: api/CustomerOrderProducts/5
-        [ResponseType(typeof(CustomerOrderProduct))]
-        public async Task<IHttpActionResult> GetCustomerOrderProduct(Guid id)
+        [ResponseType(typeof(List<CustomerOrderProduct>))]
+        public async Task<IHttpActionResult> GetCustomerOrderProduct(Guid? id)
         {
-            CustomerOrderProduct customerOrderProduct = await db.CustomerOrderProducts.FindAsync(id);
-            if (customerOrderProduct == null)
-            {
-                return NotFound();
-            }
+            if (id == null)
+                throw new Exception("CustomerOrderId should not have been NULL");
 
-            return Ok(customerOrderProduct);
+            List<CustomerOrderProduct> queryResult;
+            try
+            {
+               var  query = db.CustomerOrderProducts
+                            .Where(cop => cop.CustomerOrderId == id)
+                            .Include(cop => cop.Product);
+                queryResult = await query.ToListAsync();
+            }
+            catch (Exception e)
+            { throw e; }
+
+            return (Ok(queryResult));
         }
+
         /*
         // PUT: api/CustomerOrderProducts/5
         [ResponseType(typeof(void))]

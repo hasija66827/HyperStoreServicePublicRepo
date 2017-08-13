@@ -77,9 +77,13 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(customerOrder);
         }
         */
+        [ResponseType(typeof(List<CustomerOrder>))]
         [HttpGet]
         public async Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria)
         {
+            if (customerOrderFilterCriteria == null)
+                throw new Exception("A filter criteria object should not be null for retrieving list of customer orders");
+            List<CustomerOrder> queryResult;
             try
             {
                 var selectedCustomerId = customerOrderFilterCriteria.CustomerId;
@@ -90,10 +94,10 @@ namespace HyperStoreServiceAPP.Controllers
                     throw new Exception("A Date Range cannot be null");
                 if (selectedDateRange.StartDate > selectedDateRange.EndDate)
                     throw new Exception(String.Format("Start Date {0} cannot be ahead of EndDate {1}", selectedDateRange.StartDate, selectedDateRange.EndDate));
+
                 var commonQuery = db.CustomerOrders
                                     .Where(order => order.OrderDate >= selectedDateRange.StartDate.Date &&
                                                         order.OrderDate <= selectedDateRange.EndDate.Date);
-
                 IQueryable<CustomerOrder> query = commonQuery;
                 if (selectedCustomerId != null)
                 {
@@ -103,11 +107,11 @@ namespace HyperStoreServiceAPP.Controllers
                 {
                     query = commonQuery.Where(order => order.CustomerOrderNo == selectedCustomerOrderNo);
                 }
-                var queryResult = query.OrderByDescending(order => order.OrderDate);
-                return Ok(await queryResult.ToListAsync());
+                queryResult = await query.OrderByDescending(order => order.OrderDate).ToListAsync();
             }
             catch (Exception e)
             { throw e; }
+            return Ok(queryResult);
         }
         /*
         // PUT: api/CustomerOrders/5
