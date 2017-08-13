@@ -35,7 +35,7 @@ namespace HyperStoreServiceAPP.Controllers
 
             return Ok(customerOrderProduct);
         }
-
+        /*
         // PUT: api/CustomerOrderProducts/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutCustomerOrderProduct(Guid id, CustomerOrderProduct customerOrderProduct)
@@ -70,11 +70,12 @@ namespace HyperStoreServiceAPP.Controllers
 
             return StatusCode(HttpStatusCode.NoContent);
         }
-
+        
         // POST: api/CustomerOrderProducts
         [ResponseType(typeof(CustomerOrderProduct))]
         public async Task<IHttpActionResult> PostCustomerOrderProduct(CustomerOrderProduct customerOrderProduct)
         {
+            customerOrderProduct.CustomerOrderProductId = Guid.NewGuid();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -116,7 +117,7 @@ namespace HyperStoreServiceAPP.Controllers
 
             return Ok(customerOrderProduct);
         }
-
+        */
         protected override void Dispose(bool disposing)
         {
             if (disposing)

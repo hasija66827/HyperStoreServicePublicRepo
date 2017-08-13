@@ -8,7 +8,6 @@ namespace HyperStoreService.Models
 {
     public class CustomerOrderProduct
     {
-        [Required]
         public Guid? CustomerOrderProductId { get; set; }
         [Required]
         public float? DiscountPerSnapShot { get; set; }

@@ -8,7 +8,6 @@ namespace HyperStoreService.Models
 {
     public class Customer
     {
-        [Required]
         public Guid? CustomerId { get; set; }
         public string Address { get; set; }
         public string GSTIN { get; set; }
@@ -16,12 +15,12 @@ namespace HyperStoreService.Models
         public string MobileNo { get; set; }
         [Required]
         public string Name { get; set; }
-        public decimal WalletBalance { get; set; }
+        [Required]
+        public decimal? WalletBalance { get; set; }
 
         public Customer()
         {
-            this.WalletBalance = 0;
         }
-     
+     //TODO: #DB, Name and MobileNo should be unique, customerId should not be null in database, although in model it can be null
     }
 }

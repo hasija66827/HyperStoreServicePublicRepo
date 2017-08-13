@@ -8,12 +8,11 @@ namespace HyperStoreService.Models
 {
     public class CustomerOrder
     {
-        [Required]
-        public Guid? CustomerOrderId { get; set; }
-        [Required]
-        public string CustomerOrderNo { get; set; }
+        public Guid? CustomerOrderId { get; set; }//TODO: Should not be nullable in database
+
+        public string CustomerOrderNo { get; set; }//TODO: Should not be nullable in database
         
-        public DateTime OrderDate { get; set; }
+        public DateTime OrderDate { get; set; } 
 
         [Required]
         public decimal? BillAmount { get; set; }
@@ -27,20 +26,14 @@ namespace HyperStoreService.Models
         public bool? IsUsingWallet { get; set; }
         [Required]
         public decimal? PayingAmount { get; set; }
-        public decimal UsingWalletAmount { get; set; }// TODO: Should not be set by the customer. Use DTO
+        public decimal UsingWalletAmount { get; set; }
         
         public CustomerOrder()
         {
         }
-        public void SetDefaultValue()
-        {
-            this.CustomerOrderId = Guid.NewGuid();
-            this.CustomerOrderNo = Utility.GenerateCustomerOrderNo();
-            this.OrderDate = DateTime.Now;
-        }
 
         [Required]
-        public Guid CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
         public Customer Customer { get; set; }
     }
 }

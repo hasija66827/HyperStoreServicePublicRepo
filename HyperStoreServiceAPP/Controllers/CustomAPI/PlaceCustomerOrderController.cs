@@ -16,109 +16,65 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
     {
         [Required]
         public Guid? ProductId;
-        public float QuantityConsumed;
+        [Required]
+        public float? QuantityConsumed;
     }
 
     public class OrderDetails
     {
         [Required]
-        public Guid? CustomerId;
-        [Required]
         public List<ProductConsumed> ProductsConsumed;
         [Required]
-        public CustomerOrder CustomerOrder;
-        public OrderDetails(Guid? customerId, List<ProductConsumed> productsConsumed, CustomerOrder customerOrder)
-        {
-            this.CustomerId = customerId;
-            this.ProductsConsumed = productsConsumed;
-            this.CustomerOrder = customerOrder;
-        }
-    }
-
-    public class FilterOrderDateRange
-    {
+        public Guid? CustomerId { get; set; }
         [Required]
-        private DateTime _startDate;
-        public DateTime StartDate
-        {
-            get { return this._startDate; }
-            set { this._startDate = value; }
-        }
-
+        public decimal? BillAmount { get; set; }
         [Required]
-        private DateTime _endDate;
-        public DateTime EndDate
-        {
-            get { return this._endDate; }
-            set { this._endDate = value; }
-        }
-
-        public FilterOrderDateRange(DateTime startDate, DateTime endDate)
-        {
-            _startDate = startDate;
-            _endDate = endDate;
-        }
-    }
-
-    public class CustomerOrderFilterCriteria
-    {
-        public Customer Customer;
-        public string CustomerOrderNo;
-        public FilterOrderDateRange DateRange;
+        public decimal? DiscountedAmount { get; set; }
+        [Required]
+        public bool? IsPayingNow { get; set; }
+        [Required]
+        public bool? IsUsingWallet { get; set; }
+        [Required]
+        public decimal? PayingAmount { get; set; }
     }
 
     interface PlaceCustomerOrderInt
     {
         Task<IHttpActionResult> PlaceCustomerOrder(OrderDetails orderDetails);
-        Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria);
     }
 
     public class PlaceCustomerOrderController : ApiController, PlaceCustomerOrderInt
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
-        [HttpGet]
-        public async Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria)
-        {
-            var selectedCustomer = customerOrderFilterCriteria.Customer;
-            var selectedCustomerOrderNo = customerOrderFilterCriteria.CustomerOrderNo;
-            var selectedDateRange = customerOrderFilterCriteria.DateRange;
-
-            if (selectedDateRange == null)
-                throw new Exception("A Date Range cannot be null");
-
-            var commonQuery = db.Customers
-                                .Join(db.CustomerOrders,
-                                customer => customer.CustomerId,
-                                customerOrder => customerOrder.CustomerId,
-                                (customer, customerOrder) => new OrderDetails(customer.CustomerId, null, customerOrder))
-                                .Where(order => order.CustomerOrder.OrderDate.Date >= selectedDateRange.StartDate.Date &&
-                                                    order.CustomerOrder.OrderDate.Date <= selectedDateRange.EndDate.Date)
-                                .OrderByDescending(order => order.CustomerOrder.OrderDate);
-
-            IQueryable<OrderDetails> query = commonQuery;
-            if (selectedCustomer != null)
-            {
-                query = commonQuery.Where(order => order.CustomerId == selectedCustomer.CustomerId);
-            }
-            if (selectedCustomerOrderNo != null)
-            {
-                query = commonQuery.Where(order => order.CustomerOrder.CustomerOrderNo == selectedCustomerOrderNo);
-            }
-            return Ok(await query.ToListAsync());
-        }
 
         [HttpPut]
         public async Task<IHttpActionResult> PlaceCustomerOrder(OrderDetails orderDetails)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if (orderDetails.BillAmount < orderDetails.DiscountedAmount)
+                throw new Exception(string.Format("Bill Amount {0} cannot be less than Discounted Amount {1}",
+                    orderDetails.BillAmount, orderDetails.DiscountedAmount));
             try
             {
                 await UpdateProductStockAsync(orderDetails.ProductsConsumed);
-                orderDetails.CustomerOrder.UsingWalletAmount = await UpdateWalletBalanceOfCustomer(orderDetails.CustomerId, orderDetails.CustomerOrder);
-                CreateNewCustomerOrder(orderDetails.CustomerOrder);
-                await AddIntoCustomerOrderProductAsync(orderDetails.ProductsConsumed, orderDetails.CustomerOrder.CustomerOrderId);
+                var usingWalletAmount = await UpdateWalletBalanceOfCustomer(orderDetails);
+                var customerOrder = new CustomerOrder()
+                {
+                    CustomerOrderId = Guid.NewGuid(),
+                    CustomerOrderNo = Utility.GenerateCustomerOrderNo(),
+                    OrderDate = DateTime.Now,
+                    BillAmount = orderDetails.BillAmount,
+                    DiscountedAmount = orderDetails.DiscountedAmount,
+                    IsPayingNow = orderDetails.IsPayingNow,
+                    IsUsingWallet = orderDetails.IsUsingWallet,
+                    PayingAmount = orderDetails.PayingAmount,
+                    UsingWalletAmount = usingWalletAmount,
+                    CustomerId = orderDetails.CustomerId
+                };
+                CreateNewCustomerOrder(customerOrder);
+                await AddIntoCustomerOrderProductAsync(orderDetails.ProductsConsumed, customerOrder.CustomerOrderId);
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -129,8 +85,6 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             { throw e; }
             return StatusCode(HttpStatusCode.NoContent);
         }
-
-
 
         private async Task<Boolean> UpdateProductStockAsync(List<ProductConsumed> productsConsumed)
         {
@@ -148,33 +102,33 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return true;
         }
 
-        private async Task<decimal> UpdateWalletBalanceOfCustomer(Guid? customerId, CustomerOrder customerOrder)
+        private async Task<decimal> UpdateWalletBalanceOfCustomer(OrderDetails orderDetails)
         {
             decimal walletAmountToBeDeducted = 0;
 
             try
             {
-                var customer = await db.Customers.FindAsync(customerId);
+                var customer = await db.Customers.FindAsync(orderDetails.CustomerId);
                 if (customer == null)
-                    throw new Exception(String.Format("Customer {0} not found", customerId));
+                    throw new Exception(String.Format("Customer {0} not found", orderDetails.CustomerId));
 
                 decimal walletAmountToBeAdded = 0;
-                if (customerOrder.IsPayingNow == true)
+                if (orderDetails.IsPayingNow == true)
                 {
-                    if (customerOrder.IsUsingWallet == true)
-                        walletAmountToBeDeducted = Math.Min((decimal)customerOrder.DiscountedAmount, customer.WalletBalance);
+                    if (orderDetails.IsUsingWallet == true)
+                        walletAmountToBeDeducted = Math.Min((decimal)orderDetails.DiscountedAmount, (decimal)customer.WalletBalance);
                     else
                         walletAmountToBeDeducted = 0;
-                    var remainingAmount = customerOrder.DiscountedAmount - walletAmountToBeDeducted;
-                    if (customerOrder.PayingAmount < remainingAmount)
-                        throw new Exception(String.Format("Customer {0} payment {1} cannot be less than remaining payment {2}", customer.Name, customerOrder.PayingAmount, remainingAmount));
-                    walletAmountToBeAdded = (decimal)(customerOrder.PayingAmount - remainingAmount);
+                    var remainingAmount = orderDetails.DiscountedAmount - walletAmountToBeDeducted;
+                    if (orderDetails.PayingAmount < remainingAmount)
+                        throw new Exception(String.Format("Customer {0} payment {1} cannot be less than remaining payment {2}", customer.Name, orderDetails.PayingAmount, remainingAmount));
+                    walletAmountToBeAdded = (decimal)(orderDetails.PayingAmount - remainingAmount);
                 }
                 else
                 {
-                    if (customerOrder.PayingAmount > customerOrder.DiscountedAmount)
-                        throw new Exception(String.Format("Customer {0} paying {1} cannot be greater than discountedBillAmount {2} in Pay Later Mode ", customerId, customerOrder.PayingAmount, customerOrder.DiscountedAmount));
-                    walletAmountToBeDeducted = (decimal)customerOrder.DiscountedAmount - (decimal)customerOrder.PayingAmount;
+                    if (orderDetails.PayingAmount > orderDetails.DiscountedAmount)
+                        throw new Exception(String.Format("Customer {0} paying {1} cannot be greater than discountedBillAmount {2} in Pay Later Mode ", orderDetails.CustomerId, orderDetails.PayingAmount, orderDetails.DiscountedAmount));
+                    walletAmountToBeDeducted = (decimal)orderDetails.DiscountedAmount - (decimal)orderDetails.PayingAmount;
                 }
                 customer.WalletBalance -= walletAmountToBeDeducted;
                 customer.WalletBalance += walletAmountToBeAdded;
@@ -223,14 +177,13 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         {
             try
             {
-
                 var product = await db.Products.FindAsync(productConsumed.ProductId);
                 if (product == null)
                     throw new Exception(String.Format("Product with id {0} not found", productConsumed.ProductId));
                 if (product.TotalQuantity < productConsumed.QuantityConsumed)
                     throw new Exception(string.Format("Product {0} is deficient by {1} units in stock," +
                         " please update the product in stock", product.Name, productConsumed.QuantityConsumed - product.TotalQuantity));
-                product.TotalQuantity -= productConsumed.QuantityConsumed;
+                product.TotalQuantity -= (float)productConsumed.QuantityConsumed;
                 db.Entry(product).State = EntityState.Modified;
             }
             catch (Exception e)

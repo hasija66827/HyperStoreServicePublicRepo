@@ -83,6 +83,7 @@ namespace HyperStoreServiceAPP.Controllers
         [ResponseType(typeof(Customer))]
         public async Task<IHttpActionResult> PostCustomer(Customer customer)
         {
+            customer.CustomerId = Guid.NewGuid();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

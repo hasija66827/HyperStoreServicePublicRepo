@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using HyperStoreService.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
@@ -18,10 +19,25 @@ namespace HyperStoreServiceAPP.Controllers
         IQueryable<Product> GetProducts();
         Task<IHttpActionResult> GetProduct(Guid id);
         Task<IHttpActionResult> PutProduct(Guid id, Product product);
-        Task<IHttpActionResult> PostProduct(Product product);
+        Task<IHttpActionResult> PostProduct(ProductDTO product);
         Task<IHttpActionResult> DeleteProduct(Guid id);
 
     }
+    public class ProductDTO
+    {
+        public float? CGSTPer { get; set; }
+        [Required]
+        public string Code { get; set; }
+        [Required]
+        public float? DisplayPrice { get; set; }
+        public float DiscountPer { get; set; }
+        [Required]
+        public string Name { get; set; }
+        public Int32 RefillTime { get; set; }
+        public float? SGSTPer { get; set; }
+        public Int32 Threshold { get; set; }
+    }
+
     public class ProductsController : ApiController, ProductContInt
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
@@ -82,13 +98,27 @@ namespace HyperStoreServiceAPP.Controllers
 
         // POST: api/Products
         [ResponseType(typeof(Product))]
-        public async Task<IHttpActionResult> PostProduct(Product product)
+        public async Task<IHttpActionResult> PostProduct(ProductDTO productDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            Product product = new Product()
+            {
+                ProductId = Guid.NewGuid(),
+                TotalQuantity = 0,
+                SupplierId = null,
+                Code = productDTO.Code,
+                CGSTPer =productDTO.CGSTPer,
+                DiscountPer=productDTO.DiscountPer,
+                DisplayPrice=productDTO.DisplayPrice,
+                Name=productDTO.Name,
+                RefillTime=productDTO.RefillTime,
+                SGSTPer=productDTO.SGSTPer,
+                Threshold=productDTO.Threshold
+            };
             db.Products.Add(product);
 
             try
