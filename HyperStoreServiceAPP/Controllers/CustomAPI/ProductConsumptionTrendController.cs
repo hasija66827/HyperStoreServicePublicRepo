@@ -31,7 +31,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         public int? MonthsCount { get; set; }
     }
 
-    public class PrductConsumptionTrendController : ApiController
+    public class ProductConsumptionTrendController : ApiController
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

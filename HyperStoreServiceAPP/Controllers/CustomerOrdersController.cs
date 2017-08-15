@@ -41,10 +41,10 @@ namespace HyperStoreServiceAPP.Controllers
 
     public class CustomerOrderFilterCriteria
     {
-        public Guid? CustomerId;
-        public string CustomerOrderNo;
+        public Guid? CustomerId { get; set; }
+        public string CustomerOrderNo { get; set; }
         [Required]
-        public FilterOrderDateRange DateRange;
+        public FilterOrderDateRange DateRange { get; set; }
     }
 
     interface CustomerOrderInt
@@ -81,38 +81,39 @@ namespace HyperStoreServiceAPP.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             if (customerOrderFilterCriteria == null)
-                throw new Exception("A filter criteria object should not be null for retrieving list of customer orders");
-            List<CustomerOrder> queryResult;
+                return BadRequest("A filter criteria object should not be null for retrieving list of customer orders");
+            var selectedCustomerId = customerOrderFilterCriteria.CustomerId;
+            var selectedCustomerOrderNo = customerOrderFilterCriteria.CustomerOrderNo;
+            var selectedDateRange = customerOrderFilterCriteria.DateRange;
+
+            if (selectedDateRange.StartDate > selectedDateRange.EndDate)
+                return BadRequest(String.Format("Start Date {0} cannot be ahead of EndDate {1}", selectedDateRange.StartDate, selectedDateRange.EndDate));
+
+            List<CustomerOrder> result;
             try
             {
-                var selectedCustomerId = customerOrderFilterCriteria.CustomerId;
-                var selectedCustomerOrderNo = customerOrderFilterCriteria.CustomerOrderNo;
-                var selectedDateRange = customerOrderFilterCriteria.DateRange;
-
-                if (selectedDateRange == null)
-                    throw new Exception("A Date Range cannot be null");
-                if (selectedDateRange.StartDate > selectedDateRange.EndDate)
-                    throw new Exception(String.Format("Start Date {0} cannot be ahead of EndDate {1}", selectedDateRange.StartDate, selectedDateRange.EndDate));
-
-                var commonQuery = db.CustomerOrders
+                IQueryable<CustomerOrder> query;
+                query = db.CustomerOrders
                                     .Where(order => order.OrderDate >= selectedDateRange.StartDate.Date &&
-                                                        order.OrderDate <= selectedDateRange.EndDate.Date);
-                IQueryable<CustomerOrder> query = commonQuery;
+                                                    order.OrderDate <= selectedDateRange.EndDate.Date);
                 if (selectedCustomerId != null)
                 {
-                    query = commonQuery.Where(order => order.CustomerId == selectedCustomerId);
+                    query = query.Where(order => order.CustomerId == selectedCustomerId);
                 }
                 if (selectedCustomerOrderNo != null)
                 {
-                    query = commonQuery.Where(order => order.CustomerOrderNo == selectedCustomerOrderNo);
+                    query = query.Where(order => order.CustomerOrderNo == selectedCustomerOrderNo);
                 }
-                queryResult = await query.OrderByDescending(order => order.OrderDate).ToListAsync();
+                result = await query.OrderByDescending(order => order.OrderDate).ToListAsync();
             }
             catch (Exception e)
             { throw e; }
-            return Ok(queryResult);
+            return Ok(result);
         }
+
         /*
         // PUT: api/CustomerOrders/5
         [ResponseType(typeof(void))]

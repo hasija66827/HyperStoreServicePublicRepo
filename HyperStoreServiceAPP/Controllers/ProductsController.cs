@@ -16,13 +16,14 @@ namespace HyperStoreServiceAPP.Controllers
 {
     interface ProductContInt
     {
-        IQueryable<Product> GetProducts();
-        Task<IHttpActionResult> GetProduct(Guid id);
+        //IQueryable<Product> GetProducts();
+        //Task<IHttpActionResult> GetProduct(Guid id);
         Task<IHttpActionResult> PutProduct(Guid id, Product product);
         Task<IHttpActionResult> PostProduct(ProductDTO product);
         Task<IHttpActionResult> DeleteProduct(Guid id);
 
     }
+
     public class ProductDTO
     {
         public float? CGSTPer { get; set; }
@@ -38,10 +39,40 @@ namespace HyperStoreServiceAPP.Controllers
         public Int32 Threshold { get; set; }
     }
 
+    public class IRange<T>
+    {
+        public T LB { get; set; }
+        public T UB { get; set; }
+        public IRange(T lb, T ub)
+        {
+            LB = lb;
+            UB = ub;
+        }
+    }
+
+    public class FilterProductCriteria
+    {
+        public Guid? ProductId { get; set; }
+        public List<Guid?> TagIds { get; set; }
+        [Required]
+        public FilterProductQDT FilterProductQDT { get; set; }
+    }
+
+    public class FilterProductQDT
+    {
+        [Required]
+        public IRange<float?> DiscountPerRange { get; set; }
+        [Required]
+        public IRange<Int32?> QuantityRange { get; set; }
+        [Required]
+        public bool? IncludeDeficientItemsOnly { get; set; }
+    }
+
     public class ProductsController : ApiController, ProductContInt
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
+        /*
         // GET: api/Products
         public IQueryable<Product> GetProducts()
         {
@@ -59,6 +90,45 @@ namespace HyperStoreServiceAPP.Controllers
             }
 
             return Ok(product);
+        }
+        */
+        [HttpGet]
+        [ResponseType(typeof(IEnumerable<Product>))]
+        public async Task<IHttpActionResult> GetProducts(FilterProductCriteria filterProductCriteria)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            if (filterProductCriteria == null)
+                return BadRequest("Input parameter cannot be null");
+
+            var productId = filterProductCriteria.ProductId;
+            var tagIds = filterProductCriteria.TagIds;
+            var filterProductQDT = filterProductCriteria.FilterProductQDT;
+            var discountPerRange = filterProductQDT.DiscountPerRange;
+            var quantity = filterProductQDT.QuantityRange;
+
+            IEnumerable<Product> result;
+            try
+            {
+                IQueryable<Product> query = db.Products;
+
+                if (productId != null)
+                    query = query.Where(p => p.ProductId == productId);
+
+                if (filterProductQDT != null)
+                {
+                    query = query.Where(p => p.DiscountPer >= discountPerRange.LB &&
+                                             p.DiscountPer <= discountPerRange.UB &&
+                                             p.TotalQuantity >= quantity.LB &&
+                                             p.TotalQuantity <= quantity.UB);
+                    if (filterProductQDT.IncludeDeficientItemsOnly == true)
+                        query = query.Where(p => p.TotalQuantity <= p.Threshold);
+                }
+                result = await query.ToListAsync();
+            }
+            catch (Exception e)
+            { throw e; }
+            return Ok(result);
         }
 
         // PUT: api/Products/5
@@ -111,13 +181,13 @@ namespace HyperStoreServiceAPP.Controllers
                 TotalQuantity = 0,
                 SupplierId = null,
                 Code = productDTO.Code,
-                CGSTPer =productDTO.CGSTPer,
-                DiscountPer=productDTO.DiscountPer,
-                DisplayPrice=productDTO.DisplayPrice,
-                Name=productDTO.Name,
-                RefillTime=productDTO.RefillTime,
-                SGSTPer=productDTO.SGSTPer,
-                Threshold=productDTO.Threshold
+                CGSTPer = productDTO.CGSTPer,
+                DiscountPer = productDTO.DiscountPer,
+                DisplayPrice = productDTO.DisplayPrice,
+                Name = productDTO.Name,
+                RefillTime = productDTO.RefillTime,
+                SGSTPer = productDTO.SGSTPer,
+                Threshold = productDTO.Threshold
             };
             db.Products.Add(product);
 
