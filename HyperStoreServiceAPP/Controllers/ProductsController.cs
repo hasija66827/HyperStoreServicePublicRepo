@@ -36,6 +36,7 @@ namespace HyperStoreServiceAPP.Controllers
         public Int32 RefillTime { get; set; }
         public float? SGSTPer { get; set; }
         public Int32 Threshold { get; set; }
+        public List<Guid?> TagIds { get; set; }
     }
 
     public class IRange<T>
@@ -55,7 +56,7 @@ namespace HyperStoreServiceAPP.Controllers
         public override bool IsValid(object value)
         {
             var quantityRange = value as IRange<float?>;
-            return (quantityRange.LB>0 && quantityRange.LB<quantityRange.UB);
+            return (quantityRange.LB > 0 && quantityRange.LB < quantityRange.UB);
         }
     }
 
@@ -197,10 +198,10 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            var newProductId = Guid.NewGuid();
             Product product = new Product()
             {
-                ProductId = Guid.NewGuid(),
+                ProductId = newProductId,
                 TotalQuantity = 0,
                 SupplierId = null,
                 Code = productDTO.Code,
@@ -212,10 +213,20 @@ namespace HyperStoreServiceAPP.Controllers
                 SGSTPer = productDTO.SGSTPer,
                 Threshold = productDTO.Threshold
             };
-            db.Products.Add(product);
 
             try
             {
+                db.Products.Add(product);
+                if (productDTO.TagIds != null && productDTO.TagIds.Count != 0)
+                {
+                    IEnumerable<ProductTag> productTags = productDTO.TagIds.Select(tagId => new ProductTag
+                    {
+                        ProductTagId = Guid.NewGuid(),
+                        ProductId = newProductId,
+                        TagId = tagId
+                    });
+                    db.ProductTags.AddRange(productTags);
+                }
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateException)
@@ -223,6 +234,11 @@ namespace HyperStoreServiceAPP.Controllers
                 if (ProductExists(product.ProductId))
                 {
                     return Conflict();
+                }
+                var x = await TagExists(productDTO.TagIds);
+                if (x != null)
+                {
+                    return BadRequest(String.Format("Tag with id {0} does not exists", x));
                 }
                 else
                 {
@@ -261,6 +277,17 @@ namespace HyperStoreServiceAPP.Controllers
         private bool ProductExists(Guid? id)
         {
             return db.Products.Count(e => e.ProductId == id) > 0;
+        }
+
+        private async Task<Guid?> TagExists(List<Guid?> tagIds)
+        {
+            foreach (var tagId in tagIds)
+            {
+                var x = await db.Tags.CountAsync(t => t.TagId == tagId) > 0;
+                if (!x)
+                    return tagId;
+            }
+            return null;
         }
     }
 }
