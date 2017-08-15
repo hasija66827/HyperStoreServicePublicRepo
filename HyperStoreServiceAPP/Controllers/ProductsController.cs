@@ -56,7 +56,7 @@ namespace HyperStoreServiceAPP.Controllers
         public override bool IsValid(object value)
         {
             var quantityRange = value as IRange<float?>;
-            return (quantityRange.LB > 0 && quantityRange.LB < quantityRange.UB);
+            return (quantityRange.LB >= 0 && quantityRange.LB <= quantityRange.UB);
         }
     }
 
@@ -147,6 +147,11 @@ namespace HyperStoreServiceAPP.Controllers
                                              p.TotalQuantity <= quantity.UB);
                     if (filterProductQDT.IncludeDeficientItemsOnly == true)
                         query = query.Where(p => p.TotalQuantity <= p.Threshold);
+                }
+                if (tagIds != null)
+                {
+                  var productIds_tag= await RetrieveProductIdsAsync(tagIds);
+                  query = query.Where(p => productIds_tag.Contains(p.ProductId));
                 }
                 result = await query.ToListAsync();
             }
@@ -288,6 +293,20 @@ namespace HyperStoreServiceAPP.Controllers
                     return tagId;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Retrieves list of distinct product Id having atleast one tag in tagIds.
+        /// </summary>
+        /// <param name="tagIds"></param>
+        /// <returns></returns>
+        private async Task<List<Guid?>> RetrieveProductIdsAsync(List<Guid?> tagIds)
+        {
+            var result = db.ProductTags
+                            .Where(pt => tagIds.Contains(pt.TagId))
+                            .Select(pt => pt.ProductId)
+                             .Distinct();
+            return await result.ToListAsync();
         }
     }
 }
