@@ -8,7 +8,6 @@ namespace HyperStoreService.Models
 {
     public class Supplier
     {
-        [Required]
         public Guid? SupplierId { get; set; }
         public string Address { get; set; }
         public string GSTIN { get; set; }
@@ -19,7 +18,17 @@ namespace HyperStoreService.Models
         public float WalletBalance { get; set; }
 
         public Supplier() {
-            this.WalletBalance = 0;
         }
+    }
+
+    public class SupplierDTO
+    {
+        public string Address { get; set; }
+        public string GSTIN { get; set; }
+        [Required]
+        [RegularExpression(@"[987]\d{9}")]
+        public string MobileNo { get; set; }
+        [Required]
+        public string Name { get; set; }
     }
 }

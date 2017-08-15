@@ -18,7 +18,7 @@ namespace HyperStoreServiceAPP.Controllers
         IQueryable<Supplier> GetSuppliers();
         Task<IHttpActionResult> GetSupplier(Guid id);
         Task<IHttpActionResult> PutSupplier(Guid id, Supplier supplier);
-        Task<IHttpActionResult> PostSupplier(Supplier supplier);
+        Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO);
         Task<IHttpActionResult> DeleteSupplier(Guid id);
     }
 
@@ -82,15 +82,22 @@ namespace HyperStoreServiceAPP.Controllers
 
         // POST: api/Suppliers
         [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> PostSupplier(Supplier supplier)
+        public async Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            var supplier = new Supplier()
+            {
+                SupplierId = Guid.NewGuid(),
+                Address = supplierDTO.Address,
+                GSTIN = supplierDTO.GSTIN,
+                MobileNo = supplierDTO.MobileNo,
+                Name = supplierDTO.Name,
+                WalletBalance = 0,
+            };
             db.Suppliers.Add(supplier);
-
             try
             {
                 await db.SaveChangesAsync();
@@ -106,7 +113,6 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
             return CreatedAtRoute("DefaultApi", new { id = supplier.SupplierId }, supplier);
         }
 
