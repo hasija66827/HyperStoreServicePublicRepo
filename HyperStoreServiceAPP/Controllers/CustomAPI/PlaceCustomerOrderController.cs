@@ -15,15 +15,16 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
     public class ProductConsumed
     {
         [Required]
-        public Guid? ProductId;
+        public Guid? ProductId { get; set; }
         [Required]
-        public float? QuantityConsumed;
+        [Range(0,float.MaxValue)]
+        public float? QuantityConsumed { get; set; }
     }
 
-    public class CustomerOrderDetails
+    public class CustomerOrderDTO
     {
         [Required]
-        public List<ProductConsumed> ProductsConsumed;
+        public List<ProductConsumed> ProductsConsumed { get; set; }
         [Required]
         public Guid? CustomerId { get; set; }
         [Required]
@@ -40,7 +41,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
     interface PlaceCustomerOrderInt
     {
-        Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDetails orderDetails);
+        Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDTO orderDetail);
     }
 
     public class PlaceCustomerOrderController : ApiController, PlaceCustomerOrderInt
@@ -48,35 +49,35 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         [HttpPut]
-        public async Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDetails orderDetails)
+        public async Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDTO orderDetail)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (orderDetails == null)
+            if (orderDetail == null)
                 return BadRequest("OrderDetails should not have been null while placing the customer order");
-            if (orderDetails.BillAmount < orderDetails.DiscountedAmount)
+            if (orderDetail.BillAmount < orderDetail.DiscountedAmount)
                 return BadRequest(string.Format("Bill Amount {0} cannot be less than Discounted Amount {1}",
-                                                    orderDetails.BillAmount, orderDetails.DiscountedAmount));
-            //TODO: Verify bill amount, if it is given else assign it to bill amount.
+                                                    orderDetail.BillAmount, orderDetail.DiscountedAmount));
+            //TODO: Verify bill amount.
             try
             {
-                await UpdateProductStockAsync(orderDetails.ProductsConsumed);
-                var usingWalletAmount = await UpdateWalletBalanceOfCustomer(orderDetails);
+                await UpdateProductStockAsync(orderDetail.ProductsConsumed);
+                var usingWalletAmount = await UpdateWalletBalanceOfCustomer(orderDetail);
                 var customerOrder = new CustomerOrder()
                 {
                     CustomerOrderId = Guid.NewGuid(),
                     CustomerOrderNo = Utility.GenerateCustomerOrderNo(),
                     OrderDate = DateTime.Now,
-                    BillAmount = orderDetails.BillAmount,
-                    DiscountedAmount = orderDetails.DiscountedAmount,
-                    IsPayingNow = orderDetails.IsPayingNow,
-                    IsUsingWallet = orderDetails.IsUsingWallet,
-                    PayingAmount = orderDetails.PayingAmount,
+                    BillAmount = orderDetail.BillAmount,
+                    DiscountedAmount = orderDetail.DiscountedAmount,
+                    IsPayingNow = orderDetail.IsPayingNow,
+                    IsUsingWallet = orderDetail.IsUsingWallet,
+                    PayingAmount = orderDetail.PayingAmount,
                     UsingWalletAmount = usingWalletAmount,
-                    CustomerId = orderDetails.CustomerId
+                    CustomerId = orderDetail.CustomerId
                 };
                 CreateNewCustomerOrder(customerOrder);
-                await AddIntoCustomerOrderProductAsync(orderDetails.ProductsConsumed, customerOrder.CustomerOrderId);
+                await AddIntoCustomerOrderProductAsync(orderDetail.ProductsConsumed, customerOrder.CustomerOrderId);
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -104,7 +105,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return true;
         }
 
-        private async Task<decimal> UpdateWalletBalanceOfCustomer(CustomerOrderDetails orderDetails)
+        private async Task<decimal> UpdateWalletBalanceOfCustomer(CustomerOrderDTO orderDetails)
         {
             decimal walletAmountToBeDeducted = 0;
 

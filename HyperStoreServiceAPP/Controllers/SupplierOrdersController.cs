@@ -10,9 +10,38 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using HyperStoreService.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
+    public class ProductPurchased
+    {
+        [Required]
+        public Guid? ProductId { get; set; }
+        [Required]
+        [Range(0, float.MaxValue)]
+        public float? QuantityPurchased { get; set; }
+        [Required]
+        public decimal? PurchasePricePerUnit { get; set; }
+    }
+
+    public class SupplierOrderDTO
+    {
+        [Required]
+        public List<ProductPurchased> ProductsPurchased { get; set; }
+        [Required]
+        public Guid? SupplierId { get; set; }
+        [Required]
+        public decimal? BillAmount { get; set; }
+        [Required]
+        public decimal? PaidAmount { get; set; }
+        [Required]
+        public DateTime? DueDate { get; set; }
+        [Required]
+        [Range(0, 100)]
+        public float IntrestRate { get; set; }
+    }
+
     public class SupplierOrdersController : ApiController
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
@@ -73,32 +102,27 @@ namespace HyperStoreServiceAPP.Controllers
 
         // POST: api/SupplierOrders
         [ResponseType(typeof(SupplierOrder))]
-        public async Task<IHttpActionResult> PostSupplierOrder(SupplierOrder supplierOrder)
+        public async Task<IHttpActionResult> PostSupplierOrder(SupplierOrderDTO orderDetail)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            db.SupplierOrders.Add(supplierOrder);
-
+            if (orderDetail == null)
+                return BadRequest("OrderDetails should not have been null while placing the supplier order");
+            if (orderDetail.PaidAmount > orderDetail.BillAmount)
+                return BadRequest(String.Format("PaidAmount {0} should be less than Bill Amount {1}", orderDetail.PaidAmount, orderDetail.BillAmount));
+            //TODO: Verify bill amount.
             try
             {
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (SupplierOrderExists(supplierOrder.SupplierOrderId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = supplierOrder.SupplierOrderId }, supplierOrder);
+            return CreatedAtRoute("DefaultApi", new { id = orderDetail.BillAmount }, orderDetail);
         }
 
         // DELETE: api/SupplierOrders/5
