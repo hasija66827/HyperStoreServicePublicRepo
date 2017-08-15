@@ -8,7 +8,6 @@ namespace HyperStoreService.Models
 {
     public class Tag
     {
-        [Required]
         public Guid? TagId { get; set; }
         [Required]
         public string TagName { get; set; }

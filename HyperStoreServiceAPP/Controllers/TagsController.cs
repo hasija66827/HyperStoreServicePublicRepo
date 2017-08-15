@@ -75,6 +75,7 @@ namespace HyperStoreServiceAPP.Controllers
         [ResponseType(typeof(Tag))]
         public async Task<IHttpActionResult> PostTag(Tag tag)
         {
+            tag.TagId = Guid.NewGuid();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
