@@ -14,28 +14,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class FilterOrderDateRange
+    public sealed class DateRangeAttribute : ValidationAttribute
     {
-        [Required]
-        private DateTime _startDate;
-        public DateTime StartDate
+        public override bool IsValid(object value)
         {
-            get { return this._startDate; }
-            set { this._startDate = value; }
-        }
-
-        [Required]
-        private DateTime _endDate;
-        public DateTime EndDate
-        {
-            get { return this._endDate; }
-            set { this._endDate = value; }
-        }
-
-        public FilterOrderDateRange(DateTime startDate, DateTime endDate)
-        {
-            _startDate = startDate;
-            _endDate = endDate;
+            var dateRange = value as IRange<DateTime>;
+            return dateRange.LB <= dateRange.UB;
         }
     }
 
@@ -44,7 +28,8 @@ namespace HyperStoreServiceAPP.Controllers
         public Guid? CustomerId { get; set; }
         public string CustomerOrderNo { get; set; }
         [Required]
-        public FilterOrderDateRange DateRange { get; set; }
+        [DateRange(ErrorMessage ="{0} is invalid, possibly lb>ub")]
+        public IRange<DateTime> DateRange { get; set; }
     }
 
     interface CustomerOrderInt
@@ -89,16 +74,13 @@ namespace HyperStoreServiceAPP.Controllers
             var selectedCustomerOrderNo = customerOrderFilterCriteria.CustomerOrderNo;
             var selectedDateRange = customerOrderFilterCriteria.DateRange;
 
-            if (selectedDateRange.StartDate > selectedDateRange.EndDate)
-                return BadRequest(String.Format("Start Date {0} cannot be ahead of EndDate {1}", selectedDateRange.StartDate, selectedDateRange.EndDate));
-
             List<CustomerOrder> result;
             try
             {
                 IQueryable<CustomerOrder> query;
                 query = db.CustomerOrders
-                                    .Where(order => order.OrderDate >= selectedDateRange.StartDate.Date &&
-                                                    order.OrderDate <= selectedDateRange.EndDate.Date);
+                                    .Where(order => order.OrderDate >= selectedDateRange.LB.Date &&
+                                                    order.OrderDate <= selectedDateRange.UB.Date);
                 if (selectedCustomerId != null)
                 {
                     query = query.Where(order => order.CustomerId == selectedCustomerId);

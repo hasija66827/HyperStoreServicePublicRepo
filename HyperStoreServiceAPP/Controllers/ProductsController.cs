@@ -21,7 +21,6 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> PutProduct(Guid id, Product product);
         Task<IHttpActionResult> PostProduct(ProductDTO product);
         Task<IHttpActionResult> DeleteProduct(Guid id);
-
     }
 
     public class ProductDTO
@@ -41,12 +40,32 @@ namespace HyperStoreServiceAPP.Controllers
 
     public class IRange<T>
     {
+        [Required]
         public T LB { get; set; }
+        [Required]
         public T UB { get; set; }
         public IRange(T lb, T ub)
         {
             LB = lb;
             UB = ub;
+        }
+    }
+    public sealed class QuantityRangeAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            var quantityRange = value as IRange<float?>;
+            return (quantityRange.LB>0 && quantityRange.LB<quantityRange.UB);
+        }
+    }
+
+    public sealed class DiscountPerRangeAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            var discountPerRange = value as IRange<float?>;
+            bool valid = (discountPerRange.LB <= discountPerRange.UB && discountPerRange.LB >= 0 && discountPerRange.UB <= 100);
+            return valid;
         }
     }
 
@@ -61,9 +80,13 @@ namespace HyperStoreServiceAPP.Controllers
     public class FilterProductQDT
     {
         [Required]
+        [DiscountPerRange]
         public IRange<float?> DiscountPerRange { get; set; }
+
         [Required]
-        public IRange<Int32?> QuantityRange { get; set; }
+        [QuantityRange]
+        public IRange<float?> QuantityRange { get; set; }
+
         [Required]
         public bool? IncludeDeficientItemsOnly { get; set; }
     }
