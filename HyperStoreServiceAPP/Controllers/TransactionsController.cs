@@ -79,10 +79,7 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var walletSnapshot = await UpdateSupplierWalletBalance(transactionDTO);
-            if (walletSnapshot == null)
-                return BadRequest(String.Format("Supplier with id {0} not found", transactionDTO.SupplierId));
-            var transaction = CreateNewTransaction(transactionDTO, (decimal)walletSnapshot);
+            var transaction = await transactionDTO.CreateNewTransaction(db);
             //TODO: SettleUP orders
             try
             {
@@ -94,39 +91,6 @@ namespace HyperStoreServiceAPP.Controllers
 
             }
             return CreatedAtRoute("DefaultApi", new { id = transaction.TransactionId }, transaction);
-        }
-
-        private async Task<decimal?> UpdateSupplierWalletBalance(TransactionDTO transactionDTO)
-        {
-            Guid supplierId = (Guid)transactionDTO.SupplierId;
-            decimal transactionAmount = (decimal)transactionDTO.TransactionAmount;
-            bool IsCredit = (bool)transactionDTO.IsCredit;
-            var supplier = await db.Suppliers.FindAsync(supplierId);
-            if (supplier == null)
-                return null;
-            var walletSnapshot = supplier.WalletBalance;
-            if (IsCredit == true)
-                supplier.WalletBalance += transactionAmount;
-            else
-                supplier.WalletBalance -= transactionAmount;
-            db.Entry(supplier).State = EntityState.Modified;
-            return walletSnapshot;
-        }
-
-        private Transaction CreateNewTransaction(TransactionDTO transactionDTO, decimal walletSnapshot)
-        {
-            var transaction = new Transaction
-            {
-                TransactionId = Guid.NewGuid(),
-                TransactionNo = Utility.GenerateSupplierTransactionNo(),
-                TransactionDate = DateTime.Now,
-                TransactionAmount = (decimal)transactionDTO.TransactionAmount,
-                IsCredit = (bool)transactionDTO.IsCredit,
-                SupplierId = (Guid)transactionDTO.SupplierId,
-                WalletSnapshot = walletSnapshot
-            };
-            db.Transactions.Add(transaction);
-            return transaction;
         }
 
         // DELETE: api/Transactions/5
