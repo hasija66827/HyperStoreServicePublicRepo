@@ -60,7 +60,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                         .Include(cop => cop.Product)
                         .Select(cop => new CustomerPurchaseTrend()
                         {
-                            TotalQuantityPurchased = (int)cop.QuantityPurchased,
+                            TotalQuantityPurchased = (int)cop.QuantityConsumed,
                             Product = cop.Product
                         }
                         );

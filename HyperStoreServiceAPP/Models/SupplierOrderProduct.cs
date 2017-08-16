@@ -8,12 +8,9 @@ namespace HyperStoreService.Models
 {
     public class SupplierOrderProduct
     {
-        [Required]
-        public Guid? SupplierOrderProductId { get; set; }
-        [Required]
-        public int? QuantityPurchased { get; set; }
-        [Required]
-        public float? PurchasePrice { get; set; }
+        public Guid SupplierOrderProductId { get; set; }
+        public decimal PurchasePrice { get; set; }
+        public float QuantityPurchased { get; set; }
 
         public SupplierOrderProduct() {
         }

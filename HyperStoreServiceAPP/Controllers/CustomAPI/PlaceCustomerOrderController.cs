@@ -17,7 +17,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         [Required]
         public Guid? ProductId { get; set; }
         [Required]
-        [Range(0,float.MaxValue)]
+        [Range(0, float.MaxValue)]
         public float? QuantityConsumed { get; set; }
     }
 
@@ -61,23 +61,10 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             //TODO: Verify bill amount.
             try
             {
-                await UpdateProductStockAsync(orderDetail.ProductsConsumed);
-                var usingWalletAmount = await UpdateWalletBalanceOfCustomer(orderDetail);
-                var customerOrder = new CustomerOrder()
-                {
-                    CustomerOrderId = Guid.NewGuid(),
-                    CustomerOrderNo = Utility.GenerateCustomerOrderNo(),
-                    OrderDate = DateTime.Now,
-                    BillAmount = orderDetail.BillAmount,
-                    DiscountedAmount = orderDetail.DiscountedAmount,
-                    IsPayingNow = orderDetail.IsPayingNow,
-                    IsUsingWallet = orderDetail.IsUsingWallet,
-                    PayingAmount = orderDetail.PayingAmount,
-                    UsingWalletAmount = usingWalletAmount,
-                    CustomerId = orderDetail.CustomerId
-                };
-                CreateNewCustomerOrder(customerOrder);
-                await AddIntoCustomerOrderProductAsync(orderDetail.ProductsConsumed, customerOrder.CustomerOrderId);
+                await UpdateStockOfProductsAsync(orderDetail.ProductsConsumed);
+                var usingWalletAmount = await UpdateWalletBalanceOfCustomerAsync(orderDetail);
+                var customerOrderId = CreateNewCustomerOrder(orderDetail, usingWalletAmount);
+                await AddIntoCustomerOrderProductAsync(orderDetail.ProductsConsumed, customerOrderId);
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -89,13 +76,13 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        private async Task<Boolean> UpdateProductStockAsync(List<ProductConsumed> productsConsumed)
+        private async Task<Boolean> UpdateStockOfProductsAsync(List<ProductConsumed> productsConsumed)
         {
             try
             {
                 foreach (var productConsumed in productsConsumed)
                 {
-                    var x = await UpdateProductStock(productConsumed);
+                    var x = await UpdateProductStockAsync(productConsumed);
                 }
             }
             catch (Exception e)
@@ -105,7 +92,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return true;
         }
 
-        private async Task<decimal> UpdateWalletBalanceOfCustomer(CustomerOrderDTO orderDetails)
+        private async Task<decimal> UpdateWalletBalanceOfCustomerAsync(CustomerOrderDTO orderDetails)
         {
             decimal walletAmountToBeDeducted = 0;
 
@@ -144,12 +131,26 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return walletAmountToBeDeducted;
         }
 
-        private void CreateNewCustomerOrder(CustomerOrder customerOrder)
+        private Guid CreateNewCustomerOrder(CustomerOrderDTO orderDetail, decimal usingWalletAmount)
         {
+            var customerOrder = new CustomerOrder()
+            {
+                CustomerOrderId = Guid.NewGuid(),
+                CustomerOrderNo = Utility.GenerateCustomerOrderNo(),
+                OrderDate = DateTime.Now,
+                BillAmount = (decimal)orderDetail.BillAmount,
+                DiscountedAmount = (decimal)orderDetail.DiscountedAmount,
+                IsPayingNow = (bool)orderDetail.IsPayingNow,
+                IsUsingWallet = (bool)orderDetail.IsUsingWallet,
+                PayingAmount = (decimal)orderDetail.PayingAmount,
+                UsingWalletAmount = usingWalletAmount,
+                CustomerId = (Guid)orderDetail.CustomerId
+            };
             db.CustomerOrders.Add(customerOrder);
+            return customerOrder.CustomerOrderId;
         }
 
-        private async Task<Boolean> AddIntoCustomerOrderProductAsync(List<ProductConsumed> productsConsumed, Guid? customerOrderId)
+        private async Task<Boolean> AddIntoCustomerOrderProductAsync(List<ProductConsumed> productsConsumed, Guid customerOrderId)
         {
             try
             {
@@ -158,15 +159,15 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                     // Adding each product consumed in the order into the Entity CustomerOrderProduct.
                     var product = await db.Products.FindAsync(productConsumed.ProductId);
                     if (product == null)
-                        throw new Exception(String.Format("product with id {0} not found while adding product in customerOrderProduct", productConsumed.ProductId));
+                        throw new Exception(String.Format("product with id {0} not found while adding product in CustomerOrderProduct", productConsumed.ProductId));
                     var customerOrderProduct = new CustomerOrderProduct
                     {
                         CustomerOrderProductId = Guid.NewGuid(),
                         CustomerOrderId = customerOrderId,
                         ProductId = product.ProductId,
-                        DiscountPerSnapShot = product.DiscountPer,
-                        DisplayCostSnapShot = product.DisplayPrice,
-                        QuantityPurchased = productConsumed.QuantityConsumed
+                        DiscountPerSnapShot = (float)product.DiscountPer,
+                        DisplayCostSnapShot = (decimal)product.DisplayPrice,
+                        QuantityConsumed = (float)productConsumed.QuantityConsumed
                     };
                     db.CustomerOrderProducts.Add(customerOrderProduct);
                 }
@@ -176,7 +177,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return true;
         }
 
-        private async Task<Boolean> UpdateProductStock(ProductConsumed productConsumed)
+        private async Task<Boolean> UpdateProductStockAsync(ProductConsumed productConsumed)
         {
             try
             {

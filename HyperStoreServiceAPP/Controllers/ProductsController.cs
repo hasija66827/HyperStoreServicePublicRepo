@@ -251,7 +251,7 @@ namespace HyperStoreServiceAPP.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = product.ProductId }, productDTO);
+            return CreatedAtRoute("DefaultApi", new { id = product.ProductId }, product);
         }
 
         // DELETE: api/Products/5

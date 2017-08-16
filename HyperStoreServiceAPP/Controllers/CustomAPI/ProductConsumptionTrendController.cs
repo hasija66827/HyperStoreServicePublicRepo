@@ -64,7 +64,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
         private ProductTrend AggregateQuantity(IGrouping<DayOfWeek, CustomerOrderProduct> items)
         {
-            return new ProductTrend(items.Key, items.Sum(cop => (float)cop.QuantityPurchased));
+            return new ProductTrend(items.Key, items.Sum(cop => (float)cop.QuantityConsumed));
         }
     }
 }

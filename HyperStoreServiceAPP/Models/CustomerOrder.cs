@@ -8,32 +8,32 @@ namespace HyperStoreService.Models
 {
     public class CustomerOrder
     {
-        public Guid? CustomerOrderId { get; set; }//TODO: Should not be nullable in database
+        public Guid CustomerOrderId { get; set; }
 
-        public string CustomerOrderNo { get; set; }//TODO: Should not be nullable in database
+        [Required]
+        public string CustomerOrderNo { get; set; }
         
         public DateTime OrderDate { get; set; } 
 
-        [Required]
-        public decimal? BillAmount { get; set; }
-        [Required]
-        public decimal? DiscountedAmount { get; set; }
+       
+        public decimal BillAmount { get; set; }
+        
+        public decimal DiscountedAmount { get; set; }
 
         // PayingNow = DiscountedBillAmount + AddingMoneyToWallet - UsingWalletAmount
-        [Required]
-        public bool? IsPayingNow { get; set; }
-        [Required]
-        public bool? IsUsingWallet { get; set; }
-        [Required]
-        public decimal? PayingAmount { get; set; }
+      
+        public bool IsPayingNow { get; set; }
+        
+        public bool IsUsingWallet { get; set; }
+        
+        public decimal PayingAmount { get; set; }
         public decimal UsingWalletAmount { get; set; }
         
         public CustomerOrder()
         {
         }
 
-        [Required]
-        public Guid? CustomerId { get; set; }
+        public Guid CustomerId { get; set; }
         public Customer Customer { get; set; }
     }
 }
