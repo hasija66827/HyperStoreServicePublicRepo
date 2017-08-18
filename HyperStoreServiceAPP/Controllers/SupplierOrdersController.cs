@@ -101,7 +101,17 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         // POST: api/SupplierOrders
+        /// <summary>
+        /// 1. Increments the wallet balance of the supplier with creating a transaction entity associated with the supplier.
+        /// 2. Creates a new supplier order.
+        /// 3. Creates a new supplierorder transaction.
+        /// 4. Updates the stock of each product purchased in orderDetail.
+        /// 5. Creates supplierorderproduct entity for each product purchased in orderDetail.
+        /// </summary>
+        /// <param name="orderDetail"></param>
+        /// <returns></returns>
         [ResponseType(typeof(SupplierOrder))]
+        [HttpPost]
         public async Task<IHttpActionResult> PostSupplierOrder(SupplierOrderDTO orderDetail)
         {
             if (!ModelState.IsValid)
@@ -117,39 +127,41 @@ namespace HyperStoreServiceAPP.Controllers
             //TODO: Verify bill amount.
             try
             {
-                await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased);
-                var IsUpdated = await UpdateWalletBalanceOfSupplierAsync(orderDetail);
-                var supplierOrderId = CreateNewSupplierOrder(orderDetail);
-                await AddIntoSupplierOrderProductAsync(orderDetail.ProductsPurchased, supplierOrderId);
+                TransactionDTO transactionDTO = new TransactionDTO
+                {
+                    IsCredit = true,
+                    SupplierId = orderDetail.SupplierId,
+                    TransactionAmount = orderDetail.BillAmount - orderDetail.PaidAmount
+                };
+                var transaction = await transactionDTO.CreateNewTransactionAsync(db);
+                var supplierOrder = CreateNewSupplierOrder(orderDetail);
+                var supplierOrderTransaction = CreateNewSupplierOrderTransaction(supplierOrder, transaction);
+                var products=await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased);
+                AddIntoSupplierOrderProduct(orderDetail.ProductsPurchased, supplierOrder.SupplierOrderId);
                 await db.SaveChangesAsync();
+                return CreatedAtRoute("DefaultApi", new { id = supplierOrder.SupplierOrderNo }, products);
             }
             catch (DbUpdateException)
             {
                 throw;
             }
-
-            return CreatedAtRoute("DefaultApi", new { id = orderDetail.BillAmount }, orderDetail);
         }
 
-        private async Task<bool> UpdateWalletBalanceOfSupplierAsync(SupplierOrderDTO orderDetails)
+        private SupplierOrderTransaction CreateNewSupplierOrderTransaction(SupplierOrder supplierOrder, Transaction transaction)
         {
-            try
+            var supplierOrderTransaction = new SupplierOrderTransaction
             {
-                var supplier = await db.Suppliers.FindAsync(orderDetails.SupplierId);
-                if (supplier == null)
-                    throw new Exception(String.Format("Supplier with id {0} not found", orderDetails.SupplierId));
-                var usingWalletAmount = orderDetails.BillAmount - orderDetails.PaidAmount;
-                supplier.WalletBalance += (decimal)usingWalletAmount;
-                db.Entry(supplier).State = EntityState.Modified;
-                return true;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+                SupplierOrderTransactionId = Guid.NewGuid(),
+                TransactionId = transaction.TransactionId,
+                SupplierOrderId = supplierOrder.SupplierOrderId,
+                IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.PaidAmount ? true : false,
+                PaidAmount = null
+            };
+            db.SupplierOrderTransactions.Add(supplierOrderTransaction);
+            return supplierOrderTransaction;
         }
 
-        private Guid CreateNewSupplierOrder(SupplierOrderDTO orderDetail)
+        private SupplierOrder CreateNewSupplierOrder(SupplierOrderDTO orderDetail)
         {
             var supplierOrder = new SupplierOrder
             {
@@ -162,17 +174,43 @@ namespace HyperStoreServiceAPP.Controllers
                 SupplierId = (Guid)orderDetail.SupplierId
             };
             db.SupplierOrders.Add(supplierOrder);
-            return supplierOrder.SupplierOrderId;
+            return supplierOrder;
         }
 
-        private async Task<bool> AddIntoSupplierOrderProductAsync(List<ProductPurchased> productsPurchased, Guid supplierOrderId)
+        private async Task<List<Product>> UpdateStockOfProductsAsync(List<ProductPurchased> productsPurchased)
         {
+            List<Product> products = new List<Product>();
+            try
+            {
+                foreach (var productPurchased in productsPurchased)
+                {
+                    var product = await UpdateProductStockAsync(productPurchased);
+                    products.Add(product);
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            return products;
+        }
+
+        private async Task<Product> UpdateProductStockAsync(ProductPurchased productPurchased)
+        {
+            var product = await db.Products.FindAsync(productPurchased.ProductId);
+            if (product == null)
+                throw new Exception(String.Format("Product with id {0} not found while updating the stock", productPurchased.ProductId));
+            product.TotalQuantity += (float)productPurchased.QuantityPurchased;
+            db.Entry(product).State = EntityState.Modified;
+            return product;
+        }
+
+        private void AddIntoSupplierOrderProduct(List<ProductPurchased> productsPurchased, Guid supplierOrderId)
+        {
+            // Not checking if product exists or not because it has been already checked by updateProductStock.
             foreach (var productPurchased in productsPurchased)
             {
                 // Adding each product purchased in the order into the Entity SupplierOrderProduct.
-                var product = await db.Products.FindAsync(productPurchased.ProductId);
-                if (product == null)
-                    throw new Exception(String.Format("product with id {0} not found while adding product in SupplierOrderProduct", productPurchased.ProductId));
                 var supplierOrderProduct = new SupplierOrderProduct
                 {
                     SupplierOrderProductId = Guid.NewGuid(),
@@ -183,34 +221,9 @@ namespace HyperStoreServiceAPP.Controllers
                 };
                 db.SupplierOrderProducts.Add(supplierOrderProduct);
             }
-            return true;
         }
 
-        private async Task<Boolean> UpdateStockOfProductsAsync(List<ProductPurchased> productsPurchased)
-        {
-            try
-            {
-                foreach (var productPurchased in productsPurchased)
-                {
-                    var x = await UpdateProductStockAsync(productPurchased);
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            return true;
-        }
-
-        private async Task<Boolean> UpdateProductStockAsync(ProductPurchased productPurchased)
-        {
-            var product = await db.Products.FindAsync(productPurchased.ProductId);
-            if (product == null)
-                throw new Exception(String.Format("Product with id {0} not found", productPurchased.ProductId));
-            product.TotalQuantity += (float)productPurchased.QuantityPurchased;
-            db.Entry(product).State = EntityState.Modified;
-            return true;
-        }
+       
 
         // DELETE: api/SupplierOrders/5
         [ResponseType(typeof(SupplierOrder))]

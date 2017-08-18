@@ -11,7 +11,7 @@ namespace HyperStoreService.Models
 {
     public class Transaction
     {
-        public Guid? TransactionId { get; set; }
+        public Guid TransactionId { get; set; }
         public bool IsCredit { get; set; }
         [Required]
         public string TransactionNo { get; set; }
@@ -33,9 +33,15 @@ namespace HyperStoreService.Models
         [Required]
         public decimal? TransactionAmount { get; set; }
 
-        public async Task<Transaction> CreateNewTransaction(HyperStoreServiceContext db)
+        /// <summary>
+        /// 1. Updates the wallet balance of the supplier.
+        /// 2. Creates a transaction entity associated with the supplier.
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        public async Task<Transaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
         {
-            var walletSnapshot = await this.UpdateSupplierWalletBalance(db);
+            var walletSnapshot = await this.UpdateSupplierWalletBalanceAsync(db);
             if (walletSnapshot == null)
                 throw new Exception(String.Format("Supplier with id {0} not found", this.SupplierId));
             var transaction = this.AddNewTransaction((decimal)walletSnapshot, db);
@@ -43,7 +49,13 @@ namespace HyperStoreService.Models
             return transaction;
         }
 
-        private async Task<decimal?> UpdateSupplierWalletBalance(HyperStoreServiceContext db)
+        /// <summary>
+        /// Updates the wallet balance of the supplier.
+        /// Positive Balance always means that the user owes the supplier that much amount.
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns></returns>
+        private async Task<decimal?> UpdateSupplierWalletBalanceAsync(HyperStoreServiceContext db)
         {
             Guid supplierId = (Guid)this.SupplierId;
             decimal transactionAmount = (decimal)this.TransactionAmount;
@@ -60,6 +72,12 @@ namespace HyperStoreService.Models
             return walletSnapshot;
         }
 
+        /// <summary>
+        /// Creates a transaction entity associated with supplier.
+        /// </summary>
+        /// <param name="walletSnapshot"></param>
+        /// <param name="db"></param>
+        /// <returns></returns>
         private Transaction AddNewTransaction(decimal walletSnapshot, HyperStoreServiceContext db)
         {
             var transaction = new Transaction
@@ -75,6 +93,5 @@ namespace HyperStoreService.Models
             db.Transactions.Add(transaction);
             return transaction;
         }
-
     }
 }

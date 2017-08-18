@@ -79,7 +79,7 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var transaction = await transactionDTO.CreateNewTransaction(db);
+            var transaction = await transactionDTO.CreateNewTransactionAsync(db);
             //TODO: SettleUP orders
             try
             {

@@ -246,6 +246,10 @@
     <Compile Include="Migrations\201708161817138_Fifth.Designer.cs">
       <DependentUpon>201708161817138_Fifth.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708181904220_eight.cs" />
+    <Compile Include="Migrations\201708181904220_eight.Designer.cs">
+      <DependentUpon>201708181904220_eight.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -348,6 +352,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708161817138_Fifth.resx">
       <DependentUpon>201708161817138_Fifth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708181904220_eight.resx">
+      <DependentUpon>201708181904220_eight.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

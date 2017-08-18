@@ -8,22 +8,21 @@ namespace HyperStoreService.Models
 {
     public class SupplierOrderTransaction
     {
-        [Required]
-        public Guid? SupplierOrderTransactionId { get; set; }
-        [Required]
-        public float? PaidAmount { get; set; }
-        [Required]
-        public bool? IsPaymentComplete { get; set; }
+        public Guid SupplierOrderTransactionId { get; set; }
+        //It is amount paid from the transaction amount.
+        //It is null, if the transaction was credit transaction o.w. it is less than equal to transaction amount.
+        public decimal? PaidAmount { get; set; }
 
-        public SupplierOrderTransaction() {
+        public bool IsPaymentComplete { get; set; }
+
+        public SupplierOrderTransaction()
+        {
         }
 
-        [Required]
-        public Guid? TransactionId { get; set; }
+        public Guid TransactionId { get; set; }
         public Transaction Transaction { get; set; }
 
-        [Required]
-        public Guid? SupplierOrderId { get; set; }
+        public Guid SupplierOrderId { get; set; }
         public SupplierOrder SupplierOrder { get; set; }
     }
 }
