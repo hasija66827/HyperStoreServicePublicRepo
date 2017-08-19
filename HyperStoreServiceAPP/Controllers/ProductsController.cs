@@ -29,7 +29,7 @@ namespace HyperStoreServiceAPP.Controllers
         [Required]
         public string Code { get; set; }
         [Required]
-        public float? DisplayPrice { get; set; }
+        public decimal? DisplayPrice { get; set; }
         public float DiscountPer { get; set; }
         [Required]
         public string Name { get; set; }

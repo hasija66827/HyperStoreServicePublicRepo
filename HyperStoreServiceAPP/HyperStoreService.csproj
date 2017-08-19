@@ -249,6 +249,14 @@
     <Compile Include="Migrations\201708181904220_eight.Designer.cs">
       <DependentUpon>201708181904220_eight.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708191950224_Ninth.cs" />
+    <Compile Include="Migrations\201708191950224_Ninth.Designer.cs">
+      <DependentUpon>201708191950224_Ninth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708192000187_Tenth.cs" />
+    <Compile Include="Migrations\201708192000187_Tenth.Designer.cs">
+      <DependentUpon>201708192000187_Tenth.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -354,6 +362,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708181904220_eight.resx">
       <DependentUpon>201708181904220_eight.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708191950224_Ninth.resx">
+      <DependentUpon>201708191950224_Ninth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708192000187_Tenth.resx">
+      <DependentUpon>201708192000187_Tenth.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

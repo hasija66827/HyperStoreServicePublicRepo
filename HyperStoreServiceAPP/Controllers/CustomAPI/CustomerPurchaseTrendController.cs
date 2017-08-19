@@ -16,16 +16,8 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
     {
         public int TotalQuantityPurchased { get; set; }
         public Product Product { get; set; }
-
-        public CustomerPurchaseTrend()
-        {
-        }
-
-        public CustomerPurchaseTrend(Product product, int totalQuantityPurchased)
-        {
-            this.Product = product;
-            this.TotalQuantityPurchased = totalQuantityPurchased;
-        }
+        public decimal NetValue { get; set; }
+        public CustomerPurchaseTrend() { }
     }
 
     public class CustomerPurchaseTrendParameter
@@ -60,21 +52,27 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                         .Include(cop => cop.Product)
                         .Select(cop => new CustomerPurchaseTrend()
                         {
-                            TotalQuantityPurchased = (int)cop.QuantityConsumed,
-                            Product = cop.Product
+                            Product = cop.Product,
+                            NetValue = cop.NetValue,
+                            TotalQuantityPurchased = (int)cop.QuantityConsumed
                         }
                         );
                 var groupByQueryResult = await query.GroupBy(c => c.Product.ProductId).ToListAsync();
-                queryResult = groupByQueryResult.Select(c => AggregateQuantity(c));
+                queryResult = groupByQueryResult.Select(c => AggregateAttributes(c));
             }
             catch (Exception e)
             { throw e; }
             return Ok(queryResult);
         }
 
-        private CustomerPurchaseTrend AggregateQuantity(IGrouping<Guid?, CustomerPurchaseTrend> items)
+        private CustomerPurchaseTrend AggregateAttributes(IGrouping<Guid?, CustomerPurchaseTrend> items)
         {
-            return new CustomerPurchaseTrend(items.Select(p => p.Product).FirstOrDefault(), items.Sum(p => p.TotalQuantityPurchased));
+            return new CustomerPurchaseTrend()
+            {
+                Product = items.Select(p => p.Product).FirstOrDefault(),
+                NetValue = items.Sum(p => p.NetValue),
+                TotalQuantityPurchased = items.Sum(p => p.TotalQuantityPurchased)
+            };
         }
     }
 }

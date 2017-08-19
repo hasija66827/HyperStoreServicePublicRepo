@@ -31,7 +31,7 @@ namespace HyperStoreServiceAPP.Controllers
         public string CustomerOrderNo { get; set; }
 
         [Required]
-        [DateRange(ErrorMessage ="{0} is invalid, lb>ub")]
+        [DateRange(ErrorMessage = "{0} is invalid, lb>ub")]
         public IRange<DateTime> OrderDateRange { get; set; }
     }
 
@@ -236,7 +236,12 @@ namespace HyperStoreServiceAPP.Controllers
                         ProductId = product.ProductId,
                         DiscountPerSnapShot = (float)product.DiscountPer,
                         DisplayCostSnapShot = (decimal)product.DisplayPrice,
-                        QuantityConsumed = (float)productConsumed.QuantityConsumed
+                        CGSTPerSnapShot = (float)product.CGSTPer,
+                        SGSTPerSnapshot = (float)product.SGSTPer,
+                        QuantityConsumed = (float)productConsumed.QuantityConsumed,
+                        NetValue = (decimal)(product.DisplayPrice
+                                                    * (decimal)((100 - product.DiscountPer) * (100 + product.CGSTPer + product.SGSTPer) / 10000
+                                                    * productConsumed.QuantityConsumed))
                     };
                     db.CustomerOrderProducts.Add(customerOrderProduct);
                 }
