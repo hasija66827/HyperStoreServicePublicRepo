@@ -18,6 +18,8 @@ namespace HyperStoreServiceAPP.Controllers
     {
         public override bool IsValid(object value)
         {
+            if (value == null)
+                return false;
             var dateRange = value as IRange<DateTime>;
             return dateRange.LB <= dateRange.UB;
         }
@@ -27,15 +29,17 @@ namespace HyperStoreServiceAPP.Controllers
     {
         public Guid? CustomerId { get; set; }
         public string CustomerOrderNo { get; set; }
+
         [Required]
-        [DateRange(ErrorMessage ="{0} is invalid, possibly lb>ub")]
-        public IRange<DateTime> DateRange { get; set; }
+        [DateRange(ErrorMessage ="{0} is invalid, lb>ub")]
+        public IRange<DateTime> OrderDateRange { get; set; }
     }
 
     public class ProductConsumed
     {
         [Required]
         public Guid? ProductId { get; set; }
+
         [Required]
         [Range(0, float.MaxValue)]
         public float? QuantityConsumed { get; set; }
@@ -45,16 +49,22 @@ namespace HyperStoreServiceAPP.Controllers
     {
         [Required]
         public List<ProductConsumed> ProductsConsumed { get; set; }
+
         [Required]
         public Guid? CustomerId { get; set; }
+
         [Required]
         public decimal? BillAmount { get; set; }
+
         [Required]
         public decimal? DiscountedAmount { get; set; }
+
         [Required]
         public bool? IsPayingNow { get; set; }
+
         [Required]
         public bool? IsUsingWallet { get; set; }
+
         [Required]
         public decimal? PayingAmount { get; set; }
     }
@@ -64,7 +74,6 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria);
         Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDTO orderDetail);
     }
-
 
     public class CustomerOrdersController : ApiController, CustomerOrderInt
     {
@@ -80,13 +89,12 @@ namespace HyperStoreServiceAPP.Controllers
                 return BadRequest("A filter criteria object should not be null for retrieving list of customer orders");
             var selectedCustomerId = customerOrderFilterCriteria.CustomerId;
             var selectedCustomerOrderNo = customerOrderFilterCriteria.CustomerOrderNo;
-            var selectedDateRange = customerOrderFilterCriteria.DateRange;
+            var selectedDateRange = customerOrderFilterCriteria.OrderDateRange;
 
             List<CustomerOrder> result;
             try
             {
-                IQueryable<CustomerOrder> query;
-                query = db.CustomerOrders
+                var query = db.CustomerOrders
                                     .Where(order => order.OrderDate >= selectedDateRange.LB.Date &&
                                                     order.OrderDate <= selectedDateRange.UB.Date);
                 if (selectedCustomerId != null)
@@ -104,7 +112,12 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(result);
         }
 
-        [HttpPut]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="orderDetail"></param>
+        /// <returns></returns>
+        [HttpPost]
         public async Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDTO orderDetail)
         {
             if (!ModelState.IsValid)

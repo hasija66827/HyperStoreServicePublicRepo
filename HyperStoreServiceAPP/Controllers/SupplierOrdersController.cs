@@ -18,9 +18,11 @@ namespace HyperStoreServiceAPP.Controllers
     {
         [Required]
         public Guid? ProductId { get; set; }
+
         [Required]
         [Range(0, float.MaxValue)]
         public float? QuantityPurchased { get; set; }
+
         [Required]
         public decimal? PurchasePricePerUnit { get; set; }
     }
@@ -29,57 +31,88 @@ namespace HyperStoreServiceAPP.Controllers
     {
         [Required]
         public List<ProductPurchased> ProductsPurchased { get; set; }
+
         [Required]
         public Guid? SupplierId { get; set; }
+
         [Required]
         public decimal? BillAmount { get; set; }
+
         [Required]
         public decimal? PaidAmount { get; set; }
+
         [Required]
         public DateTime? DueDate { get; set; }
+
         [Required]
         [Range(0, 100)]
         public float IntrestRate { get; set; }
     }
 
+    public class SupplierOrderFilterCriteria
+    {
+        public Guid? SupplierId { get; set; }
+
+        public string SupplierOrderNo { get; set; }
+
+        [Required]
+        public bool? PartiallyPaidOrderOnly { get; set; }
+
+        [Required]
+        [DateRange(ErrorMessage = "{0} is invalid, lb>ub")]
+        public IRange<DateTime> OrderDateRange { get; set; }
+
+        [Required]
+        [DateRange(ErrorMessage = "{0} is invalid, lb>ub")]
+        public IRange<DateTime> DueDateRange { get; set; }
+    }
 
     public class SupplierOrdersController : ApiController
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
-        // PUT: api/SupplierOrders/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutSupplierOrder(Guid id, SupplierOrder supplierOrder)
+        [HttpGet]
+        [ResponseType(typeof(List<SupplierOrder>))]
+        public async Task<IHttpActionResult> GetSupplierOrders(SupplierOrderFilterCriteria SOFC)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
-
-            if (id != supplierOrder.SupplierOrderId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(supplierOrder).State = EntityState.Modified;
+            if (SOFC == null)
+                return BadRequest("A filter criteria object should not be null for retrieving list of supplier orders");
+            if (SOFC.DueDateRange.LB < SOFC.OrderDateRange.LB)
+                return BadRequest(String.Format("Order DueDate {0} Cannot be less than OrdeDate {1}",
+                    SOFC.DueDateRange.LB, SOFC.OrderDateRange.LB));
+            List<SupplierOrder> result;
 
             try
             {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SupplierOrderExists(id))
+                var query = db.SupplierOrders.Where(order => order.OrderDate >= SOFC.OrderDateRange.LB.Date &&
+                                                             order.OrderDate <= SOFC.OrderDateRange.UB.Date &&
+                                                             order.DueDate >= SOFC.DueDateRange.LB.Date &&
+                                                             order.DueDate <= SOFC.DueDateRange.UB.Date
+                                                             );
+                if (SOFC.SupplierId != null)
                 {
-                    return NotFound();
+                    query = query.Where(order => order.SupplierId == SOFC.SupplierId);
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return StatusCode(HttpStatusCode.NoContent);
+                if (SOFC.SupplierOrderNo != null)
+                {
+                    query = query.Where(order => order.SupplierOrderNo == SOFC.SupplierOrderNo);
+                }
+
+                if (SOFC.PartiallyPaidOrderOnly == true)
+                {
+                    query = query.Where(order => order.PaidAmount < order.BillAmount);
+                }
+
+                result = await query.ToListAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            return Ok(result);
         }
 
         // POST: api/SupplierOrders
@@ -118,7 +151,7 @@ namespace HyperStoreServiceAPP.Controllers
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
                 var supplierOrder = CreateNewSupplierOrder(orderDetail);
                 var supplierOrderTransaction = CreateNewSupplierOrderTransaction(supplierOrder, transaction);
-                var products=await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased);
+                var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased);
                 AddIntoSupplierOrderProduct(orderDetail.ProductsPurchased, supplierOrder.SupplierOrderId);
                 await db.SaveChangesAsync();
                 return CreatedAtRoute("DefaultApi", new { id = supplierOrder.SupplierOrderNo }, products);
@@ -205,7 +238,7 @@ namespace HyperStoreServiceAPP.Controllers
             }
         }
 
-       
+
 
         // DELETE: api/SupplierOrders/5
         [ResponseType(typeof(SupplierOrder))]

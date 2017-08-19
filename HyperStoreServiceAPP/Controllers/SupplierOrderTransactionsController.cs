@@ -39,7 +39,7 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(result);
         }
 
-  // PUT: api/SupplierOrderTransactions/5
+        // PUT: api/SupplierOrderTransactions/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutSupplierOrderTransaction(Guid id, SupplierOrderTransaction supplierOrderTransaction)
         {
