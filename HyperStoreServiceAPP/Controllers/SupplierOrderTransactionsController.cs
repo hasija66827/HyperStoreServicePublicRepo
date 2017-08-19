@@ -16,7 +16,9 @@ namespace HyperStoreServiceAPP.Controllers
     public class SupplierOrderTransactionsController : ApiController
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
-        
+
+        //TODO: Renaming and parameterizing with cclass variable.
+
         [ResponseType(typeof(List<SupplierOrderTransaction>))]
         [HttpGet]
         private async Task<IHttpActionResult> GetTransactionsOfSupplierOrder(Guid supplierOrderId)
@@ -36,8 +38,8 @@ namespace HyperStoreServiceAPP.Controllers
             var result = await query.ToListAsync();
             return Ok(result);
         }
-        //TODO: Renaming and parameterizing with cclass variable.
-        // PUT: api/SupplierOrderTransactions/5
+
+  // PUT: api/SupplierOrderTransactions/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutSupplierOrderTransaction(Guid id, SupplierOrderTransaction supplierOrderTransaction)
         {

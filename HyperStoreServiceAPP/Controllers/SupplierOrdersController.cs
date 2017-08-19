@@ -42,28 +42,10 @@ namespace HyperStoreServiceAPP.Controllers
         public float IntrestRate { get; set; }
     }
 
+
     public class SupplierOrdersController : ApiController
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
-
-        // GET: api/SupplierOrders
-        public IQueryable<SupplierOrder> GetSupplierOrders()
-        {
-            return db.SupplierOrders;
-        }
-
-        // GET: api/SupplierOrders/5
-        [ResponseType(typeof(SupplierOrder))]
-        public async Task<IHttpActionResult> GetSupplierOrder(Guid id)
-        {
-            SupplierOrder supplierOrder = await db.SupplierOrders.FindAsync(id);
-            if (supplierOrder == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(supplierOrder);
-        }
 
         // PUT: api/SupplierOrders/5
         [ResponseType(typeof(void))]

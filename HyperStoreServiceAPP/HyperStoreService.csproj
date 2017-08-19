@@ -209,7 +209,6 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\CustomAPI\CustomerPurchaseTrendController.cs" />
-    <Compile Include="Controllers\CustomAPI\PlaceCustomerOrderController.cs" />
     <Compile Include="Controllers\CustomAPI\ProductConsumptionTrendController.cs" />
     <Compile Include="Controllers\CustomerOrderProductsController.cs" />
     <Compile Include="Controllers\CustomerOrdersController.cs" />
