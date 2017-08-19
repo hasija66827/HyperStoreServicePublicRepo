@@ -10,30 +10,31 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using HyperStoreService.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
+    public class TransactionFilterCriteria
+    {
+        [Required]
+        public Guid? SupplierId { get; set; }
+    }
+
     public class TransactionsController : ApiController
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
-        // GET: api/Transactions
-        public IQueryable<Transaction> GetTransactions()
-        {
-            return db.Transactions;
-        }
 
         // GET: api/Transactions/5
-        [ResponseType(typeof(Transaction))]
-        public async Task<IHttpActionResult> GetTransaction(Guid id)
+        [ResponseType(typeof(List<Transaction>))]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetTransactions(TransactionFilterCriteria transactionFilterCriteria)
         {
-            Transaction transaction = await db.Transactions.FindAsync(id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(transaction);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var supplierId = transactionFilterCriteria.SupplierId;
+            var transactions = await db.Transactions.Where(t => t.SupplierId == supplierId).ToListAsync();
+            return Ok(transactions);
         }
 
         // PUT: api/Transactions/5

@@ -16,26 +16,27 @@ namespace HyperStoreServiceAPP.Controllers
     public class SupplierOrderTransactionsController : ApiController
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
-
-        // GET: api/SupplierOrderTransactions
-        public IQueryable<SupplierOrderTransaction> GetSupplierOrderTransactions()
+        
+        [ResponseType(typeof(List<SupplierOrderTransaction>))]
+        [HttpGet]
+        private async Task<IHttpActionResult> GetTransactionsOfSupplierOrder(Guid supplierOrderId)
         {
-            return db.SupplierOrderTransactions;
+            var query = db.SupplierOrderTransactions.Where(sot => sot.SupplierOrderId == supplierOrderId)
+                                                    .Include(sot => sot.Transaction);
+            var result = await query.ToListAsync();
+            return Ok(result);
         }
 
-        // GET: api/SupplierOrderTransactions/5
-        [ResponseType(typeof(SupplierOrderTransaction))]
-        public async Task<IHttpActionResult> GetSupplierOrderTransaction(Guid id)
+        [ResponseType(typeof(List<SupplierOrderTransaction>))]
+        [HttpGet]
+        private async Task<IHttpActionResult> GetSupplierOrdersOfTransaction(Guid transactionId)
         {
-            SupplierOrderTransaction supplierOrderTransaction = await db.SupplierOrderTransactions.FindAsync(id);
-            if (supplierOrderTransaction == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(supplierOrderTransaction);
+            var query = db.SupplierOrderTransactions.Where(sot => sot.TransactionId == transactionId)
+                                                   .Include(sot => sot.SupplierOrder);
+            var result = await query.ToListAsync();
+            return Ok(result);
         }
-
+        //TODO: Renaming and parameterizing with cclass variable.
         // PUT: api/SupplierOrderTransactions/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutSupplierOrderTransaction(Guid id, SupplierOrderTransaction supplierOrderTransaction)
