@@ -49,7 +49,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return Ok(queryResult);
         }
 
-        private CustomerPurchaseTrend AggregateAttributes(IGrouping<Guid?, CustomerPurchaseTrend> items)
+        private CustomerPurchaseTrend AggregateAttributes(IGrouping<Guid, CustomerPurchaseTrend> items)
         {
             return new CustomerPurchaseTrend()
             {

@@ -110,7 +110,6 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 ProductId = newProductId,
                 TotalQuantity = 0,
-                SupplierId = null,
                 Code = productDTO.Code,
                 CGSTPer = productDTO.CGSTPer,
                 DiscountPer = productDTO.DiscountPer,

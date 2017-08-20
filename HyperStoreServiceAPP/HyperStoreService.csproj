@@ -258,6 +258,10 @@
     <Compile Include="Migrations\201708192000187_Tenth.Designer.cs">
       <DependentUpon>201708192000187_Tenth.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708201139440_Eleven.cs" />
+    <Compile Include="Migrations\201708201139440_Eleven.Designer.cs">
+      <DependentUpon>201708201139440_Eleven.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -369,6 +373,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708192000187_Tenth.resx">
       <DependentUpon>201708192000187_Tenth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708201139440_Eleven.resx">
+      <DependentUpon>201708201139440_Eleven.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
