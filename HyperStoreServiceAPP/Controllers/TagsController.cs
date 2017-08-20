@@ -13,7 +13,7 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class TagsController : ApiController
+    public class TagsController : ApiController, TagInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

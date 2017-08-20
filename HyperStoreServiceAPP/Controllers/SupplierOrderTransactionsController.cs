@@ -13,7 +13,7 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class SupplierOrderTransactionsController : ApiController
+    public class SupplierOrderTransactionsController : ApiController, SupplierOrderTransactionInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
@@ -21,7 +21,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [ResponseType(typeof(List<SupplierOrderTransaction>))]
         [HttpGet]
-        private async Task<IHttpActionResult> GetTransactionsOfSupplierOrder(Guid supplierOrderId)
+        public async Task<IHttpActionResult> GetTransactionsOfSupplierOrder(Guid supplierOrderId)
         {
             var query = db.SupplierOrderTransactions.Where(sot => sot.SupplierOrderId == supplierOrderId)
                                                     .Include(sot => sot.Transaction);
@@ -31,93 +31,12 @@ namespace HyperStoreServiceAPP.Controllers
 
         [ResponseType(typeof(List<SupplierOrderTransaction>))]
         [HttpGet]
-        private async Task<IHttpActionResult> GetSupplierOrdersOfTransaction(Guid transactionId)
+        public async Task<IHttpActionResult> GetSupplierOrdersOfTransaction(Guid transactionId)
         {
             var query = db.SupplierOrderTransactions.Where(sot => sot.TransactionId == transactionId)
                                                    .Include(sot => sot.SupplierOrder);
             var result = await query.ToListAsync();
             return Ok(result);
-        }
-
-        // PUT: api/SupplierOrderTransactions/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutSupplierOrderTransaction(Guid id, SupplierOrderTransaction supplierOrderTransaction)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != supplierOrderTransaction.SupplierOrderTransactionId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(supplierOrderTransaction).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SupplierOrderTransactionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        // POST: api/SupplierOrderTransactions
-        [ResponseType(typeof(SupplierOrderTransaction))]
-        public async Task<IHttpActionResult> PostSupplierOrderTransaction(SupplierOrderTransaction supplierOrderTransaction)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.SupplierOrderTransactions.Add(supplierOrderTransaction);
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (SupplierOrderTransactionExists(supplierOrderTransaction.SupplierOrderTransactionId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtRoute("DefaultApi", new { id = supplierOrderTransaction.SupplierOrderTransactionId }, supplierOrderTransaction);
-        }
-
-        // DELETE: api/SupplierOrderTransactions/5
-        [ResponseType(typeof(SupplierOrderTransaction))]
-        public async Task<IHttpActionResult> DeleteSupplierOrderTransaction(Guid id)
-        {
-            SupplierOrderTransaction supplierOrderTransaction = await db.SupplierOrderTransactions.FindAsync(id);
-            if (supplierOrderTransaction == null)
-            {
-                return NotFound();
-            }
-
-            db.SupplierOrderTransactions.Remove(supplierOrderTransaction);
-            await db.SaveChangesAsync();
-
-            return Ok(supplierOrderTransaction);
         }
 
         protected override void Dispose(bool disposing)
@@ -127,11 +46,6 @@ namespace HyperStoreServiceAPP.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool SupplierOrderTransactionExists(Guid? id)
-        {
-            return db.SupplierOrderTransactions.Count(e => e.SupplierOrderTransactionId == id) > 0;
         }
     }
 }

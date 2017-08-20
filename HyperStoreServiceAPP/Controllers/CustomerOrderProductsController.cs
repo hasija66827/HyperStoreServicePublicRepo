@@ -13,7 +13,7 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class CustomerOrderProductsController : ApiController
+    public class CustomerOrderProductsController : ApiController, CustomerOrderDetailInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
@@ -23,9 +23,14 @@ namespace HyperStoreServiceAPP.Controllers
             return db.CustomerOrderProducts;
         }
 
-        // GET: api/CustomerOrderProducts/5
+        /// <summary>
+        /// Returns the order detail of the customer order.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [ResponseType(typeof(List<CustomerOrderProduct>))]
-        public async Task<IHttpActionResult> GetCustomerOrderProduct(Guid? id)
+        [HttpGet]
+        public async Task<IHttpActionResult> GetCustomerOrderDetail(Guid? id)
         {
             if (id == null)
                 throw new Exception("CustomerOrderId should not have been NULL");
@@ -43,90 +48,7 @@ namespace HyperStoreServiceAPP.Controllers
 
             return (Ok(queryResult));
         }
-
-        /*
-        // PUT: api/CustomerOrderProducts/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutCustomerOrderProduct(Guid id, CustomerOrderProduct customerOrderProduct)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != customerOrderProduct.CustomerOrderProductId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(customerOrderProduct).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CustomerOrderProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-        
-        // POST: api/CustomerOrderProducts
-        [ResponseType(typeof(CustomerOrderProduct))]
-        public async Task<IHttpActionResult> PostCustomerOrderProduct(CustomerOrderProduct customerOrderProduct)
-        {
-            customerOrderProduct.CustomerOrderProductId = Guid.NewGuid();
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.CustomerOrderProducts.Add(customerOrderProduct);
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (CustomerOrderProductExists(customerOrderProduct.CustomerOrderProductId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtRoute("DefaultApi", new { id = customerOrderProduct.CustomerOrderProductId }, customerOrderProduct);
-        }
-
-        // DELETE: api/CustomerOrderProducts/5
-        [ResponseType(typeof(CustomerOrderProduct))]
-        public async Task<IHttpActionResult> DeleteCustomerOrderProduct(Guid id)
-        {
-            CustomerOrderProduct customerOrderProduct = await db.CustomerOrderProducts.FindAsync(id);
-            if (customerOrderProduct == null)
-            {
-                return NotFound();
-            }
-
-            db.CustomerOrderProducts.Remove(customerOrderProduct);
-            await db.SaveChangesAsync();
-
-            return Ok(customerOrderProduct);
-        }
-        */
+   
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -136,9 +58,5 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool CustomerOrderProductExists(Guid? id)
-        {
-            return db.CustomerOrderProducts.Count(e => e.CustomerOrderProductId == id) > 0;
-        }
     }
 }

@@ -14,16 +14,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class TransactionFilterCriteria
-    {
-        [Required]
-        public Guid? SupplierId { get; set; }
-    }
-
-    public class TransactionsController : ApiController
+    public partial class TransactionsController : ApiController, TransactionControllerInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
-
 
         // GET: api/Transactions/5
         [ResponseType(typeof(List<Transaction>))]
@@ -37,43 +30,9 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(transactions);
         }
 
-        // PUT: api/Transactions/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutTransaction(Guid id, Transaction transaction)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != transaction.TransactionId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(transaction).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TransactionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
         // POST: api/Transactions
         [ResponseType(typeof(Transaction))]
+        [HttpPost]
         public async Task<IHttpActionResult> PostTransaction(TransactionDTO transactionDTO)
         {
             if (!ModelState.IsValid)
@@ -90,10 +49,26 @@ namespace HyperStoreServiceAPP.Controllers
             catch (DbUpdateException)
             {
                 throw;
-
             }
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private bool TransactionExists(Guid? id)
+        {
+            return db.Transactions.Count(e => e.TransactionId == id) > 0;
+        }
+    }
+
+    public partial class TransactionsController : ApiController, TransactionControllerInterface
+    {
         private List<SupplierOrder> SettleUpOrders(Transaction transaction)
         {
             List<SupplierOrder> settleUpSupplierOrder = new List<SupplierOrder>();
@@ -133,37 +108,6 @@ namespace HyperStoreServiceAPP.Controllers
             if (supplierOrder.PaidAmount == supplierOrder.BillAmount)
                 return true;
             return false;
-        }
-
-
-        // DELETE: api/Transactions/5
-        [ResponseType(typeof(Transaction))]
-        public async Task<IHttpActionResult> DeleteTransaction(Guid id)
-        {
-            Transaction transaction = await db.Transactions.FindAsync(id);
-            if (transaction == null)
-            {
-                return NotFound();
-            }
-
-            db.Transactions.Remove(transaction);
-            await db.SaveChangesAsync();
-
-            return Ok(transaction);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        private bool TransactionExists(Guid? id)
-        {
-            return db.Transactions.Count(e => e.TransactionId == id) > 0;
         }
     }
 }

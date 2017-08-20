@@ -14,60 +14,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class ProductPurchased
-    {
-        [Required]
-        public Guid? ProductId { get; set; }
-
-        [Required]
-        [Range(0, float.MaxValue)]
-        public float? QuantityPurchased { get; set; }
-
-        [Required]
-        public decimal? PurchasePricePerUnit { get; set; }
-    }
-
-    public class SupplierOrderDTO
-    {
-        [Required]
-        public List<ProductPurchased> ProductsPurchased { get; set; }
-
-        [Required]
-        public Guid? SupplierId { get; set; }
-
-        [Required]
-        public decimal? BillAmount { get; set; }
-
-        [Required]
-        public decimal? PaidAmount { get; set; }
-
-        [Required]
-        public DateTime? DueDate { get; set; }
-
-        [Required]
-        [Range(0, 100)]
-        public float IntrestRate { get; set; }
-    }
-
-    public class SupplierOrderFilterCriteria
-    {
-        public Guid? SupplierId { get; set; }
-
-        public string SupplierOrderNo { get; set; }
-
-        [Required]
-        public bool? PartiallyPaidOrderOnly { get; set; }
-
-        [Required]
-        [DateRange(ErrorMessage = "{0} is invalid, lb>ub")]
-        public IRange<DateTime> OrderDateRange { get; set; }
-
-        [Required]
-        [DateRange(ErrorMessage = "{0} is invalid, lb>ub")]
-        public IRange<DateTime> DueDateRange { get; set; }
-    }
-
-    public class SupplierOrdersController : ApiController
+    public partial class SupplierOrdersController : ApiController, SupplierOrderInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
@@ -162,6 +109,40 @@ namespace HyperStoreServiceAPP.Controllers
             }
         }
 
+        //TODO: Need To Check
+        // DELETE: api/SupplierOrders/5
+        [ResponseType(typeof(SupplierOrder))]
+        public async Task<IHttpActionResult> DeleteSupplierOrder(Guid id)
+        {
+            SupplierOrder supplierOrder = await db.SupplierOrders.FindAsync(id);
+            if (supplierOrder == null)
+            {
+                return NotFound();
+            }
+
+            db.SupplierOrders.Remove(supplierOrder);
+            await db.SaveChangesAsync();
+
+            return Ok(supplierOrder);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private bool SupplierOrderExists(Guid? id)
+        {
+            return db.SupplierOrders.Count(e => e.SupplierOrderId == id) > 0;
+        }
+    }
+
+    public partial class SupplierOrdersController : ApiController, SupplierOrderInterface
+    {
         private SupplierOrderTransaction CreateNewSupplierOrderTransaction(SupplierOrder supplierOrder, Transaction transaction)
         {
             var supplierOrderTransaction = new SupplierOrderTransaction
@@ -236,38 +217,6 @@ namespace HyperStoreServiceAPP.Controllers
                 };
                 db.SupplierOrderProducts.Add(supplierOrderProduct);
             }
-        }
-
-
-
-        // DELETE: api/SupplierOrders/5
-        [ResponseType(typeof(SupplierOrder))]
-        public async Task<IHttpActionResult> DeleteSupplierOrder(Guid id)
-        {
-            SupplierOrder supplierOrder = await db.SupplierOrders.FindAsync(id);
-            if (supplierOrder == null)
-            {
-                return NotFound();
-            }
-
-            db.SupplierOrders.Remove(supplierOrder);
-            await db.SaveChangesAsync();
-
-            return Ok(supplierOrder);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        private bool SupplierOrderExists(Guid? id)
-        {
-            return db.SupplierOrders.Count(e => e.SupplierOrderId == id) > 0;
         }
     }
 }

@@ -13,16 +13,7 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    interface SupplierContInt
-    {
-        IQueryable<Supplier> GetSuppliers();
-        Task<IHttpActionResult> GetSupplier(Guid id);
-        Task<IHttpActionResult> PutSupplier(Guid id, Supplier supplier);
-        Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO);
-        Task<IHttpActionResult> DeleteSupplier(Guid id);
-    }
-
-    public class SuppliersController : ApiController, SupplierContInt
+    public class SuppliersController : ApiController, SupplierControllerInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

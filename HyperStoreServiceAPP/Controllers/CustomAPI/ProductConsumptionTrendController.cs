@@ -12,26 +12,7 @@ using System.Web.Http.Description;
 
 namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
-    public class ProductTrend
-    {
-        public DayOfWeek Day { get; set; }
-        public float Quantity { get; set; }
-        public ProductTrend(DayOfWeek day, float quantity)
-        {
-            this.Day = day;
-            this.Quantity = quantity;
-        }
-    }
-
-    public class ProductTrendParameter
-    {
-        [Required]
-        public Guid? ProductId { get; set; }
-        [Required]
-        public int? MonthsCount { get; set; }
-    }
-
-    public class ProductConsumptionTrendController : ApiController
+    public class ProductConsumptionTrendController : ApiController, ProductTrendInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

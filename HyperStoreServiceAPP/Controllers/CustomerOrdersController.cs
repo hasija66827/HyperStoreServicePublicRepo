@@ -14,71 +14,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public sealed class DateRangeAttribute : ValidationAttribute
-    {
-        public override bool IsValid(object value)
-        {
-            if (value == null)
-                return false;
-            var dateRange = value as IRange<DateTime>;
-            return dateRange.LB <= dateRange.UB;
-        }
-    }
-
-    public class CustomerOrderFilterCriteria
-    {
-        public Guid? CustomerId { get; set; }
-        public string CustomerOrderNo { get; set; }
-
-        [Required]
-        [DateRange(ErrorMessage = "{0} is invalid, lb>ub")]
-        public IRange<DateTime> OrderDateRange { get; set; }
-    }
-
-    public class ProductConsumed
-    {
-        [Required]
-        public Guid? ProductId { get; set; }
-
-        [Required]
-        [Range(0, float.MaxValue)]
-        public float? QuantityConsumed { get; set; }
-    }
-
-    public class CustomerOrderDTO
-    {
-        [Required]
-        public List<ProductConsumed> ProductsConsumed { get; set; }
-
-        [Required]
-        public Guid? CustomerId { get; set; }
-
-        [Required]
-        public decimal? BillAmount { get; set; }
-
-        [Required]
-        public decimal? DiscountedAmount { get; set; }
-
-        [Required]
-        public bool? IsPayingNow { get; set; }
-
-        [Required]
-        public bool? IsUsingWallet { get; set; }
-
-        [Required]
-        public decimal? PayingAmount { get; set; }
-    }
-
-    interface CustomerOrderInt
-    {
-        Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria);
-        Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDTO orderDetail);
-    }
-
-    public class CustomerOrdersController : ApiController, CustomerOrderInt
+    public partial class CustomerOrdersController : ApiController, CustomerOrderInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="customerOrderFilterCriteria"></param>
+        /// <returns></returns>
         [ResponseType(typeof(List<CustomerOrder>))]
         [HttpGet]
         public async Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria)
@@ -144,7 +88,19 @@ namespace HyperStoreServiceAPP.Controllers
             { throw e; }
             return StatusCode(HttpStatusCode.NoContent);
         }
+    
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+    }
 
+    public partial class CustomerOrdersController : ApiController, CustomerOrderInterface
+    {
         private async Task<Boolean> UpdateStockOfProductsAsync(List<ProductConsumed> productsConsumed)
         {
             try
@@ -269,20 +225,6 @@ namespace HyperStoreServiceAPP.Controllers
                 throw e;
             }
             return true;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        private bool CustomerOrderExists(Guid? id)
-        {
-            return db.CustomerOrders.Count(e => e.CustomerOrderId == id) > 0;
         }
     }
 }

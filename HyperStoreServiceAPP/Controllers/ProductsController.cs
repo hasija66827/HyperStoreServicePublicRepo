@@ -14,108 +14,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    interface ProductContInt
-    {
-        //IQueryable<Product> GetProducts();
-        //Task<IHttpActionResult> GetProduct(Guid id);
-        Task<IHttpActionResult> PutProduct(Guid id, Product product);
-        Task<IHttpActionResult> PostProduct(ProductDTO product);
-        Task<IHttpActionResult> DeleteProduct(Guid id);
-    }
-
-    public class ProductDTO
-    {
-        public float? CGSTPer { get; set; }
-        [Required]
-        public string Code { get; set; }
-        [Required]
-        public decimal? DisplayPrice { get; set; }
-        public float DiscountPer { get; set; }
-        [Required]
-        public string Name { get; set; }
-        public Int32 RefillTime { get; set; }
-        public float? SGSTPer { get; set; }
-        public Int32 Threshold { get; set; }
-        public List<Guid?> TagIds { get; set; }
-    }
-
-    public class IRange<T>
-    {
-        [Required]
-        public T LB { get; set; }
-        [Required]
-        public T UB { get; set; }
-        public IRange(T lb, T ub)
-        {
-            LB = lb;
-            UB = ub;
-        }
-    }
-    public sealed class QuantityRangeAttribute : ValidationAttribute
-    {
-        public override bool IsValid(object value)
-        {
-            var quantityRange = value as IRange<float?>;
-            return (quantityRange.LB >= 0 && quantityRange.LB <= quantityRange.UB);
-        }
-    }
-
-    public sealed class DiscountPerRangeAttribute : ValidationAttribute
-    {
-        public override bool IsValid(object value)
-        {
-            var discountPerRange = value as IRange<float?>;
-            bool valid = (discountPerRange.LB <= discountPerRange.UB && discountPerRange.LB >= 0 && discountPerRange.UB <= 100);
-            return valid;
-        }
-    }
-
-    public class FilterProductCriteria
-    {
-        public Guid? ProductId { get; set; }
-        public List<Guid?> TagIds { get; set; }
-        [Required]
-        public FilterProductQDT FilterProductQDT { get; set; }
-    }
-
-    public class FilterProductQDT
-    {
-        [Required]
-        [DiscountPerRange]
-        public IRange<float?> DiscountPerRange { get; set; }
-
-        [Required]
-        [QuantityRange]
-        public IRange<float?> QuantityRange { get; set; }
-
-        [Required]
-        public bool? IncludeDeficientItemsOnly { get; set; }
-    }
-
-    public class ProductsController : ApiController, ProductContInt
+    public partial class ProductsController : ApiController, ProductInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
-        /*
-        // GET: api/Products
-        public IQueryable<Product> GetProducts()
-        {
-            return db.Products;
-        }
-
-        // GET: api/Products/5
-        [ResponseType(typeof(Product))]
-        public async Task<IHttpActionResult> GetProduct(Guid id)
-        {
-            Product product = await db.Products.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(product);
-        }
-        */
         [HttpGet]
         [ResponseType(typeof(IEnumerable<Product>))]
         public async Task<IHttpActionResult> GetProducts(FilterProductCriteria filterProductCriteria)
@@ -150,8 +52,8 @@ namespace HyperStoreServiceAPP.Controllers
                 }
                 if (tagIds != null)
                 {
-                  var productIds_tag= await RetrieveProductIdsAsync(tagIds);
-                  query = query.Where(p => productIds_tag.Contains(p.ProductId));
+                    var productIds_tag = await RetrieveProductIdsAsync(tagIds);
+                    query = query.Where(p => productIds_tag.Contains(p.ProductId));
                 }
                 result = await query.ToListAsync();
             }
@@ -278,6 +180,11 @@ namespace HyperStoreServiceAPP.Controllers
             }
             base.Dispose(disposing);
         }
+
+    }
+
+    public partial class ProductsController : ApiController, ProductInterface
+    {
 
         private bool ProductExists(Guid? id)
         {

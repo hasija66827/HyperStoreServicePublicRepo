@@ -214,14 +214,15 @@
     <Compile Include="Controllers\CustomerOrdersController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\Interfaces.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
-    <Compile Include="Controllers\ProductTagsController.cs" />
     <Compile Include="Controllers\SupplierOrderProductsController.cs" />
     <Compile Include="Controllers\SupplierOrdersController.cs" />
     <Compile Include="Controllers\SupplierOrderTransactionsController.cs" />
     <Compile Include="Controllers\SuppliersController.cs" />
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Controllers\TransactionsController.cs" />
+    <Compile Include="Controllers\UtilityClass.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
