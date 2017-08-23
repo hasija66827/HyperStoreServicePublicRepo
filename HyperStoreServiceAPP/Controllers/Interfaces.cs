@@ -60,7 +60,7 @@ namespace HyperStoreServiceAPP.Controllers
 
     public interface SupplierControllerInterface
     {
-        IQueryable<Supplier> GetSuppliers();
+        Task<IHttpActionResult> GetSuppliers(SupplierFilterCriteria sfc);
         Task<IHttpActionResult> GetSupplier(Guid id);
         Task<IHttpActionResult> PutSupplier(Guid id, Supplier supplier);
         Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO);
@@ -87,7 +87,4 @@ namespace HyperStoreServiceAPP.Controllers
     {
         Task<IHttpActionResult> GetProductTrend(ProductTrendParameter parameter);
     }
-
-  
-
 }

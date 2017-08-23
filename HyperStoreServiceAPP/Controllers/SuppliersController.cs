@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using HyperStoreService.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
@@ -18,9 +19,30 @@ namespace HyperStoreServiceAPP.Controllers
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         // GET: api/Suppliers
-        public IQueryable<Supplier> GetSuppliers()
+        [HttpGet]
+        [ResponseType(typeof(List<Supplier>))]
+        public async Task<IHttpActionResult> GetSuppliers(SupplierFilterCriteria sfc)
         {
-            return db.Suppliers;
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            IQueryable<Supplier> query = db.Suppliers;
+            if (sfc == null)
+                return Ok(await query.ToListAsync());
+            try
+            {
+                if (sfc.WalletAmount != null)
+                    query = db.Suppliers.Where(s => s.WalletBalance >= sfc.WalletAmount.LB &&
+                                                    s.WalletBalance <= sfc.WalletAmount.UB);
+
+                if (sfc.SupplierId != null)
+                    query = query.Where(s => s.SupplierId == sfc.SupplierId);
+                var result = await query.ToListAsync();
+                return Ok(result);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         // GET: api/Suppliers/5

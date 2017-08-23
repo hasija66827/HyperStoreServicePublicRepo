@@ -19,13 +19,13 @@ namespace HyperStoreServiceAPP.Controllers
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         [HttpGet]
-        [ResponseType(typeof(IEnumerable<Product>))]
+        [ResponseType(typeof(List<Product>))]
         public async Task<IHttpActionResult> GetProducts(FilterProductCriteria filterProductCriteria)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             if (filterProductCriteria == null)
-                return BadRequest("Input parameter cannot be null");
+                return BadRequest("ProductFilterCriteria parameter cannot be null");
 
             var productId = filterProductCriteria.ProductId;
             var tagIds = filterProductCriteria.TagIds;
@@ -36,19 +36,17 @@ namespace HyperStoreServiceAPP.Controllers
             IEnumerable<Product> result;
             try
             {
-                IQueryable<Product> query = db.Products;
+                IQueryable<Product> query = db.Products
+                                                .Where(p => p.DiscountPer >= discountPerRange.LB &&
+                                                            p.DiscountPer <= discountPerRange.UB &&
+                                                            p.TotalQuantity >= quantity.LB &&
+                                                            p.TotalQuantity <= quantity.UB);
+                if (filterProductQDT.IncludeDeficientItemsOnly == true)
+                    query = query.Where(p => p.TotalQuantity <= p.Threshold);
 
                 if (productId != null)
-                    query = query.Where(p => p.ProductId == productId);
-
-                if (filterProductQDT != null)
                 {
-                    query = query.Where(p => p.DiscountPer >= discountPerRange.LB &&
-                                             p.DiscountPer <= discountPerRange.UB &&
-                                             p.TotalQuantity >= quantity.LB &&
-                                             p.TotalQuantity <= quantity.UB);
-                    if (filterProductQDT.IncludeDeficientItemsOnly == true)
-                        query = query.Where(p => p.TotalQuantity <= p.Threshold);
+                    query = query.Where(p => p.ProductId == productId);
                 }
                 if (tagIds != null)
                 {

@@ -303,4 +303,11 @@ namespace HyperStoreServiceAPP.Controllers
         }
     }
     #endregion
+    #region Supplier Controller
+    public class SupplierFilterCriteria
+    {
+        public IRange<decimal> WalletAmount { get; set; }
+        public Guid? SupplierId { get; set; }
+    }
+    #endregion
 }
