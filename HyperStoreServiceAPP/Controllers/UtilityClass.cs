@@ -75,7 +75,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [Required]
         [Range(0, float.MaxValue)]
-        public float? QuantityConsumed { get; set; }
+        public decimal? QuantityConsumed { get; set; }
     }
 
     public class CustomerOrderDTO
@@ -105,17 +105,18 @@ namespace HyperStoreServiceAPP.Controllers
     #region Product Controller
     public class ProductDTO
     {
-        public float? CGSTPer { get; set; }
+        public decimal? CGSTPer { get; set; }
         [Required]
         public string Code { get; set; }
         [Required]
         public decimal? DisplayPrice { get; set; }
-        public float DiscountPer { get; set; }
+        [Required]
+        public decimal? DiscountPer { get; set; }
         [Required]
         public string Name { get; set; }
         public Int32 RefillTime { get; set; }
-        public float? SGSTPer { get; set; }
-        public Int32 Threshold { get; set; }
+        public decimal? SGSTPer { get; set; }
+        public decimal Threshold { get; set; }
         public List<Guid?> TagIds { get; set; }
     }
 
@@ -135,7 +136,7 @@ namespace HyperStoreServiceAPP.Controllers
     {
         public override bool IsValid(object value)
         {
-            var quantityRange = value as IRange<float?>;
+            var quantityRange = value as IRange<decimal?>;
             return (quantityRange.LB >= 0 && quantityRange.LB <= quantityRange.UB);
         }
     }
@@ -144,13 +145,13 @@ namespace HyperStoreServiceAPP.Controllers
     {
         public override bool IsValid(object value)
         {
-            var discountPerRange = value as IRange<float?>;
+            var discountPerRange = value as IRange<decimal?>;
             bool valid = (discountPerRange.LB <= discountPerRange.UB && discountPerRange.LB >= 0 && discountPerRange.UB <= 100);
             return valid;
         }
     }
 
-    public class FilterProductCriteria
+    public class ProductFilterCriteria
     {
         public Guid? ProductId { get; set; }
         public List<Guid?> TagIds { get; set; }
@@ -162,11 +163,11 @@ namespace HyperStoreServiceAPP.Controllers
     {
         [Required]
         [DiscountPerRange]
-        public IRange<float?> DiscountPerRange { get; set; }
+        public IRange<decimal?> DiscountPerRange { get; set; }
 
         [Required]
         [QuantityRange]
-        public IRange<float?> QuantityRange { get; set; }
+        public IRange<decimal?> QuantityRange { get; set; }
 
         [Required]
         public bool? IncludeDeficientItemsOnly { get; set; }
@@ -232,6 +233,7 @@ namespace HyperStoreServiceAPP.Controllers
         [Required]
         public Guid? SupplierId { get; set; }
     }
+
     public class TransactionDTO
     {
         [Required]
@@ -310,4 +312,12 @@ namespace HyperStoreServiceAPP.Controllers
         public Guid? SupplierId { get; set; }
     }
     #endregion
+    #region Customer Controller
+    public class CustomerFilterCriteria
+    {
+        public IRange<decimal> WalletAmount { get; set; }
+        public Guid? CustomerId { get; set; }
+    }
+    #endregion
+
 }

@@ -196,7 +196,7 @@ namespace HyperStoreServiceAPP.Controllers
             var product = await db.Products.FindAsync(productPurchased.ProductId);
             if (product == null)
                 throw new Exception(String.Format("Product with id {0} not found while updating the stock", productPurchased.ProductId));
-            product.TotalQuantity += (float)productPurchased.QuantityPurchased;
+            product.TotalQuantity += (decimal)productPurchased.QuantityPurchased;
             db.Entry(product).State = EntityState.Modified;
             return product;
         }

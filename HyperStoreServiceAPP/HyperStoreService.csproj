@@ -262,6 +262,14 @@
     <Compile Include="Migrations\201708201139440_Eleven.Designer.cs">
       <DependentUpon>201708201139440_Eleven.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708251449104_twele.cs" />
+    <Compile Include="Migrations\201708251449104_twele.Designer.cs">
+      <DependentUpon>201708251449104_twele.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708251858250_Thirteen.cs" />
+    <Compile Include="Migrations\201708251858250_Thirteen.Designer.cs">
+      <DependentUpon>201708251858250_Thirteen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -376,6 +384,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708201139440_Eleven.resx">
       <DependentUpon>201708201139440_Eleven.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708251449104_twele.resx">
+      <DependentUpon>201708251449104_twele.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708251858250_Thirteen.resx">
+      <DependentUpon>201708251858250_Thirteen.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

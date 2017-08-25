@@ -217,7 +217,7 @@ namespace HyperStoreServiceAPP.Controllers
                 if (product.TotalQuantity < productConsumed.QuantityConsumed)
                     throw new Exception(string.Format("Product {0} is deficient by {1} units in stock," +
                         " please update the product in stock", product.Name, productConsumed.QuantityConsumed - product.TotalQuantity));
-                product.TotalQuantity -= (float)productConsumed.QuantityConsumed;
+                product.TotalQuantity -= (decimal)productConsumed.QuantityConsumed;
                 db.Entry(product).State = EntityState.Modified;
             }
             catch (Exception e)

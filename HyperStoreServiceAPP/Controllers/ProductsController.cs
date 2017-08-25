@@ -20,27 +20,27 @@ namespace HyperStoreServiceAPP.Controllers
 
         [HttpGet]
         [ResponseType(typeof(List<Product>))]
-        public async Task<IHttpActionResult> GetProducts(FilterProductCriteria filterProductCriteria)
+        public async Task<IHttpActionResult> GetProducts(ProductFilterCriteria pfc)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (filterProductCriteria == null)
-                return BadRequest("ProductFilterCriteria parameter cannot be null");
-
-            var productId = filterProductCriteria.ProductId;
-            var tagIds = filterProductCriteria.TagIds;
-            var filterProductQDT = filterProductCriteria.FilterProductQDT;
+            IQueryable<Product> query = db.Products;
+            if (pfc == null)
+                return Ok(await query.ToListAsync());
+            var productId = pfc.ProductId;
+            var tagIds = pfc.TagIds;
+            var filterProductQDT = pfc.FilterProductQDT;
             var discountPerRange = filterProductQDT.DiscountPerRange;
             var quantity = filterProductQDT.QuantityRange;
 
             IEnumerable<Product> result;
             try
             {
-                IQueryable<Product> query = db.Products
-                                                .Where(p => p.DiscountPer >= discountPerRange.LB &&
-                                                            p.DiscountPer <= discountPerRange.UB &&
-                                                            p.TotalQuantity >= quantity.LB &&
-                                                            p.TotalQuantity <= quantity.UB);
+
+                query = query.Where(p => p.DiscountPer >= discountPerRange.LB &&
+                                                              p.DiscountPer <= discountPerRange.UB &&
+                                                              p.TotalQuantity >= quantity.LB &&
+                                                              p.TotalQuantity <= quantity.UB);
                 if (filterProductQDT.IncludeDeficientItemsOnly == true)
                     query = query.Where(p => p.TotalQuantity <= p.Threshold);
 
@@ -48,7 +48,7 @@ namespace HyperStoreServiceAPP.Controllers
                 {
                     query = query.Where(p => p.ProductId == productId);
                 }
-                if (tagIds != null)
+                if (tagIds != null && tagIds.Count()!=0)
                 {
                     var productIds_tag = await RetrieveProductIdsAsync(tagIds);
                     query = query.Where(p => productIds_tag.Contains(p.ProductId));
@@ -99,10 +99,13 @@ namespace HyperStoreServiceAPP.Controllers
         [ResponseType(typeof(Product))]
         public async Task<IHttpActionResult> PostProduct(ProductDTO productDTO)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid )
             {
                 return BadRequest(ModelState);
             }
+            if (productDTO == null)
+                return BadRequest("ProductDTO cannot be null");
+
             var newProductId = Guid.NewGuid();
             Product product = new Product()
             {
@@ -149,7 +152,6 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
             return CreatedAtRoute("DefaultApi", new { id = product.ProductId }, product);
         }
 

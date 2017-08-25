@@ -16,24 +16,31 @@ namespace HyperStoreServiceAPP.Controllers
     public class CustomersController : ApiController, CustomerInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
-
-        // GET: api/Customers
-        public IQueryable<Customer> GetCustomers()
-        {
-            return db.Customers;
-        }
-
         // GET: api/Customers/5
-        [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> GetCustomer(Guid id)
+        [HttpGet]
+        [ResponseType(typeof(List<Customer>))]
+        public async Task<IHttpActionResult> GetCustomers(CustomerFilterCriteria cfc)
         {
-            Customer customer = await db.Customers.FindAsync(id);
-            if (customer == null)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            IQueryable<Customer> query = db.Customers;
+            if (cfc == null)
+                return Ok(await query.ToListAsync());
+            try
             {
-                return NotFound();
-            }
+                if (cfc.WalletAmount != null)
+                    query = db.Customers.Where(s => s.WalletBalance >= cfc.WalletAmount.LB &&
+                                                    s.WalletBalance <= cfc.WalletAmount.UB);
 
-            return Ok(customer);
+                if (cfc.CustomerId != null)
+                    query = query.Where(c => c.CustomerId == cfc.CustomerId);
+                var result = await query.ToListAsync();
+                return Ok(result);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         // PUT: api/Customers/5

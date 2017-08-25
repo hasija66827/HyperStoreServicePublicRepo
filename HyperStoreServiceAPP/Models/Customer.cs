@@ -18,9 +18,6 @@ namespace HyperStoreService.Models
         [Required]
         public decimal? WalletBalance { get; set; }
 
-        public Customer()
-        {
-        }
      //TODO: #DB, Name and MobileNo should be unique, customerId should not be null in database, although in model it can be null
     }
 }

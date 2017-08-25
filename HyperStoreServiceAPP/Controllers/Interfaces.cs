@@ -21,8 +21,7 @@ namespace HyperStoreServiceAPP.Controllers
 
     public interface CustomerInterface
     {
-        IQueryable<Customer> GetCustomers();
-        Task<IHttpActionResult> GetCustomer(Guid id);
+        Task<IHttpActionResult> GetCustomers(CustomerFilterCriteria cfc);
         Task<IHttpActionResult> PutCustomer(Guid id, Customer customer);
         Task<IHttpActionResult> PostCustomer(Customer customer);
         Task<IHttpActionResult> DeleteCustomer(Guid id);
@@ -39,7 +38,7 @@ namespace HyperStoreServiceAPP.Controllers
 
     public interface ProductInterface
     {
-        Task<IHttpActionResult> GetProducts(FilterProductCriteria filterProductCriteria);
+        Task<IHttpActionResult> GetProducts(ProductFilterCriteria filterProductCriteria);
         Task<IHttpActionResult> PutProduct(Guid id, Product product);
         Task<IHttpActionResult> PostProduct(ProductDTO product);
         Task<IHttpActionResult> DeleteProduct(Guid id);
