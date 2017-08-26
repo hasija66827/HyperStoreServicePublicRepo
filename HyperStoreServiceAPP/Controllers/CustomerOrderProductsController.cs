@@ -26,7 +26,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// <summary>
         /// Returns the order detail of the customer order.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">CustomerOrderId</param>
         /// <returns></returns>
         [ResponseType(typeof(List<CustomerOrderProduct>))]
         [HttpGet]

@@ -40,7 +40,8 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 var query = db.CustomerOrders
                                     .Where(order => order.OrderDate >= selectedDateRange.LB.Date &&
-                                                    order.OrderDate <= selectedDateRange.UB.Date);
+                                                    order.OrderDate <= selectedDateRange.UB.Date)
+                                     .Include(co=>co.Customer);
                 if (selectedCustomerId != null)
                 {
                     query = query.Where(order => order.CustomerId == selectedCustomerId);
