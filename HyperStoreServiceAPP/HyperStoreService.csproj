@@ -270,6 +270,10 @@
     <Compile Include="Migrations\201708251858250_Thirteen.Designer.cs">
       <DependentUpon>201708251858250_Thirteen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708271250393_making cgstper and sgstper reuired.cs" />
+    <Compile Include="Migrations\201708271250393_making cgstper and sgstper reuired.Designer.cs">
+      <DependentUpon>201708271250393_making cgstper and sgstper reuired.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -390,6 +394,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708251858250_Thirteen.resx">
       <DependentUpon>201708251858250_Thirteen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708271250393_making cgstper and sgstper reuired.resx">
+      <DependentUpon>201708271250393_making cgstper and sgstper reuired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

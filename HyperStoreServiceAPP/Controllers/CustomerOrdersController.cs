@@ -41,7 +41,7 @@ namespace HyperStoreServiceAPP.Controllers
                 var query = db.CustomerOrders
                                     .Where(order => order.OrderDate >= selectedDateRange.LB.Date &&
                                                     order.OrderDate <= selectedDateRange.UB.Date)
-                                     .Include(co=>co.Customer);
+                                     .Include(co => co.Customer);
                 if (selectedCustomerId != null)
                 {
                     query = query.Where(order => order.CustomerId == selectedCustomerId);
@@ -62,6 +62,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// </summary>
         /// <param name="orderDetail"></param>
         /// <returns></returns>
+        [ResponseType(typeof(decimal))]
         [HttpPost]
         public async Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDTO orderDetail)
         {
@@ -72,11 +73,12 @@ namespace HyperStoreServiceAPP.Controllers
             if (orderDetail.BillAmount < orderDetail.DiscountedAmount)
                 return BadRequest(string.Format("Bill Amount {0} cannot be less than Discounted Amount {1}",
                                                     orderDetail.BillAmount, orderDetail.DiscountedAmount));
+            decimal usingWalletAmount = 0;
             //TODO: Verify bill amount.
             try
             {
                 await UpdateStockOfProductsAsync(orderDetail.ProductsConsumed);
-                var usingWalletAmount = await UpdateWalletBalanceOfCustomerAsync(orderDetail);
+                usingWalletAmount = await UpdateWalletBalanceOfCustomerAsync(orderDetail);
                 var customerOrderId = CreateNewCustomerOrder(orderDetail, usingWalletAmount);
                 await AddIntoCustomerOrderProductAsync(orderDetail.ProductsConsumed, customerOrderId);
                 await db.SaveChangesAsync();
@@ -86,10 +88,10 @@ namespace HyperStoreServiceAPP.Controllers
                 throw;
             }
             catch (Exception e)
-            { throw e; }
-            return StatusCode(HttpStatusCode.NoContent);
+            { return BadRequest(e.ToString()); }
+            return Ok(usingWalletAmount);
         }
-    
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -121,14 +123,13 @@ namespace HyperStoreServiceAPP.Controllers
         private async Task<decimal> UpdateWalletBalanceOfCustomerAsync(CustomerOrderDTO orderDetails)
         {
             decimal walletAmountToBeDeducted = 0;
-
+            decimal walletAmountToBeAdded = 0;
             try
             {
                 var customer = await db.Customers.FindAsync(orderDetails.CustomerId);
                 if (customer == null)
                     throw new Exception(String.Format("Customer {0} not found", orderDetails.CustomerId));
 
-                decimal walletAmountToBeAdded = 0;
                 if (orderDetails.IsPayingNow == true)
                 {
                     if (orderDetails.IsUsingWallet == true)
@@ -154,7 +155,7 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 throw e;
             }
-            return walletAmountToBeDeducted;
+            return walletAmountToBeDeducted - walletAmountToBeAdded;
         }
 
         private Guid CreateNewCustomerOrder(CustomerOrderDTO orderDetail, decimal usingWalletAmount)
