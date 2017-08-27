@@ -71,8 +71,8 @@ namespace HyperStoreServiceAPP.Controllers
         /// 5. Creates supplierorderproduct entity for each product purchased in orderDetail.
         /// </summary>
         /// <param name="orderDetail"></param>
-        /// <returns></returns>
-        [ResponseType(typeof(SupplierOrder))]
+        /// <returns>Using wallet amount</returns>
+        [ResponseType(typeof(decimal))]
         [HttpPost]
         public async Task<IHttpActionResult> PostSupplierOrder(SupplierOrderDTO orderDetail)
         {
@@ -101,7 +101,7 @@ namespace HyperStoreServiceAPP.Controllers
                 var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased);
                 AddIntoSupplierOrderProduct(orderDetail.ProductsPurchased, supplierOrder.SupplierOrderId);
                 await db.SaveChangesAsync();
-                return CreatedAtRoute("DefaultApi", new { id = supplierOrder.SupplierOrderNo }, products);
+                return Ok(transactionDTO.TransactionAmount);
             }
             catch (DbUpdateException)
             {
