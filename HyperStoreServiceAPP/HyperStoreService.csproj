@@ -226,53 +226,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201708130457308_Initial.cs" />
-    <Compile Include="Migrations\201708130457308_Initial.Designer.cs">
-      <DependentUpon>201708130457308_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708151316302_Second.cs" />
-    <Compile Include="Migrations\201708151316302_Second.Designer.cs">
-      <DependentUpon>201708151316302_Second.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708151345519_Third.cs" />
-    <Compile Include="Migrations\201708151345519_Third.Designer.cs">
-      <DependentUpon>201708151345519_Third.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708161443140_Fourth.cs" />
-    <Compile Include="Migrations\201708161443140_Fourth.Designer.cs">
-      <DependentUpon>201708161443140_Fourth.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708161817138_Fifth.cs" />
-    <Compile Include="Migrations\201708161817138_Fifth.Designer.cs">
-      <DependentUpon>201708161817138_Fifth.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708181904220_eight.cs" />
-    <Compile Include="Migrations\201708181904220_eight.Designer.cs">
-      <DependentUpon>201708181904220_eight.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708191950224_Ninth.cs" />
-    <Compile Include="Migrations\201708191950224_Ninth.Designer.cs">
-      <DependentUpon>201708191950224_Ninth.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708192000187_Tenth.cs" />
-    <Compile Include="Migrations\201708192000187_Tenth.Designer.cs">
-      <DependentUpon>201708192000187_Tenth.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708201139440_Eleven.cs" />
-    <Compile Include="Migrations\201708201139440_Eleven.Designer.cs">
-      <DependentUpon>201708201139440_Eleven.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708251449104_twele.cs" />
-    <Compile Include="Migrations\201708251449104_twele.Designer.cs">
-      <DependentUpon>201708251449104_twele.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708251858250_Thirteen.cs" />
-    <Compile Include="Migrations\201708251858250_Thirteen.Designer.cs">
-      <DependentUpon>201708251858250_Thirteen.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708271250393_making cgstper and sgstper reuired.cs" />
-    <Compile Include="Migrations\201708271250393_making cgstper and sgstper reuired.Designer.cs">
-      <DependentUpon>201708271250393_making cgstper and sgstper reuired.cs</DependentUpon>
+    <Compile Include="Migrations\201708281651194_initital.cs" />
+    <Compile Include="Migrations\201708281651194_initital.Designer.cs">
+      <DependentUpon>201708281651194_initital.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CustomerPurchaseTrend.cs" />
@@ -364,41 +320,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201708130457308_Initial.resx">
-      <DependentUpon>201708130457308_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708151316302_Second.resx">
-      <DependentUpon>201708151316302_Second.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708151345519_Third.resx">
-      <DependentUpon>201708151345519_Third.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708161443140_Fourth.resx">
-      <DependentUpon>201708161443140_Fourth.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708161817138_Fifth.resx">
-      <DependentUpon>201708161817138_Fifth.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708181904220_eight.resx">
-      <DependentUpon>201708181904220_eight.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708191950224_Ninth.resx">
-      <DependentUpon>201708191950224_Ninth.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708192000187_Tenth.resx">
-      <DependentUpon>201708192000187_Tenth.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708201139440_Eleven.resx">
-      <DependentUpon>201708201139440_Eleven.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708251449104_twele.resx">
-      <DependentUpon>201708251449104_twele.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708251858250_Thirteen.resx">
-      <DependentUpon>201708251858250_Thirteen.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708271250393_making cgstper and sgstper reuired.resx">
-      <DependentUpon>201708271250393_making cgstper and sgstper reuired.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201708281651194_initital.resx">
+      <DependentUpon>201708281651194_initital.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

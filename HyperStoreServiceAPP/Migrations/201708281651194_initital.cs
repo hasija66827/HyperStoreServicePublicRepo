@@ -3,7 +3,7 @@ namespace HyperStoreServiceAPP.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Initial : DbMigration
+    public partial class initital : DbMigration
     {
         public override void Up()
         {
@@ -12,9 +12,12 @@ namespace HyperStoreServiceAPP.Migrations
                 c => new
                     {
                         CustomerOrderProductId = c.Guid(nullable: false),
+                        DisplayCostSnapShot = c.Decimal(nullable: false, precision: 18, scale: 2),
                         DiscountPerSnapShot = c.Single(nullable: false),
-                        DisplayCostSnapShot = c.Single(nullable: false),
-                        QuantityPurchased = c.Single(nullable: false),
+                        CGSTPerSnapShot = c.Single(nullable: false),
+                        SGSTPerSnapshot = c.Single(nullable: false),
+                        QuantityConsumed = c.Single(nullable: false),
+                        NetValue = c.Decimal(nullable: false, precision: 18, scale: 2),
                         CustomerOrderId = c.Guid(nullable: false),
                         ProductId = c.Guid(nullable: false),
                     })
@@ -29,7 +32,7 @@ namespace HyperStoreServiceAPP.Migrations
                 c => new
                     {
                         CustomerOrderId = c.Guid(nullable: false),
-                        CustomerOrderNo = c.String(),
+                        CustomerOrderNo = c.String(nullable: false),
                         OrderDate = c.DateTime(nullable: false),
                         BillAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         DiscountedAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
@@ -50,44 +53,32 @@ namespace HyperStoreServiceAPP.Migrations
                         CustomerId = c.Guid(nullable: false),
                         Address = c.String(),
                         GSTIN = c.String(),
-                        MobileNo = c.String(nullable: false),
-                        Name = c.String(nullable: false),
+                        MobileNo = c.String(nullable: false, maxLength: 10),
+                        Name = c.String(nullable: false, maxLength: 24),
                         WalletBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
                     })
-                .PrimaryKey(t => t.CustomerId);
+                .PrimaryKey(t => t.CustomerId)
+                .Index(t => t.MobileNo, unique: true)
+                .Index(t => t.Name, unique: true);
             
             CreateTable(
                 "dbo.Products",
                 c => new
                     {
                         ProductId = c.Guid(nullable: false),
-                        CGSTPer = c.Single(),
-                        Code = c.String(nullable: false),
-                        DisplayPrice = c.Single(nullable: false),
-                        DiscountPer = c.Single(nullable: false),
-                        Name = c.String(nullable: false),
+                        CGSTPer = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        Code = c.String(nullable: false, maxLength: 15),
+                        DisplayPrice = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        DiscountPer = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        Name = c.String(nullable: false, maxLength: 24),
                         RefillTime = c.Int(nullable: false),
-                        SGSTPer = c.Single(),
-                        Threshold = c.Int(nullable: false),
-                        TotalQuantity = c.Single(nullable: false),
-                        SupplierId = c.Guid(),
+                        SGSTPer = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        Threshold = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        TotalQuantity = c.Decimal(nullable: false, precision: 18, scale: 2),
                     })
                 .PrimaryKey(t => t.ProductId)
-                .ForeignKey("dbo.Suppliers", t => t.SupplierId)
-                .Index(t => t.SupplierId);
-            
-            CreateTable(
-                "dbo.Suppliers",
-                c => new
-                    {
-                        SupplierId = c.Guid(nullable: false),
-                        Address = c.String(),
-                        GSTIN = c.String(),
-                        MobileNo = c.String(nullable: false),
-                        Name = c.String(nullable: false),
-                        WalletBalance = c.Single(nullable: false),
-                    })
-                .PrimaryKey(t => t.SupplierId);
+                .Index(t => t.Code, unique: true)
+                .Index(t => t.Name, unique: true);
             
             CreateTable(
                 "dbo.ProductTags",
@@ -108,17 +99,18 @@ namespace HyperStoreServiceAPP.Migrations
                 c => new
                     {
                         TagId = c.Guid(nullable: false),
-                        TagName = c.String(nullable: false),
+                        TagName = c.String(nullable: false, maxLength: 24),
                     })
-                .PrimaryKey(t => t.TagId);
+                .PrimaryKey(t => t.TagId)
+                .Index(t => t.TagName, unique: true);
             
             CreateTable(
                 "dbo.SupplierOrderProducts",
                 c => new
                     {
                         SupplierOrderProductId = c.Guid(nullable: false),
-                        QuantityPurchased = c.Int(nullable: false),
-                        PurchasePrice = c.Single(nullable: false),
+                        PurchasePrice = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        QuantityPurchased = c.Single(nullable: false),
                         SupplierOrderId = c.Guid(nullable: false),
                         ProductId = c.Guid(nullable: false),
                     })
@@ -133,11 +125,11 @@ namespace HyperStoreServiceAPP.Migrations
                 c => new
                     {
                         SupplierOrderId = c.Guid(nullable: false),
-                        SupplierOrderNo = c.String(nullable: false),
-                        OrderDate = c.DateTime(nullable: false),
+                        BillAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         DueDate = c.DateTime(nullable: false),
-                        BillAmount = c.Single(nullable: false),
-                        PaidAmount = c.Single(nullable: false),
+                        OrderDate = c.DateTime(nullable: false),
+                        PaidAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        SupplierOrderNo = c.String(nullable: false),
                         SupplierId = c.Guid(nullable: false),
                     })
                 .PrimaryKey(t => t.SupplierOrderId)
@@ -145,11 +137,25 @@ namespace HyperStoreServiceAPP.Migrations
                 .Index(t => t.SupplierId);
             
             CreateTable(
+                "dbo.Suppliers",
+                c => new
+                    {
+                        SupplierId = c.Guid(nullable: false),
+                        Address = c.String(),
+                        GSTIN = c.String(),
+                        MobileNo = c.String(nullable: false, maxLength: 10),
+                        Name = c.String(nullable: false, maxLength: 24),
+                        WalletBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
+                    })
+                .PrimaryKey(t => t.SupplierId)
+                .Index(t => t.MobileNo, unique: true);
+            
+            CreateTable(
                 "dbo.SupplierOrderTransactions",
                 c => new
                     {
                         SupplierOrderTransactionId = c.Guid(nullable: false),
-                        PaidAmount = c.Single(nullable: false),
+                        PaidAmount = c.Decimal(precision: 18, scale: 2),
                         IsPaymentComplete = c.Boolean(nullable: false),
                         TransactionId = c.Guid(nullable: false),
                         SupplierOrderId = c.Guid(nullable: false),
@@ -165,18 +171,23 @@ namespace HyperStoreServiceAPP.Migrations
                 c => new
                     {
                         TransactionId = c.Guid(nullable: false),
+                        IsCredit = c.Boolean(nullable: false),
                         TransactionNo = c.String(nullable: false),
-                        CreditAmount = c.Single(nullable: false),
                         TransactionDate = c.DateTime(nullable: false),
-                        WalletSnapshot = c.Single(nullable: false),
+                        TransactionAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        WalletSnapshot = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        SupplierId = c.Guid(nullable: false),
                     })
-                .PrimaryKey(t => t.TransactionId);
+                .PrimaryKey(t => t.TransactionId)
+                .ForeignKey("dbo.Suppliers", t => t.SupplierId, cascadeDelete: false)
+                .Index(t => t.SupplierId);
             
         }
         
         public override void Down()
         {
             DropForeignKey("dbo.SupplierOrderTransactions", "TransactionId", "dbo.Transactions");
+            DropForeignKey("dbo.Transactions", "SupplierId", "dbo.Suppliers");
             DropForeignKey("dbo.SupplierOrderTransactions", "SupplierOrderId", "dbo.SupplierOrders");
             DropForeignKey("dbo.SupplierOrderProducts", "SupplierOrderId", "dbo.SupplierOrders");
             DropForeignKey("dbo.SupplierOrders", "SupplierId", "dbo.Suppliers");
@@ -184,27 +195,32 @@ namespace HyperStoreServiceAPP.Migrations
             DropForeignKey("dbo.ProductTags", "TagId", "dbo.Tags");
             DropForeignKey("dbo.ProductTags", "ProductId", "dbo.Products");
             DropForeignKey("dbo.CustomerOrderProducts", "ProductId", "dbo.Products");
-            DropForeignKey("dbo.Products", "SupplierId", "dbo.Suppliers");
             DropForeignKey("dbo.CustomerOrderProducts", "CustomerOrderId", "dbo.CustomerOrders");
             DropForeignKey("dbo.CustomerOrders", "CustomerId", "dbo.Customers");
+            DropIndex("dbo.Transactions", new[] { "SupplierId" });
             DropIndex("dbo.SupplierOrderTransactions", new[] { "SupplierOrderId" });
             DropIndex("dbo.SupplierOrderTransactions", new[] { "TransactionId" });
+            DropIndex("dbo.Suppliers", new[] { "MobileNo" });
             DropIndex("dbo.SupplierOrders", new[] { "SupplierId" });
             DropIndex("dbo.SupplierOrderProducts", new[] { "ProductId" });
             DropIndex("dbo.SupplierOrderProducts", new[] { "SupplierOrderId" });
+            DropIndex("dbo.Tags", new[] { "TagName" });
             DropIndex("dbo.ProductTags", new[] { "TagId" });
             DropIndex("dbo.ProductTags", new[] { "ProductId" });
-            DropIndex("dbo.Products", new[] { "SupplierId" });
+            DropIndex("dbo.Products", new[] { "Name" });
+            DropIndex("dbo.Products", new[] { "Code" });
+            DropIndex("dbo.Customers", new[] { "Name" });
+            DropIndex("dbo.Customers", new[] { "MobileNo" });
             DropIndex("dbo.CustomerOrders", new[] { "CustomerId" });
             DropIndex("dbo.CustomerOrderProducts", new[] { "ProductId" });
             DropIndex("dbo.CustomerOrderProducts", new[] { "CustomerOrderId" });
             DropTable("dbo.Transactions");
             DropTable("dbo.SupplierOrderTransactions");
+            DropTable("dbo.Suppliers");
             DropTable("dbo.SupplierOrders");
             DropTable("dbo.SupplierOrderProducts");
             DropTable("dbo.Tags");
             DropTable("dbo.ProductTags");
-            DropTable("dbo.Suppliers");
             DropTable("dbo.Products");
             DropTable("dbo.Customers");
             DropTable("dbo.CustomerOrders");
