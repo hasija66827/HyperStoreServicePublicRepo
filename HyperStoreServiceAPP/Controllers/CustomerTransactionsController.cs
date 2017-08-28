@@ -13,73 +13,46 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class CustomerTransactionsController : ApiController
+    public class CustomerTransactionsController : ApiController, CustomerTransactionInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
-        // GET: api/CustomerTransactions
-        public IQueryable<CustomerTransaction> GetCustomerTransactions()
-        {
-            return db.CustomerTransactions;
-        }
-
         // GET: api/CustomerTransactions/5
-        [ResponseType(typeof(CustomerTransaction))]
-        public async Task<IHttpActionResult> GetCustomerTransaction(Guid id)
+        [ResponseType(typeof(List<CustomerTransaction>))]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetTransactions(CustomerTransactionFilterCriteria transactionFilterCriteria)
         {
-            CustomerTransaction customerTransaction = await db.CustomerTransactions.FindAsync(id);
-            if (customerTransaction == null)
+            if (transactionFilterCriteria == null)
+                return BadRequest("TransactionFilterCriteria cannont be null while retreiving the transaction for Customer");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var customerId = transactionFilterCriteria.CustomerId;
+            var transactions = await db.CustomerTransactions.Where(t => t.CustomerId == customerId)
+                                                          .OrderByDescending(t => t.TransactionDate).ToListAsync();
+            Customer customer;
+            if (transactions == null || transactions.Count() == 0)
             {
-                return NotFound();
+                customer = await db.Customers.FindAsync(customerId);
+                if (customer == null)
+                    return BadRequest(String.Format("Customer of id {0} does not exists", customerId));
             }
-
-            return Ok(customerTransaction);
+            return Ok(transactions);
         }
 
         // POST: api/CustomerTransactions
         [ResponseType(typeof(CustomerTransaction))]
-        public async Task<IHttpActionResult> PostCustomerTransaction(CustomerTransaction customerTransaction)
+        [HttpPost]
+        public async Task<IHttpActionResult> PostCustomerTransaction(CustomerTransactionDTO transactionDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            db.CustomerTransactions.Add(customerTransaction);
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (CustomerTransactionExists(customerTransaction.CustomerTransactionId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtRoute("DefaultApi", new { id = customerTransaction.CustomerTransactionId }, customerTransaction);
-        }
-
-        // DELETE: api/CustomerTransactions/5
-        [ResponseType(typeof(CustomerTransaction))]
-        public async Task<IHttpActionResult> DeleteCustomerTransaction(Guid id)
-        {
-            CustomerTransaction customerTransaction = await db.CustomerTransactions.FindAsync(id);
-            if (customerTransaction == null)
-            {
-                return NotFound();
-            }
-
-            db.CustomerTransactions.Remove(customerTransaction);
+            if (transactionDTO == null)
+                return BadRequest("TransactionDTO cannot be null, on creating transaction for customer");
+            var transaction = await transactionDTO.CreateNewTransactionAsync(db);
             await db.SaveChangesAsync();
-
-            return Ok(customerTransaction);
+            return (Ok(transaction));
         }
 
         protected override void Dispose(bool disposing)
@@ -89,11 +62,6 @@ namespace HyperStoreServiceAPP.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool CustomerTransactionExists(Guid id)
-        {
-            return db.CustomerTransactions.Count(e => e.CustomerTransactionId == id) > 0;
         }
     }
 }

@@ -12,9 +12,12 @@ namespace HyperStoreService.Models
     public class CustomerTransaction
     {
         public Guid CustomerTransactionId { get; set; }
+        public decimal TransactionAmount { get; set; }
+        public DateTime TransactionDate { get; set; }
+
         [Required]
         public string TransactionNo { get; set; }
-        public DateTime TransactionAmount { get; set; }
+
         public decimal WalletSnapshot { get; set; }
         public Guid CustomerId { get; set; }
         public Customer Customer { get; set; }

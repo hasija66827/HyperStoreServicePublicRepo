@@ -208,6 +208,79 @@ namespace HyperStoreServiceAPP.Controllers
         public IRange<DateTime> DueDateRange { get; set; }
     }
     #endregion
+    #region CustomerTransactionDTO
+    public class CustomerTransactionFilterCriteria
+    {
+        [Required]
+        public Guid? CustomerId { get; set; }
+    }
+
+    public class CustomerTransactionDTO
+    {
+        [Required]
+        public Guid? CustomerId { get; set; }
+
+        [Required]
+        [Range(0, 98765432198765)]
+        public decimal? TransactionAmount { get; set; }
+
+        /// <summary>
+        /// 1. Updates the wallet balance of the supplier.
+        /// 2. Creates a transaction entity associated with the supplier.
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
+        public async Task<CustomerTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
+        {
+            var walletSnapshot = await this.UpdateCustomerWalletBalanceAsync(db);
+            if (walletSnapshot == null)
+                throw new Exception(String.Format("Customer with id {0} has null wallet balance", this.CustomerId));
+            var transaction = this.AddNewTransaction((decimal)walletSnapshot, db);
+            return transaction;
+        }
+
+        /// <summary>
+        /// Updates the wallet balance of the customer.
+        /// Positive Balance always means that the user owes the customer that much amount.
+        /// </summary>
+        /// <param name="db"></param>
+        /// <returns>The wallet snapshot which was before this function updates it.</returns>
+        private async Task<decimal?> UpdateCustomerWalletBalanceAsync(HyperStoreServiceContext db)
+        {
+            Guid customerId = (Guid)this.CustomerId;
+            decimal transactionAmount = (decimal)this.TransactionAmount;
+            var customer = await db.Customers.FindAsync(customerId);
+            if (customer == null)
+                throw new Exception(String.Format("Customer with id {0} not found while updating its wallet balance", this.CustomerId));
+            var walletSnapshot = customer.WalletBalance;
+            customer.WalletBalance += transactionAmount;
+            db.Entry(customer).State = EntityState.Modified;
+            return walletSnapshot;
+        }
+
+        /// <summary>
+        /// Creates a transaction entity associated with customer.
+        /// </summary>
+        /// <param name="walletSnapshot"></param>
+        /// <param name="db"></param>
+        /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
+        private CustomerTransaction AddNewTransaction(decimal walletSnapshot, HyperStoreServiceContext db)
+        {
+            var transaction = new CustomerTransaction
+            {
+                CustomerTransactionId = Guid.NewGuid(),
+                CustomerId = (Guid)this.CustomerId,
+                TransactionAmount = (decimal)this.TransactionAmount,
+                TransactionNo = Utility.GenerateCustomerTransactionNo(),
+                WalletSnapshot = walletSnapshot,
+                TransactionDate = DateTime.Now,
+            };
+            db.CustomerTransactions.Add(transaction);
+            return transaction;
+        }
+    }
+
+    #endregion
     #region Supplier Transaction
     public class SupplierTransactionFilterCriteria
     {
@@ -219,9 +292,12 @@ namespace HyperStoreServiceAPP.Controllers
     {
         [Required]
         public bool? IsCredit { get; set; }
+
         [Required]
         public Guid? SupplierId { get; set; }
+
         [Required]
+        [Range(0, 98765432198765)]
         public decimal? TransactionAmount { get; set; }
 
         /// <summary>
@@ -229,14 +305,13 @@ namespace HyperStoreServiceAPP.Controllers
         /// 2. Creates a transaction entity associated with the supplier.
         /// </summary>
         /// <param name="db"></param>
-        /// <returns></returns>
+        /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
         public async Task<SupplierTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
         {
             var walletSnapshot = await this.UpdateSupplierWalletBalanceAsync(db);
             if (walletSnapshot == null)
-                throw new Exception(String.Format("Supplier with id {0} not found", this.SupplierId));
+                throw new Exception(String.Format("Supplier with id {0} ad null wallet balance", this.SupplierId));
             var transaction = this.AddNewTransaction((decimal)walletSnapshot, db);
-            //if is credit==false then do settle up the orders.
             return transaction;
         }
 
@@ -245,7 +320,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// Positive Balance always means that the user owes the supplier that much amount.
         /// </summary>
         /// <param name="db"></param>
-        /// <returns></returns>
+        /// <returns>The wallet snapshot which was before this function updates it.</returns>
         private async Task<decimal?> UpdateSupplierWalletBalanceAsync(HyperStoreServiceContext db)
         {
             Guid supplierId = (Guid)this.SupplierId;
@@ -253,7 +328,7 @@ namespace HyperStoreServiceAPP.Controllers
             bool IsCredit = (bool)this.IsCredit;
             var supplier = await db.Suppliers.FindAsync(supplierId);
             if (supplier == null)
-                return null;
+                throw new Exception(String.Format("Supplier with id {0} not found while updating its wallet balance", this.SupplierId));
             var walletSnapshot = supplier.WalletBalance;
             if (IsCredit == true)
                 supplier.WalletBalance += transactionAmount;
@@ -268,7 +343,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// </summary>
         /// <param name="walletSnapshot"></param>
         /// <param name="db"></param>
-        /// <returns></returns>
+        /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
         private SupplierTransaction AddNewTransaction(decimal walletSnapshot, HyperStoreServiceContext db)
         {
             var transaction = new SupplierTransaction

@@ -85,8 +85,9 @@ namespace HyperStoreServiceAPP.Migrations
                 c => new
                     {
                         CustomerTransactionId = c.Guid(nullable: false),
+                        TransactionAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        TransactionDate = c.DateTime(nullable: false),
                         TransactionNo = c.String(nullable: false),
-                        TransactionAmount = c.DateTime(nullable: false),
                         WalletSnapshot = c.Decimal(nullable: false, precision: 18, scale: 2),
                         CustomerId = c.Guid(nullable: false),
                     })

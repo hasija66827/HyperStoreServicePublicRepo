@@ -27,6 +27,12 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> DeleteCustomer(Guid id);
     }
 
+    public interface CustomerTransactionInterface
+    {
+        Task<IHttpActionResult> GetTransactions(CustomerTransactionFilterCriteria transactionFilterCriteria);
+        Task<IHttpActionResult> PostCustomerTransaction(CustomerTransactionDTO transactionDTO);
+    };
+
     public interface TagInterface
     {
         IQueryable<Tag> GetTags();
@@ -66,7 +72,7 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> DeleteSupplier(Guid id);
     }
 
-    public interface SupplierTransactionControllerInterface
+    public interface SupplierTransactionInterface
     {
         Task<IHttpActionResult> GetTransactions(SupplierTransactionFilterCriteria transactionFilterCriteria);
         Task<IHttpActionResult> PostTransaction(SupplierTransactionDTO transactionDTO);

@@ -14,7 +14,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public partial class SupplierTransactionsController : ApiController, SupplierTransactionControllerInterface
+    public partial class SupplierTransactionsController : ApiController, SupplierTransactionInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
@@ -23,11 +23,20 @@ namespace HyperStoreServiceAPP.Controllers
         [HttpGet]
         public async Task<IHttpActionResult> GetTransactions(SupplierTransactionFilterCriteria transactionFilterCriteria)
         {
+            if (transactionFilterCriteria == null)
+                return BadRequest("TransactionFilterCriteria cannont be null while retreiving the transaction for supplier");
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var supplierId = transactionFilterCriteria.SupplierId;
             var transactions = await db.SupplierTransactions.Where(t => t.SupplierId == supplierId)
-                                                    .OrderByDescending(t => t.TransactionDate).ToListAsync();
+                                                             .OrderByDescending(t => t.TransactionDate).ToListAsync();
+            Supplier supplier;
+            if (transactions == null || transactions.Count() == 0)
+            {
+                supplier = await db.Suppliers.FindAsync(supplierId);
+                if (supplier == null)
+                    return BadRequest(String.Format("Supplier of id {0} does not exists", supplierId));
+            }
             return Ok(transactions);
         }
 
@@ -36,11 +45,14 @@ namespace HyperStoreServiceAPP.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> PostTransaction(SupplierTransactionDTO transactionDTO)
         {
+            if (transactionDTO == null)
+                return BadRequest("TransactionDTO cannot be null, on creating transaction for supplier");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            try
+              try
             {
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
                 var settleUpOrders = SettleUpOrders(transaction);
@@ -68,7 +80,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
     }
 
-    public partial class SupplierTransactionsController : ApiController, SupplierTransactionControllerInterface
+    public partial class SupplierTransactionsController : ApiController, SupplierTransactionInterface
     {
         private List<SupplierOrder> SettleUpOrders(SupplierTransaction transaction)
         {
