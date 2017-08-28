@@ -26,7 +26,8 @@ namespace HyperStoreServiceAPP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var supplierId = transactionFilterCriteria.SupplierId;
-            var transactions = await db.Transactions.Where(t => t.SupplierId == supplierId).ToListAsync();
+            var transactions = await db.Transactions.Where(t => t.SupplierId == supplierId)
+                                                    .OrderByDescending(t => t.TransactionDate).ToListAsync();
             return Ok(transactions);
         }
 
@@ -44,7 +45,7 @@ namespace HyperStoreServiceAPP.Controllers
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
                 var settleUpOrders = SettleUpOrders(transaction);
                 await db.SaveChangesAsync();
-                return CreatedAtRoute("DefaultApi", new { id = transaction.TransactionId }, settleUpOrders);
+                return Ok(transaction);
             }
             catch (DbUpdateException)
             {
