@@ -10,15 +10,7 @@ using System.Web;
 namespace HyperStoreServiceAPP.Controllers
 {
     #region CustomerPurchaseTrend
-    public class CustomerPurchaseTrend
-    {
-        public int TotalQuantityPurchased { get; set; }
-        public Product Product { get; set; }
-        public decimal NetValue { get; set; }
-        public CustomerPurchaseTrend() { }
-    }
-
-    public class CustomerPurchaseTrendParameter
+    public class CustomerPurchaseTrendDTO
     {
         [Required]
         public Guid? CustomerId { get; set; }
@@ -27,18 +19,7 @@ namespace HyperStoreServiceAPP.Controllers
     }
     #endregion
     #region ProductConsumption Trend
-    public class ProductTrend
-    {
-        public DayOfWeek Day { get; set; }
-        public float Quantity { get; set; }
-        public ProductTrend(DayOfWeek day, float quantity)
-        {
-            this.Day = day;
-            this.Quantity = quantity;
-        }
-    }
-
-    public class ProductTrendParameter
+    public class ProductConsumptionTrendDTO
     {
         [Required]
         public Guid? ProductId { get; set; }

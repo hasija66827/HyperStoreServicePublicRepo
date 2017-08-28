@@ -79,11 +79,11 @@ namespace HyperStoreServiceAPP.Controllers
 
     public interface CustomerPurchaseTrendInterface
     {
-        Task<IHttpActionResult> CustomerPurchaseTrend(CustomerPurchaseTrendParameter parameter);
+        Task<IHttpActionResult> CustomerPurchaseTrend(CustomerPurchaseTrendDTO parameter);
     }
 
     public interface ProductTrendInterface
     {
-        Task<IHttpActionResult> GetProductTrend(ProductTrendParameter parameter);
+        Task<IHttpActionResult> GetProductTrend(ProductConsumptionTrendDTO parameter);
     }
 }

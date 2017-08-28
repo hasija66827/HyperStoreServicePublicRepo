@@ -17,15 +17,15 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         [HttpGet]
-        [ResponseType(typeof(IEnumerable<ProductTrend>))]
-        public async Task<IHttpActionResult> GetProductTrend(ProductTrendParameter parameter)
+        [ResponseType(typeof(IEnumerable<ProductConsumptionTrend>))]
+        public async Task<IHttpActionResult> GetProductTrend(ProductConsumptionTrendDTO parameter)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             if (parameter == null)
                 return BadRequest("The parameter should not have been NULL");
 
-            IEnumerable<ProductTrend> result;
+            IEnumerable<ProductConsumptionTrend> result;
             try
             {
                 var startingOrderDate = DateTime.Now.AddMonths(-(int)parameter.MonthsCount);
@@ -43,9 +43,9 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return Ok(result);
         }
 
-        private ProductTrend AggregateQuantity(IGrouping<DayOfWeek, CustomerOrderProduct> items)
+        private ProductConsumptionTrend AggregateQuantity(IGrouping<DayOfWeek, CustomerOrderProduct> items)
         {
-            return new ProductTrend(items.Key, items.Sum(cop => (float)cop.QuantityConsumed));
+            return new ProductConsumptionTrend(items.Key, items.Sum(cop => (float)cop.QuantityConsumed));
         }
     }
 }

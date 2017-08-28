@@ -275,12 +275,14 @@
       <DependentUpon>201708271250393_making cgstper and sgstper reuired.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\CustomerPurchaseTrend.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\CustomerOrder.cs" />
     <Compile Include="Models\CustomerOrderProduct.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductTag.cs" />
+    <Compile Include="Models\ProductTrend.cs" />
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Models\SupplierOrder.cs" />
     <Compile Include="Models\SupplierOrderProduct.cs" />
