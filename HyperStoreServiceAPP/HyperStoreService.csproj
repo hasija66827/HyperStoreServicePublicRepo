@@ -213,6 +213,7 @@
     <Compile Include="Controllers\CustomerOrderProductsController.cs" />
     <Compile Include="Controllers\CustomerOrdersController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
+    <Compile Include="Controllers\CustomerTransactionsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Interfaces.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
@@ -226,12 +227,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201708281711051_Initial.cs" />
-    <Compile Include="Migrations\201708281711051_Initial.Designer.cs">
-      <DependentUpon>201708281711051_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201708281810102_Initial.cs" />
+    <Compile Include="Migrations\201708281810102_Initial.Designer.cs">
+      <DependentUpon>201708281810102_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CustomerPurchaseTrend.cs" />
+    <Compile Include="Models\CustomerTransaction.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\CustomerOrder.cs" />
@@ -320,8 +322,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201708281711051_Initial.resx">
-      <DependentUpon>201708281711051_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201708281810102_Initial.resx">
+      <DependentUpon>201708281810102_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -13,7 +13,7 @@ namespace HyperStoreServiceAPP.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201708281711051_Initial"; }
+            get { return "201708281810102_Initial"; }
         }
         
         string IMigrationMetadata.Source

@@ -81,6 +81,20 @@ namespace HyperStoreServiceAPP.Migrations
                 .Index(t => t.Name, unique: true);
             
             CreateTable(
+                "dbo.CustomerTransactions",
+                c => new
+                    {
+                        CustomerTransactionId = c.Guid(nullable: false),
+                        TransactionNo = c.String(nullable: false),
+                        TransactionAmount = c.DateTime(nullable: false),
+                        WalletSnapshot = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        CustomerId = c.Guid(nullable: false),
+                    })
+                .PrimaryKey(t => t.CustomerTransactionId)
+                .ForeignKey("dbo.Customers", t => t.CustomerId, cascadeDelete: true)
+                .Index(t => t.CustomerId);
+            
+            CreateTable(
                 "dbo.ProductTags",
                 c => new
                     {
@@ -195,6 +209,7 @@ namespace HyperStoreServiceAPP.Migrations
             DropForeignKey("dbo.SupplierOrderProducts", "ProductId", "dbo.Products");
             DropForeignKey("dbo.ProductTags", "TagId", "dbo.Tags");
             DropForeignKey("dbo.ProductTags", "ProductId", "dbo.Products");
+            DropForeignKey("dbo.CustomerTransactions", "CustomerId", "dbo.Customers");
             DropForeignKey("dbo.CustomerOrderProducts", "ProductId", "dbo.Products");
             DropForeignKey("dbo.CustomerOrderProducts", "CustomerOrderId", "dbo.CustomerOrders");
             DropForeignKey("dbo.CustomerOrders", "CustomerId", "dbo.Customers");
@@ -208,6 +223,7 @@ namespace HyperStoreServiceAPP.Migrations
             DropIndex("dbo.Tags", new[] { "TagName" });
             DropIndex("dbo.ProductTags", new[] { "TagId" });
             DropIndex("dbo.ProductTags", new[] { "ProductId" });
+            DropIndex("dbo.CustomerTransactions", new[] { "CustomerId" });
             DropIndex("dbo.Products", new[] { "Name" });
             DropIndex("dbo.Products", new[] { "Code" });
             DropIndex("dbo.Customers", new[] { "Name" });
@@ -222,6 +238,7 @@ namespace HyperStoreServiceAPP.Migrations
             DropTable("dbo.SupplierOrderProducts");
             DropTable("dbo.Tags");
             DropTable("dbo.ProductTags");
+            DropTable("dbo.CustomerTransactions");
             DropTable("dbo.Products");
             DropTable("dbo.Customers");
             DropTable("dbo.CustomerOrders");

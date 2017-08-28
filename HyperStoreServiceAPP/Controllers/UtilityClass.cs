@@ -281,7 +281,7 @@ namespace HyperStoreServiceAPP.Controllers
                 SupplierId = (Guid)this.SupplierId,
                 WalletSnapshot = walletSnapshot
             };
-            db.Transactions.Add(transaction);
+            db.SupplierTransactions.Add(transaction);
             return transaction;
         }
     }

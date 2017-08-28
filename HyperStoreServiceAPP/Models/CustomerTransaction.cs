@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
+using HyperStoreServiceAPP;
+using System.Threading.Tasks;
+using System.Data.Entity;
+
+namespace HyperStoreService.Models
+{
+    public class CustomerTransaction
+    {
+        public Guid CustomerTransactionId { get; set; }
+        [Required]
+        public string TransactionNo { get; set; }
+        public DateTime TransactionAmount { get; set; }
+        public decimal WalletSnapshot { get; set; }
+        public Guid CustomerId { get; set; }
+        public Customer Customer { get; set; }
+        public CustomerTransaction() { }
+    }
+}

@@ -26,7 +26,7 @@ namespace HyperStoreServiceAPP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var supplierId = transactionFilterCriteria.SupplierId;
-            var transactions = await db.Transactions.Where(t => t.SupplierId == supplierId)
+            var transactions = await db.SupplierTransactions.Where(t => t.SupplierId == supplierId)
                                                     .OrderByDescending(t => t.TransactionDate).ToListAsync();
             return Ok(transactions);
         }
@@ -64,7 +64,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         private bool TransactionExists(Guid? id)
         {
-            return db.Transactions.Count(e => e.SupplierTransactionId == id) > 0;
+            return db.SupplierTransactions.Count(e => e.SupplierTransactionId == id) > 0;
         }
     }
 
