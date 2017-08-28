@@ -24,7 +24,7 @@ namespace HyperStoreServiceAPP.Controllers
         public async Task<IHttpActionResult> GetTransactionsOfSupplierOrder(Guid supplierOrderId)
         {
             var query = db.SupplierOrderTransactions.Where(sot => sot.SupplierOrderId == supplierOrderId)
-                                                    .Include(sot => sot.Transaction);
+                                                    .Include(sot => sot.SupplierTransaction);
             var result = await query.ToListAsync();
             return Ok(result);
         }

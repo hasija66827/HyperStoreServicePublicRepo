@@ -3,7 +3,7 @@ namespace HyperStoreServiceAPP.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class initital : DbMigration
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
@@ -159,18 +159,19 @@ namespace HyperStoreServiceAPP.Migrations
                         IsPaymentComplete = c.Boolean(nullable: false),
                         TransactionId = c.Guid(nullable: false),
                         SupplierOrderId = c.Guid(nullable: false),
+                        SupplierTransaction_SupplierTransactionId = c.Guid(),
                     })
                 .PrimaryKey(t => t.SupplierOrderTransactionId)
                 .ForeignKey("dbo.SupplierOrders", t => t.SupplierOrderId, cascadeDelete: true)
-                .ForeignKey("dbo.Transactions", t => t.TransactionId, cascadeDelete: true)
-                .Index(t => t.TransactionId)
-                .Index(t => t.SupplierOrderId);
+                .ForeignKey("dbo.SupplierTransactions", t => t.SupplierTransaction_SupplierTransactionId)
+                .Index(t => t.SupplierOrderId)
+                .Index(t => t.SupplierTransaction_SupplierTransactionId);
             
             CreateTable(
-                "dbo.Transactions",
+                "dbo.SupplierTransactions",
                 c => new
                     {
-                        TransactionId = c.Guid(nullable: false),
+                        SupplierTransactionId = c.Guid(nullable: false),
                         IsCredit = c.Boolean(nullable: false),
                         TransactionNo = c.String(nullable: false),
                         TransactionDate = c.DateTime(nullable: false),
@@ -178,7 +179,7 @@ namespace HyperStoreServiceAPP.Migrations
                         WalletSnapshot = c.Decimal(nullable: false, precision: 18, scale: 2),
                         SupplierId = c.Guid(nullable: false),
                     })
-                .PrimaryKey(t => t.TransactionId)
+                .PrimaryKey(t => t.SupplierTransactionId)
                 .ForeignKey("dbo.Suppliers", t => t.SupplierId, cascadeDelete: false)
                 .Index(t => t.SupplierId);
             
@@ -186,8 +187,8 @@ namespace HyperStoreServiceAPP.Migrations
         
         public override void Down()
         {
-            DropForeignKey("dbo.SupplierOrderTransactions", "TransactionId", "dbo.Transactions");
-            DropForeignKey("dbo.Transactions", "SupplierId", "dbo.Suppliers");
+            DropForeignKey("dbo.SupplierOrderTransactions", "SupplierTransaction_SupplierTransactionId", "dbo.SupplierTransactions");
+            DropForeignKey("dbo.SupplierTransactions", "SupplierId", "dbo.Suppliers");
             DropForeignKey("dbo.SupplierOrderTransactions", "SupplierOrderId", "dbo.SupplierOrders");
             DropForeignKey("dbo.SupplierOrderProducts", "SupplierOrderId", "dbo.SupplierOrders");
             DropForeignKey("dbo.SupplierOrders", "SupplierId", "dbo.Suppliers");
@@ -197,9 +198,9 @@ namespace HyperStoreServiceAPP.Migrations
             DropForeignKey("dbo.CustomerOrderProducts", "ProductId", "dbo.Products");
             DropForeignKey("dbo.CustomerOrderProducts", "CustomerOrderId", "dbo.CustomerOrders");
             DropForeignKey("dbo.CustomerOrders", "CustomerId", "dbo.Customers");
-            DropIndex("dbo.Transactions", new[] { "SupplierId" });
+            DropIndex("dbo.SupplierTransactions", new[] { "SupplierId" });
+            DropIndex("dbo.SupplierOrderTransactions", new[] { "SupplierTransaction_SupplierTransactionId" });
             DropIndex("dbo.SupplierOrderTransactions", new[] { "SupplierOrderId" });
-            DropIndex("dbo.SupplierOrderTransactions", new[] { "TransactionId" });
             DropIndex("dbo.Suppliers", new[] { "MobileNo" });
             DropIndex("dbo.SupplierOrders", new[] { "SupplierId" });
             DropIndex("dbo.SupplierOrderProducts", new[] { "ProductId" });
@@ -214,7 +215,7 @@ namespace HyperStoreServiceAPP.Migrations
             DropIndex("dbo.CustomerOrders", new[] { "CustomerId" });
             DropIndex("dbo.CustomerOrderProducts", new[] { "ProductId" });
             DropIndex("dbo.CustomerOrderProducts", new[] { "CustomerOrderId" });
-            DropTable("dbo.Transactions");
+            DropTable("dbo.SupplierTransactions");
             DropTable("dbo.SupplierOrderTransactions");
             DropTable("dbo.Suppliers");
             DropTable("dbo.SupplierOrders");

@@ -65,10 +65,11 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO);
         Task<IHttpActionResult> DeleteSupplier(Guid id);
     }
-    public interface TransactionControllerInterface
+
+    public interface SupplierTransactionControllerInterface
     {
-        Task<IHttpActionResult> GetTransactions(TransactionFilterCriteria transactionFilterCriteria);
-        Task<IHttpActionResult> PostTransaction(TransactionDTO transactionDTO);
+        Task<IHttpActionResult> GetTransactions(SupplierTransactionFilterCriteria transactionFilterCriteria);
+        Task<IHttpActionResult> PostTransaction(SupplierTransactionDTO transactionDTO);
     }
 
     public interface SupplierOrderTransactionInterface

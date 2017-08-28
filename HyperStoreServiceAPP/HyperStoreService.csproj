@@ -221,14 +221,14 @@
     <Compile Include="Controllers\SupplierOrderTransactionsController.cs" />
     <Compile Include="Controllers\SuppliersController.cs" />
     <Compile Include="Controllers\TagsController.cs" />
-    <Compile Include="Controllers\TransactionsController.cs" />
+    <Compile Include="Controllers\SupplierTransactionsController.cs" />
     <Compile Include="Controllers\UtilityClass.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201708281651194_initital.cs" />
-    <Compile Include="Migrations\201708281651194_initital.Designer.cs">
-      <DependentUpon>201708281651194_initital.cs</DependentUpon>
+    <Compile Include="Migrations\201708281711051_Initial.cs" />
+    <Compile Include="Migrations\201708281711051_Initial.Designer.cs">
+      <DependentUpon>201708281711051_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CustomerPurchaseTrend.cs" />
@@ -244,7 +244,7 @@
     <Compile Include="Models\SupplierOrderProduct.cs" />
     <Compile Include="Models\SupplierOrderTransaction.cs" />
     <Compile Include="Models\Tag.cs" />
-    <Compile Include="Models\Transaction.cs" />
+    <Compile Include="Models\SupplierTransaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utility\Utility.cs" />
@@ -320,8 +320,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201708281651194_initital.resx">
-      <DependentUpon>201708281651194_initital.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201708281711051_Initial.resx">
+      <DependentUpon>201708281711051_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

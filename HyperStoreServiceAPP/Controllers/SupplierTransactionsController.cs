@@ -14,14 +14,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public partial class TransactionsController : ApiController, TransactionControllerInterface
+    public partial class SupplierTransactionsController : ApiController, SupplierTransactionControllerInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         // GET: api/Transactions/5
-        [ResponseType(typeof(List<Transaction>))]
+        [ResponseType(typeof(List<SupplierTransaction>))]
         [HttpGet]
-        public async Task<IHttpActionResult> GetTransactions(TransactionFilterCriteria transactionFilterCriteria)
+        public async Task<IHttpActionResult> GetTransactions(SupplierTransactionFilterCriteria transactionFilterCriteria)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -32,9 +32,9 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         // POST: api/Transactions
-        [ResponseType(typeof(Transaction))]
+        [ResponseType(typeof(SupplierTransaction))]
         [HttpPost]
-        public async Task<IHttpActionResult> PostTransaction(TransactionDTO transactionDTO)
+        public async Task<IHttpActionResult> PostTransaction(SupplierTransactionDTO transactionDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -64,17 +64,17 @@ namespace HyperStoreServiceAPP.Controllers
 
         private bool TransactionExists(Guid? id)
         {
-            return db.Transactions.Count(e => e.TransactionId == id) > 0;
+            return db.Transactions.Count(e => e.SupplierTransactionId == id) > 0;
         }
     }
 
-    public partial class TransactionsController : ApiController, TransactionControllerInterface
+    public partial class SupplierTransactionsController : ApiController, SupplierTransactionControllerInterface
     {
-        private List<SupplierOrder> SettleUpOrders(Transaction transaction)
+        private List<SupplierOrder> SettleUpOrders(SupplierTransaction transaction)
         {
             List<SupplierOrder> settleUpSupplierOrder = new List<SupplierOrder>();
             if (transaction.IsCredit)
-                throw new Exception(String.Format("While settling up the orders transaction {0} cannot be of type credit", transaction.TransactionId));
+                throw new Exception(String.Format("While settling up the orders transaction {0} cannot be of type credit", transaction.SupplierTransactionId));
             var partiallyPaidOrders = db.SupplierOrders.Where(so => so.SupplierId == transaction.SupplierId &&
                                                                    so.BillAmount - so.PaidAmount > 0)
                                                        .OrderBy(wo => wo.OrderDate);
@@ -94,7 +94,7 @@ namespace HyperStoreServiceAPP.Controllers
                 {
                     SupplierOrderTransactionId = Guid.NewGuid(),
                     SupplierOrderId = partiallyPaidOrder.SupplierOrderId,
-                    TransactionId = transaction.TransactionId,
+                    TransactionId = transaction.SupplierTransactionId,
                     PaidAmount = payingAmountForOrder,
                     IsPaymentComplete = IsOrderSettleUp
                 });

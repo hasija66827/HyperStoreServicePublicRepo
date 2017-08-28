@@ -9,9 +9,9 @@ using System.Data.Entity;
 
 namespace HyperStoreService.Models
 {
-    public class Transaction
+    public class SupplierTransaction
     {
-        public Guid TransactionId { get; set; }
+        public Guid SupplierTransactionId { get; set; }
         public bool IsCredit { get; set; }
         [Required]
         public string TransactionNo { get; set; }
@@ -20,7 +20,7 @@ namespace HyperStoreService.Models
         public decimal WalletSnapshot { get; set; }
         public Guid SupplierId { get; set; }
         public Supplier Supplier { get; set; }
-        public Transaction() {
+        public SupplierTransaction() {
         }
     }
 }

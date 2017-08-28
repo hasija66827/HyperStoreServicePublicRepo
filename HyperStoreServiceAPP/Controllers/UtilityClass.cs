@@ -208,14 +208,14 @@ namespace HyperStoreServiceAPP.Controllers
         public IRange<DateTime> DueDateRange { get; set; }
     }
     #endregion
-    #region Transaction
-    public class TransactionFilterCriteria
+    #region Supplier Transaction
+    public class SupplierTransactionFilterCriteria
     {
         [Required]
         public Guid? SupplierId { get; set; }
     }
 
-    public class TransactionDTO
+    public class SupplierTransactionDTO
     {
         [Required]
         public bool? IsCredit { get; set; }
@@ -230,7 +230,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        public async Task<Transaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
+        public async Task<SupplierTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
         {
             var walletSnapshot = await this.UpdateSupplierWalletBalanceAsync(db);
             if (walletSnapshot == null)
@@ -269,11 +269,11 @@ namespace HyperStoreServiceAPP.Controllers
         /// <param name="walletSnapshot"></param>
         /// <param name="db"></param>
         /// <returns></returns>
-        private Transaction AddNewTransaction(decimal walletSnapshot, HyperStoreServiceContext db)
+        private SupplierTransaction AddNewTransaction(decimal walletSnapshot, HyperStoreServiceContext db)
         {
-            var transaction = new Transaction
+            var transaction = new SupplierTransaction
             {
-                TransactionId = Guid.NewGuid(),
+                SupplierTransactionId = Guid.NewGuid(),
                 TransactionNo = Utility.GenerateSupplierTransactionNo(),
                 TransactionDate = DateTime.Now,
                 TransactionAmount = (decimal)this.TransactionAmount,
@@ -300,5 +300,4 @@ namespace HyperStoreServiceAPP.Controllers
         public Guid? CustomerId { get; set; }
     }
     #endregion
-
 }

@@ -20,7 +20,7 @@ namespace HyperStoreService.Models
         }
 
         public Guid TransactionId { get; set; }
-        public Transaction Transaction { get; set; }
+        public SupplierTransaction SupplierTransaction { get; set; }
 
         public Guid SupplierOrderId { get; set; }
         public SupplierOrder SupplierOrder { get; set; }

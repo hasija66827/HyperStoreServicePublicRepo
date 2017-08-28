@@ -35,7 +35,7 @@ namespace HyperStoreService.Models
 
         public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierOrderProduct> SupplierOrderProducts { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.Transaction> Transactions { get; set; }
+        public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierTransaction> Transactions { get; set; }
 
         public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierOrderTransaction> SupplierOrderTransactions { get; set; }
 

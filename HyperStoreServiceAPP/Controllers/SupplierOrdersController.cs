@@ -90,7 +90,7 @@ namespace HyperStoreServiceAPP.Controllers
             //TODO: Verify bill amount.
             try
             {
-                TransactionDTO transactionDTO = new TransactionDTO
+                SupplierTransactionDTO transactionDTO = new SupplierTransactionDTO
                 {
                     IsCredit = true,
                     SupplierId = orderDetail.SupplierId,
@@ -144,12 +144,12 @@ namespace HyperStoreServiceAPP.Controllers
 
     public partial class SupplierOrdersController : ApiController, SupplierOrderInterface
     {
-        private SupplierOrderTransaction CreateNewSupplierOrderTransaction(SupplierOrder supplierOrder, Transaction transaction)
+        private SupplierOrderTransaction CreateNewSupplierOrderTransaction(SupplierOrder supplierOrder, SupplierTransaction transaction)
         {
             var supplierOrderTransaction = new SupplierOrderTransaction
             {
                 SupplierOrderTransactionId = Guid.NewGuid(),
-                TransactionId = transaction.TransactionId,
+                TransactionId = transaction.SupplierTransactionId,
                 SupplierOrderId = supplierOrder.SupplierOrderId,
                 IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.PaidAmount ? true : false,
                 PaidAmount = null
