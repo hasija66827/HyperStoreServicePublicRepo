@@ -44,14 +44,15 @@ namespace HyperStoreServiceAPP.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> PostCustomerTransaction(CustomerTransactionDTO transactionDTO)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            if (transactionDTO.IsCredit == true)
-                throw new Exception("Currently transaction of type credit is not supported through this API");
             if (transactionDTO == null)
                 return BadRequest("TransactionDTO cannot be null, on creating transaction for customer");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (transactionDTO.IsCredit == true)
+                throw new Exception("Currently transaction of type credit is not supported through this API");
+
             var transaction = await transactionDTO.CreateNewTransactionAsync(db);
             await db.SaveChangesAsync();
             return (Ok(transaction));

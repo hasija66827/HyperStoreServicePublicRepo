@@ -314,12 +314,12 @@ namespace HyperStoreServiceAPP.Controllers
         /// </summary>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        public async Task<SupplierTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
+        public async Task<SupplierTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db, string supplierOrderNo = null)
         {
             var walletSnapshot = await this.UpdateSupplierWalletBalanceAsync(db);
             if (walletSnapshot == null)
                 throw new Exception(String.Format("Supplier with id {0} ad null wallet balance", this.SupplierId));
-            var transaction = this.AddNewTransaction((decimal)walletSnapshot, db);
+            var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot, supplierOrderNo);
             List<SupplierOrder> settleUpOrders;
             if (transaction.IsCredit == false)
                 settleUpOrders = SettleUpOrders(transaction, db);
@@ -355,12 +355,13 @@ namespace HyperStoreServiceAPP.Controllers
         /// <param name="walletSnapshot"></param>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        private SupplierTransaction AddNewTransaction(decimal walletSnapshot, HyperStoreServiceContext db)
+        private SupplierTransaction AddNewTransaction(HyperStoreServiceContext db, decimal walletSnapshot, string supplierOrderNo)
         {
             var transaction = new SupplierTransaction
             {
                 SupplierTransactionId = Guid.NewGuid(),
                 TransactionNo = Utility.GenerateSupplierTransactionNo(),
+                SupplierOrderNo=supplierOrderNo,
                 TransactionDate = DateTime.Now,
                 TransactionAmount = (decimal)this.TransactionAmount,
                 IsCredit = (bool)this.IsCredit,

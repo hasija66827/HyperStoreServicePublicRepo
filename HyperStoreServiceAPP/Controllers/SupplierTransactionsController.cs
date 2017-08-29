@@ -47,11 +47,13 @@ namespace HyperStoreServiceAPP.Controllers
         {
             if (transactionDTO == null)
                 return BadRequest("TransactionDTO cannot be null, on creating transaction for supplier");
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            if (transactionDTO.IsCredit == true)
+                throw new Exception("Currently transaction of type credit is not supported through this API");
+
             try
             {
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);     

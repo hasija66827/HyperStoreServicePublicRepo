@@ -90,17 +90,21 @@ namespace HyperStoreServiceAPP.Controllers
             //TODO: Verify bill amount.
             try
             {
+                var supplierOrder = CreateNewSupplierOrder(orderDetail);
                 SupplierTransactionDTO transactionDTO = new SupplierTransactionDTO
                 {
                     IsCredit = true,
                     SupplierId = orderDetail.SupplierId,
                     TransactionAmount = orderDetail.BillAmount - orderDetail.PaidAmount
                 };
-                var transaction = await transactionDTO.CreateNewTransactionAsync(db);
-                var supplierOrder = CreateNewSupplierOrder(orderDetail);
+                var transaction = await transactionDTO.CreateNewTransactionAsync(db, supplierOrder.SupplierOrderNo);
+
                 var supplierOrderTransaction = CreateNewSupplierOrderTransaction(supplierOrder, transaction);
+
                 var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased);
+
                 AddIntoSupplierOrderProduct(orderDetail.ProductsPurchased, supplierOrder.SupplierOrderId);
+
                 await db.SaveChangesAsync();
                 return Ok(transactionDTO.TransactionAmount);
             }
