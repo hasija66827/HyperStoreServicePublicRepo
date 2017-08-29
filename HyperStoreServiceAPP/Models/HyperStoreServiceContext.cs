@@ -39,6 +39,8 @@ namespace HyperStoreService.Models
 
         public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierTransaction> SupplierTransactions { get; set; }
 
+        public System.Data.Entity.DbSet<HyperStoreService.Models.CustomerOrderTransaction> CustomerOrderTransactions { get; set; }
+
         public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierOrderTransaction> SupplierOrderTransactions { get; set; }
 
         public System.Data.Entity.DbSet<HyperStoreService.Models.Tag> Tags { get; set; }

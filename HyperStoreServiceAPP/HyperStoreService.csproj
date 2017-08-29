@@ -231,7 +231,12 @@
     <Compile Include="Migrations\201708281855482_Initial.Designer.cs">
       <DependentUpon>201708281855482_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708291254198_adding customerordertransactionEntity.cs" />
+    <Compile Include="Migrations\201708291254198_adding customerordertransactionEntity.Designer.cs">
+      <DependentUpon>201708291254198_adding customerordertransactionEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\CustomerOrderTransaction.cs" />
     <Compile Include="Models\CustomerPurchaseTrend.cs" />
     <Compile Include="Models\CustomerTransaction.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
@@ -324,6 +329,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201708281855482_Initial.resx">
       <DependentUpon>201708281855482_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708291254198_adding customerordertransactionEntity.resx">
+      <DependentUpon>201708291254198_adding customerordertransactionEntity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

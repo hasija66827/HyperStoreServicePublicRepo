@@ -38,7 +38,7 @@ namespace HyperStoreServiceAPP.Controllers
                                                              order.DueDate >= SOFC.DueDateRange.LB.Date &&
                                                              order.DueDate <= SOFC.DueDateRange.UB.Date
                                                              )
-                                                             .Include(so=>so.Supplier);
+                                                             .Include(so => so.Supplier);
                 if (SOFC.SupplierId != null)
                 {
                     query = query.Where(order => order.SupplierId == SOFC.SupplierId);

@@ -73,14 +73,22 @@ namespace HyperStoreServiceAPP.Controllers
             if (orderDetail.BillAmount < orderDetail.DiscountedAmount)
                 return BadRequest(string.Format("Bill Amount {0} cannot be less than Discounted Amount {1}",
                                                     orderDetail.BillAmount, orderDetail.DiscountedAmount));
-            decimal usingWalletAmount = 0;
+            decimal deductWalletAmount = 0;
             //TODO: Verify bill amount.
             try
             {
                 await UpdateStockOfProductsAsync(orderDetail.ProductsConsumed);
-                usingWalletAmount = await UpdateWalletBalanceOfCustomerAsync(orderDetail);
-                var customerOrderId = CreateNewCustomerOrder(orderDetail, usingWalletAmount);
-                await AddIntoCustomerOrderProductAsync(orderDetail.ProductsConsumed, customerOrderId);
+                deductWalletAmount = await ComputeTransactionAmountAsync(orderDetail);
+                var transactionDTO = new CustomerTransactionDTO()
+                {
+                    CustomerId = orderDetail.CustomerId,
+                    TransactionAmount = Math.Abs(deductWalletAmount),
+                    IsCredit = deductWalletAmount > 0 ? true : false,
+                };
+                var transaction = await transactionDTO.CreateNewTransactionAsync(db);
+                var customerOrder = CreateNewCustomerOrder(orderDetail, deductWalletAmount);
+                var customerOrderTransaction = CreateNewCustomerOrderTransaction(customerOrder, transaction);
+                await AddIntoCustomerOrderProductAsync(orderDetail.ProductsConsumed, customerOrder.CustomerOrderId);
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -89,7 +97,7 @@ namespace HyperStoreServiceAPP.Controllers
             }
             catch (Exception e)
             { return BadRequest(e.ToString()); }
-            return Ok(usingWalletAmount);
+            return Ok(deductWalletAmount);
         }
 
         protected override void Dispose(bool disposing)
@@ -120,7 +128,7 @@ namespace HyperStoreServiceAPP.Controllers
             return true;
         }
 
-        private async Task<decimal> UpdateWalletBalanceOfCustomerAsync(CustomerOrderDTO orderDetails)
+        private async Task<decimal> ComputeTransactionAmountAsync(CustomerOrderDTO orderDetails)
         {
             decimal walletAmountToBeDeducted = 0;
             decimal walletAmountToBeAdded = 0;
@@ -147,9 +155,6 @@ namespace HyperStoreServiceAPP.Controllers
                         throw new Exception(String.Format("Customer {0} paying {1} cannot be greater than discountedBillAmount {2} in Pay Later Mode ", orderDetails.CustomerId, orderDetails.PayingAmount, orderDetails.DiscountedAmount));
                     walletAmountToBeDeducted = (decimal)orderDetails.DiscountedAmount - (decimal)orderDetails.PayingAmount;
                 }
-                customer.WalletBalance -= walletAmountToBeDeducted;
-                customer.WalletBalance += walletAmountToBeAdded;
-                db.Entry(customer).State = EntityState.Modified;
             }
             catch (Exception e)
             {
@@ -158,7 +163,7 @@ namespace HyperStoreServiceAPP.Controllers
             return walletAmountToBeDeducted - walletAmountToBeAdded;
         }
 
-        private Guid CreateNewCustomerOrder(CustomerOrderDTO orderDetail, decimal usingWalletAmount)
+        private CustomerOrder CreateNewCustomerOrder(CustomerOrderDTO orderDetail, decimal usingWalletAmount)
         {
             var customerOrder = new CustomerOrder()
             {
@@ -174,7 +179,19 @@ namespace HyperStoreServiceAPP.Controllers
                 CustomerId = (Guid)orderDetail.CustomerId
             };
             db.CustomerOrders.Add(customerOrder);
-            return customerOrder.CustomerOrderId;
+            return customerOrder;
+        }
+
+        private CustomerOrderTransaction CreateNewCustomerOrderTransaction(CustomerOrder customerOrder, CustomerTransaction transaction)
+        {
+            var customerOrderTransaction = new CustomerOrderTransaction
+            {
+                CustomerOrderTransactionId = Guid.NewGuid(),
+                TransactionId = transaction.CustomerTransactionId,
+                CustomerOrderId = customerOrder.CustomerOrderId,
+            };
+            db.CustomerOrderTransactions.Add(customerOrderTransaction);
+            return customerOrderTransaction;
         }
 
         private async Task<Boolean> AddIntoCustomerOrderProductAsync(List<ProductConsumed> productsConsumed, Guid customerOrderId)

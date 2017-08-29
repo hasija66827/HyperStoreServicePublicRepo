@@ -221,6 +221,9 @@ namespace HyperStoreServiceAPP.Controllers
         public Guid? CustomerId { get; set; }
 
         [Required]
+        public bool? IsCredit { get; set; }
+
+        [Required]
         [Range(0, 98765432198765)]
         public decimal? TransactionAmount { get; set; }
 
@@ -253,7 +256,10 @@ namespace HyperStoreServiceAPP.Controllers
             if (customer == null)
                 throw new Exception(String.Format("Customer with id {0} not found while updating its wallet balance", this.CustomerId));
             var walletSnapshot = customer.WalletBalance;
-            customer.WalletBalance += transactionAmount;
+            if (IsCredit == true)
+                customer.WalletBalance -= transactionAmount;
+            else
+                customer.WalletBalance += transactionAmount;
             db.Entry(customer).State = EntityState.Modified;
             return walletSnapshot;
         }
@@ -269,6 +275,7 @@ namespace HyperStoreServiceAPP.Controllers
             var transaction = new CustomerTransaction
             {
                 CustomerTransactionId = Guid.NewGuid(),
+                IsCredit = (bool)this.IsCredit,
                 CustomerId = (Guid)this.CustomerId,
                 TransactionAmount = (decimal)this.TransactionAmount,
                 TransactionNo = Utility.GenerateCustomerTransactionNo(),
@@ -312,6 +319,9 @@ namespace HyperStoreServiceAPP.Controllers
             if (walletSnapshot == null)
                 throw new Exception(String.Format("Supplier with id {0} ad null wallet balance", this.SupplierId));
             var transaction = this.AddNewTransaction((decimal)walletSnapshot, db);
+            List<SupplierOrder> settleUpOrders;
+            if (transaction.IsCredit == false)
+                settleUpOrders = SettleUpOrders(transaction, db);
             return transaction;
         }
 
@@ -358,6 +368,47 @@ namespace HyperStoreServiceAPP.Controllers
             };
             db.SupplierTransactions.Add(transaction);
             return transaction;
+        }
+
+        private List<SupplierOrder> SettleUpOrders(SupplierTransaction transaction, HyperStoreServiceContext db)
+        {
+            List<SupplierOrder> settleUpSupplierOrder = new List<SupplierOrder>();
+            if (transaction.IsCredit)
+                throw new Exception(String.Format("While settling up the orders transaction {0} cannot be of type credit", transaction.SupplierTransactionId));
+            var partiallyPaidOrders = db.SupplierOrders.Where(so => so.SupplierId == transaction.SupplierId &&
+                                                                   so.BillAmount - so.PaidAmount > 0)
+                                                       .OrderBy(wo => wo.OrderDate);
+            var debitTransactionAmount = transaction.TransactionAmount;
+            foreach (var partiallyPaidOrder in partiallyPaidOrders)
+            {
+                if (debitTransactionAmount <= 0)
+                    break;
+                var remainingAmount = partiallyPaidOrder.BillAmount - partiallyPaidOrder.PaidAmount;
+                if (remainingAmount < 0)
+                    throw new Exception(string.Format("Supplier OrderNo {0}, Amount remaining to be paid: {1} cannot be less than zero", partiallyPaidOrder.SupplierOrderNo, remainingAmount));
+                decimal payingAmountForOrder = Math.Min(remainingAmount, debitTransactionAmount);
+                debitTransactionAmount -= payingAmountForOrder;
+                var IsOrderSettleUp = SettleUpOrder(partiallyPaidOrder, payingAmountForOrder, db);
+                settleUpSupplierOrder.Add(partiallyPaidOrder);
+                db.SupplierOrderTransactions.Add(new SupplierOrderTransaction
+                {
+                    SupplierOrderTransactionId = Guid.NewGuid(),
+                    SupplierOrderId = partiallyPaidOrder.SupplierOrderId,
+                    TransactionId = transaction.SupplierTransactionId,
+                    PaidAmount = payingAmountForOrder,
+                    IsPaymentComplete = IsOrderSettleUp
+                });
+            }
+            return settleUpSupplierOrder;
+        }
+
+        private bool SettleUpOrder(SupplierOrder supplierOrder, decimal settleUpAmount, HyperStoreServiceContext db)
+        {
+            supplierOrder.PaidAmount += settleUpAmount;
+            db.Entry(supplierOrder).State = EntityState.Modified;
+            if (supplierOrder.PaidAmount == supplierOrder.BillAmount)
+                return true;
+            return false;
         }
     }
     #endregion
