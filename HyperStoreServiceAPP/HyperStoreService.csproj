@@ -235,6 +235,10 @@
     <Compile Include="Migrations\201708291254198_adding customerordertransactionEntity.Designer.cs">
       <DependentUpon>201708291254198_adding customerordertransactionEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708291416465_addCustomeOrderNoInTrans.cs" />
+    <Compile Include="Migrations\201708291416465_addCustomeOrderNoInTrans.Designer.cs">
+      <DependentUpon>201708291416465_addCustomeOrderNoInTrans.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CustomerOrderTransaction.cs" />
     <Compile Include="Models\CustomerPurchaseTrend.cs" />
@@ -332,6 +336,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708291254198_adding customerordertransactionEntity.resx">
       <DependentUpon>201708291254198_adding customerordertransactionEntity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708291416465_addCustomeOrderNoInTrans.resx">
+      <DependentUpon>201708291416465_addCustomeOrderNoInTrans.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

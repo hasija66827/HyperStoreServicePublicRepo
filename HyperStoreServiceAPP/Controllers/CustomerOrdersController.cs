@@ -79,16 +79,20 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 await UpdateStockOfProductsAsync(orderDetail.ProductsConsumed);
                 deductWalletAmount = await ComputeTransactionAmountAsync(orderDetail);
+
+                var customerOrder = CreateNewCustomerOrder(orderDetail, deductWalletAmount);
                 var transactionDTO = new CustomerTransactionDTO()
                 {
                     CustomerId = orderDetail.CustomerId,
                     TransactionAmount = Math.Abs(deductWalletAmount),
                     IsCredit = deductWalletAmount > 0 ? true : false,
                 };
-                var transaction = await transactionDTO.CreateNewTransactionAsync(db);
-                var customerOrder = CreateNewCustomerOrder(orderDetail, deductWalletAmount);
+                var transaction = await transactionDTO.CreateNewTransactionAsync(db, customerOrder.CustomerOrderNo);
+
                 var customerOrderTransaction = CreateNewCustomerOrderTransaction(customerOrder, transaction);
+
                 await AddIntoCustomerOrderProductAsync(orderDetail.ProductsConsumed, customerOrder.CustomerOrderId);
+
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

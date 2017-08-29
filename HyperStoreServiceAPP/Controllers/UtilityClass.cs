@@ -233,12 +233,12 @@ namespace HyperStoreServiceAPP.Controllers
         /// </summary>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        public async Task<CustomerTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
+        public async Task<CustomerTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db, string customerOrderNo = null)
         {
             var walletSnapshot = await this.UpdateCustomerWalletBalanceAsync(db);
             if (walletSnapshot == null)
                 throw new Exception(String.Format("Customer with id {0} has null wallet balance", this.CustomerId));
-            var transaction = this.AddNewTransaction((decimal)walletSnapshot, db);
+            var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot, customerOrderNo);
             return transaction;
         }
 
@@ -270,11 +270,12 @@ namespace HyperStoreServiceAPP.Controllers
         /// <param name="walletSnapshot"></param>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        private CustomerTransaction AddNewTransaction(decimal walletSnapshot, HyperStoreServiceContext db)
+        private CustomerTransaction AddNewTransaction(HyperStoreServiceContext db, decimal walletSnapshot, string customerOrderNo)
         {
             var transaction = new CustomerTransaction
             {
                 CustomerTransactionId = Guid.NewGuid(),
+                CustomerOrderNo = customerOrderNo,
                 IsCredit = (bool)this.IsCredit,
                 CustomerId = (Guid)this.CustomerId,
                 TransactionAmount = (decimal)this.TransactionAmount,

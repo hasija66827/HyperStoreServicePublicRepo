@@ -21,6 +21,9 @@ namespace HyperStoreService.Models
         [Required]
         public string TransactionNo { get; set; }
 
+        //Not making it as foreign key, to reduce the chaos :)
+        public string CustomerOrderNo { get; set; }
+
         public decimal WalletSnapshot { get; set; }
         public Guid CustomerId { get; set; }
         public Customer Customer { get; set; }
