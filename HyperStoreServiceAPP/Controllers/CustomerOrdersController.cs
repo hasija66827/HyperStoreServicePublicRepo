@@ -86,8 +86,9 @@ namespace HyperStoreServiceAPP.Controllers
                     CustomerId = orderDetail.CustomerId,
                     TransactionAmount = Math.Abs(deductWalletAmount),
                     IsCredit = deductWalletAmount > 0 ? true : false,
+                    Description=customerOrder.CustomerOrderNo,
                 };
-                var transaction = await transactionDTO.CreateNewTransactionAsync(db, customerOrder.CustomerOrderNo);
+                var transaction = await transactionDTO.CreateNewTransactionAsync(db);
 
                 var customerOrderTransaction = CreateNewCustomerOrderTransaction(customerOrder, transaction);
 

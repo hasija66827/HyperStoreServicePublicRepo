@@ -227,18 +227,19 @@ namespace HyperStoreServiceAPP.Controllers
         [Range(0, 98765432198765)]
         public decimal? TransactionAmount { get; set; }
 
+        public string Description { get; set; }
         /// <summary>
         /// 1. Updates the wallet balance of the supplier.
         /// 2. Creates a transaction entity associated with the supplier.
         /// </summary>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        public async Task<CustomerTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db, string customerOrderNo = null)
+        public async Task<CustomerTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
         {
             var walletSnapshot = await this.UpdateCustomerWalletBalanceAsync(db);
             if (walletSnapshot == null)
                 throw new Exception(String.Format("Customer with id {0} has null wallet balance", this.CustomerId));
-            var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot, customerOrderNo);
+            var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot);
             return transaction;
         }
 
@@ -270,12 +271,12 @@ namespace HyperStoreServiceAPP.Controllers
         /// <param name="walletSnapshot"></param>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        private CustomerTransaction AddNewTransaction(HyperStoreServiceContext db, decimal walletSnapshot, string customerOrderNo)
+        private CustomerTransaction AddNewTransaction(HyperStoreServiceContext db, decimal walletSnapshot)
         {
             var transaction = new CustomerTransaction
             {
                 CustomerTransactionId = Guid.NewGuid(),
-                CustomerOrderNo = customerOrderNo,
+                CustomerOrderNo = this.Description,
                 IsCredit = (bool)this.IsCredit,
                 CustomerId = (Guid)this.CustomerId,
                 TransactionAmount = (decimal)this.TransactionAmount,
@@ -308,18 +309,19 @@ namespace HyperStoreServiceAPP.Controllers
         [Range(0, 98765432198765)]
         public decimal? TransactionAmount { get; set; }
 
+        public string Description { get; set; }
         /// <summary>
         /// 1. Updates the wallet balance of the supplier.
         /// 2. Creates a transaction entity associated with the supplier.
         /// </summary>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        public async Task<SupplierTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db, string supplierOrderNo = null)
+        public async Task<SupplierTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
         {
             var walletSnapshot = await this.UpdateSupplierWalletBalanceAsync(db);
             if (walletSnapshot == null)
                 throw new Exception(String.Format("Supplier with id {0} ad null wallet balance", this.SupplierId));
-            var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot, supplierOrderNo);
+            var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot);
             List<SupplierOrder> settleUpOrders;
             if (transaction.IsCredit == false)
                 settleUpOrders = SettleUpOrders(transaction, db);
@@ -355,15 +357,15 @@ namespace HyperStoreServiceAPP.Controllers
         /// <param name="walletSnapshot"></param>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        private SupplierTransaction AddNewTransaction(HyperStoreServiceContext db, decimal walletSnapshot, string supplierOrderNo)
+        private SupplierTransaction AddNewTransaction(HyperStoreServiceContext db, decimal walletSnapshot)
         {
             var transaction = new SupplierTransaction
             {
                 SupplierTransactionId = Guid.NewGuid(),
                 TransactionNo = Utility.GenerateSupplierTransactionNo(),
-                SupplierOrderNo=supplierOrderNo,
                 TransactionDate = DateTime.Now,
                 TransactionAmount = (decimal)this.TransactionAmount,
+                SupplierOrderNo = this.Description,
                 IsCredit = (bool)this.IsCredit,
                 SupplierId = (Guid)this.SupplierId,
                 WalletSnapshot = walletSnapshot

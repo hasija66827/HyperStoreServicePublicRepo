@@ -95,9 +95,10 @@ namespace HyperStoreServiceAPP.Controllers
                 {
                     IsCredit = true,
                     SupplierId = orderDetail.SupplierId,
-                    TransactionAmount = orderDetail.BillAmount - orderDetail.PaidAmount
+                    TransactionAmount = orderDetail.BillAmount - orderDetail.PaidAmount,
+                    Description= supplierOrder.SupplierOrderNo,
                 };
-                var transaction = await transactionDTO.CreateNewTransactionAsync(db, supplierOrder.SupplierOrderNo);
+                var transaction = await transactionDTO.CreateNewTransactionAsync(db);
 
                 var supplierOrderTransaction = CreateNewSupplierOrderTransaction(supplierOrder, transaction);
 
