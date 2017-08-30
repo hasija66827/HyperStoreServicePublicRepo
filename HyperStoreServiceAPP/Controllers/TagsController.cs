@@ -73,16 +73,20 @@ namespace HyperStoreServiceAPP.Controllers
 
         // POST: api/Tags
         [ResponseType(typeof(Tag))]
-        public async Task<IHttpActionResult> PostTag(Tag tag)
+        public async Task<IHttpActionResult> PostTag(TagDTO tagDTO)
         {
-            tag.TagId = Guid.NewGuid();
+            if (tagDTO == null)
+                return BadRequest("TagDTO should not be null while creating a new tag");
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            var tag = new Tag()
+            {
+                TagId = Guid.NewGuid(),
+                TagName = tagDTO.TagName,
+            };
             db.Tags.Add(tag);
-
             try
             {
                 await db.SaveChangesAsync();
@@ -98,7 +102,6 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
             return CreatedAtRoute("DefaultApi", new { id = tag.TagId }, tag);
         }
 

@@ -38,7 +38,7 @@ namespace HyperStoreServiceAPP.Controllers
         IQueryable<Tag> GetTags();
         Task<IHttpActionResult> GetTag(Guid id);
         Task<IHttpActionResult> PutTag(Guid id, Tag tag);
-        Task<IHttpActionResult> PostTag(Tag tag);
+        Task<IHttpActionResult> PostTag(TagDTO tagDTO);
         Task<IHttpActionResult> DeleteTag(Guid id);
     }
 

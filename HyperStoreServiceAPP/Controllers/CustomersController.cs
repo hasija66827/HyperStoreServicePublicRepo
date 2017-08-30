@@ -106,7 +106,6 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
             return CreatedAtRoute("DefaultApi", new { id = customer.CustomerId }, customer);
         }
 

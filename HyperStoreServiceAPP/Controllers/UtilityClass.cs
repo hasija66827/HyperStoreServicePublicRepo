@@ -430,4 +430,12 @@ namespace HyperStoreServiceAPP.Controllers
         public Guid? CustomerId { get; set; }
     }
     #endregion
+    #region TagController
+    public class TagDTO
+    {
+        [Required]
+        [StringLength(24)]
+        public string TagName { get; set; }
+    }
+    #endregion
 }
