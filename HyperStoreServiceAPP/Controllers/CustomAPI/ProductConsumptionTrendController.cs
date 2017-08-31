@@ -47,5 +47,14 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         {
             return new ProductConsumptionTrend(items.Key, items.Sum(cop => (float)cop.QuantityConsumed));
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

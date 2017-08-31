@@ -209,6 +209,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\CustomAPI\CustomerPurchaseTrendController.cs" />
+    <Compile Include="Controllers\CustomAPI\PriceQuotedBySupplierController.cs" />
     <Compile Include="Controllers\CustomAPI\ProductConsumptionTrendController.cs" />
     <Compile Include="Controllers\CustomerOrderProductsController.cs" />
     <Compile Include="Controllers\CustomerOrdersController.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\CustomerOrder.cs" />
     <Compile Include="Models\CustomerOrderProduct.cs" />
+    <Compile Include="Models\PriceQuotedBySupplier.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductTag.cs" />
     <Compile Include="Models\ProductTrend.cs" />

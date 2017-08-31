@@ -58,5 +58,14 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                 TotalQuantityPurchased = items.Sum(p => p.TotalQuantityPurchased)
             };
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
