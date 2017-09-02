@@ -3,7 +3,7 @@ namespace HyperStoreServiceAPP.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Initial : DbMigration
+    public partial class second : DbMigration
     {
         public override void Up()
         {
@@ -13,10 +13,11 @@ namespace HyperStoreServiceAPP.Migrations
                     {
                         CustomerOrderProductId = c.Guid(nullable: false),
                         DisplayCostSnapShot = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        DiscountPerSnapShot = c.Single(nullable: false),
-                        CGSTPerSnapShot = c.Single(nullable: false),
-                        SGSTPerSnapshot = c.Single(nullable: false),
-                        QuantityConsumed = c.Single(nullable: false),
+                        DiscountPerSnapShot = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        CGSTPerSnapShot = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        SGSTPerSnapshot = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        QuantityConsumed = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        SellingPrice = c.Decimal(nullable: false, precision: 18, scale: 2),
                         NetValue = c.Decimal(nullable: false, precision: 18, scale: 2),
                         CustomerOrderId = c.Guid(nullable: false),
                         ProductId = c.Guid(nullable: false),
@@ -34,8 +35,12 @@ namespace HyperStoreServiceAPP.Migrations
                         CustomerOrderId = c.Guid(nullable: false),
                         CustomerOrderNo = c.String(nullable: false),
                         OrderDate = c.DateTime(nullable: false),
-                        BillAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        DiscountedAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        TotalQuantity = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        TotalItems = c.Int(nullable: false),
+                        CartAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        DiscountAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        Tax = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        PayAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         IsPayingNow = c.Boolean(nullable: false),
                         IsUsingWallet = c.Boolean(nullable: false),
                         PayingAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
@@ -56,6 +61,7 @@ namespace HyperStoreServiceAPP.Migrations
                         MobileNo = c.String(nullable: false, maxLength: 10),
                         Name = c.String(nullable: false, maxLength: 24),
                         WalletBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        NetWorth = c.Decimal(nullable: false, precision: 18, scale: 2),
                     })
                 .PrimaryKey(t => t.CustomerId)
                 .Index(t => t.MobileNo, unique: true)
@@ -81,13 +87,30 @@ namespace HyperStoreServiceAPP.Migrations
                 .Index(t => t.Name, unique: true);
             
             CreateTable(
+                "dbo.CustomerOrderTransactions",
+                c => new
+                    {
+                        CustomerOrderTransactionId = c.Guid(nullable: false),
+                        TransactionId = c.Guid(nullable: false),
+                        CustomerOrderId = c.Guid(nullable: false),
+                        CustomerTransaction_CustomerTransactionId = c.Guid(),
+                    })
+                .PrimaryKey(t => t.CustomerOrderTransactionId)
+                .ForeignKey("dbo.CustomerOrders", t => t.CustomerOrderId, cascadeDelete: true)
+                .ForeignKey("dbo.CustomerTransactions", t => t.CustomerTransaction_CustomerTransactionId)
+                .Index(t => t.CustomerOrderId)
+                .Index(t => t.CustomerTransaction_CustomerTransactionId);
+            
+            CreateTable(
                 "dbo.CustomerTransactions",
                 c => new
                     {
                         CustomerTransactionId = c.Guid(nullable: false),
+                        IsCredit = c.Boolean(nullable: false),
                         TransactionAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         TransactionDate = c.DateTime(nullable: false),
                         TransactionNo = c.String(nullable: false),
+                        CustomerOrderNo = c.String(),
                         WalletSnapshot = c.Decimal(nullable: false, precision: 18, scale: 2),
                         CustomerId = c.Guid(nullable: false),
                     })
@@ -189,6 +212,7 @@ namespace HyperStoreServiceAPP.Migrations
                         SupplierTransactionId = c.Guid(nullable: false),
                         IsCredit = c.Boolean(nullable: false),
                         TransactionNo = c.String(nullable: false),
+                        SupplierOrderNo = c.String(),
                         TransactionDate = c.DateTime(nullable: false),
                         TransactionAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         WalletSnapshot = c.Decimal(nullable: false, precision: 18, scale: 2),
@@ -210,7 +234,9 @@ namespace HyperStoreServiceAPP.Migrations
             DropForeignKey("dbo.SupplierOrderProducts", "ProductId", "dbo.Products");
             DropForeignKey("dbo.ProductTags", "TagId", "dbo.Tags");
             DropForeignKey("dbo.ProductTags", "ProductId", "dbo.Products");
+            DropForeignKey("dbo.CustomerOrderTransactions", "CustomerTransaction_CustomerTransactionId", "dbo.CustomerTransactions");
             DropForeignKey("dbo.CustomerTransactions", "CustomerId", "dbo.Customers");
+            DropForeignKey("dbo.CustomerOrderTransactions", "CustomerOrderId", "dbo.CustomerOrders");
             DropForeignKey("dbo.CustomerOrderProducts", "ProductId", "dbo.Products");
             DropForeignKey("dbo.CustomerOrderProducts", "CustomerOrderId", "dbo.CustomerOrders");
             DropForeignKey("dbo.CustomerOrders", "CustomerId", "dbo.Customers");
@@ -225,6 +251,8 @@ namespace HyperStoreServiceAPP.Migrations
             DropIndex("dbo.ProductTags", new[] { "TagId" });
             DropIndex("dbo.ProductTags", new[] { "ProductId" });
             DropIndex("dbo.CustomerTransactions", new[] { "CustomerId" });
+            DropIndex("dbo.CustomerOrderTransactions", new[] { "CustomerTransaction_CustomerTransactionId" });
+            DropIndex("dbo.CustomerOrderTransactions", new[] { "CustomerOrderId" });
             DropIndex("dbo.Products", new[] { "Name" });
             DropIndex("dbo.Products", new[] { "Code" });
             DropIndex("dbo.Customers", new[] { "Name" });
@@ -240,6 +268,7 @@ namespace HyperStoreServiceAPP.Migrations
             DropTable("dbo.Tags");
             DropTable("dbo.ProductTags");
             DropTable("dbo.CustomerTransactions");
+            DropTable("dbo.CustomerOrderTransactions");
             DropTable("dbo.Products");
             DropTable("dbo.Customers");
             DropTable("dbo.CustomerOrders");

@@ -448,6 +448,20 @@ namespace HyperStoreServiceAPP.Controllers
         public IRange<decimal> WalletAmount { get; set; }
         public Guid? CustomerId { get; set; }
     }
+
+    public class CustomerDTO
+    {
+        public string Address { get; set; }
+        public string GSTIN { get; set; }
+        [Required]
+        [RegularExpression(@"[987]\d{9}")]
+        public string MobileNo { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public decimal? WalletBalance { get; set; }
+    }
+
     #endregion
     #region TagController
     public class TagDTO

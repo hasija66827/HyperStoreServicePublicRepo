@@ -23,7 +23,7 @@ namespace HyperStoreServiceAPP.Controllers
     {
         Task<IHttpActionResult> GetCustomers(CustomerFilterCriteria cfc);
         Task<IHttpActionResult> PutCustomer(Guid id, Customer customer);
-        Task<IHttpActionResult> PostCustomer(Customer customer);
+        Task<IHttpActionResult> PostCustomer(CustomerDTO customerDTO);
         Task<IHttpActionResult> DeleteCustomer(Guid id);
     }
 

@@ -91,6 +91,9 @@ namespace HyperStoreServiceAPP.Controllers
 
                 await AddIntoCustomerOrderProductAsync(orderDetail.ProductsConsumed, customerOrder.CustomerOrderId);
 
+                //Data Analytics call
+                await UpdateCustomerNetWorthAsync(orderDetail);
+
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -100,6 +103,16 @@ namespace HyperStoreServiceAPP.Controllers
             catch (Exception e)
             { return BadRequest(e.ToString()); }
             return Ok(deductWalletAmount);
+        }
+
+        private async Task<decimal?> UpdateCustomerNetWorthAsync(CustomerOrderDTO orderDTO)
+        {
+            var customer = await db.Customers.FindAsync(orderDTO.CustomerId);
+            if (customer == null)
+                throw new Exception(String.Format("Customer with id {0} not found while updating its networth", orderDTO.CustomerId));
+            customer.NetWorth += orderDTO.CustomerBillingSummary.PayAmount;
+            db.Entry(customer).State = EntityState.Modified;
+            return customer.NetWorth;
         }
 
         protected override void Dispose(bool disposing)

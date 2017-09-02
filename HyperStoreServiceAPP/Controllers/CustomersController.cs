@@ -80,15 +80,26 @@ namespace HyperStoreServiceAPP.Controllers
 
         // POST: api/Customers
         [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> PostCustomer(Customer customer)
+        public async Task<IHttpActionResult> PostCustomer(CustomerDTO customerDTO)
         {
-            //TODO: ADD DTO instead.
-            customer.CustomerId = Guid.NewGuid();
+            if (customerDTO == null)
+                throw new Exception("CustomerDTO should not be null");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            var customer = new Customer()
+            {
+                CustomerId = Guid.NewGuid(),
+                Address = customerDTO.Address,
+                GSTIN = customerDTO.GSTIN,
+                MobileNo = customerDTO.MobileNo,
+                Name = customerDTO.Name,
+                NetWorth = 0,
+                WalletBalance = customerDTO.WalletBalance,
+            };
             db.Customers.Add(customer);
 
             try
