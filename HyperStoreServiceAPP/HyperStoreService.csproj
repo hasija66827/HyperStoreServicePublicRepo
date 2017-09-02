@@ -244,6 +244,18 @@
     <Compile Include="Migrations\201708291819544_adding supplierordernoinsuppliertrans.Designer.cs">
       <DependentUpon>201708291819544_adding supplierordernoinsuppliertrans.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708311850169_htird.cs" />
+    <Compile Include="Migrations\201708311850169_htird.Designer.cs">
+      <DependentUpon>201708311850169_htird.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708311853508_third.cs" />
+    <Compile Include="Migrations\201708311853508_third.Designer.cs">
+      <DependentUpon>201708311853508_third.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201709020906501_Fouth.cs" />
+    <Compile Include="Migrations\201709020906501_Fouth.Designer.cs">
+      <DependentUpon>201709020906501_Fouth.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CustomerOrderTransaction.cs" />
     <Compile Include="Models\CustomerPurchaseTrend.cs" />
@@ -348,6 +360,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708291819544_adding supplierordernoinsuppliertrans.resx">
       <DependentUpon>201708291819544_adding supplierordernoinsuppliertrans.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708311850169_htird.resx">
+      <DependentUpon>201708311850169_htird.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708311853508_third.resx">
+      <DependentUpon>201708311853508_third.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709020906501_Fouth.resx">
+      <DependentUpon>201709020906501_Fouth.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

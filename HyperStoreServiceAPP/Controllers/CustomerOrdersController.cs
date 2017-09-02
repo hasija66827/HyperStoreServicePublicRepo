@@ -70,11 +70,8 @@ namespace HyperStoreServiceAPP.Controllers
                 return BadRequest(ModelState);
             if (orderDetail == null)
                 return BadRequest("OrderDetails should not have been null while placing the customer order");
-            if (orderDetail.BillAmount < orderDetail.DiscountedAmount)
-                return BadRequest(string.Format("Bill Amount {0} cannot be less than Discounted Amount {1}",
-                                                    orderDetail.BillAmount, orderDetail.DiscountedAmount));
             decimal deductWalletAmount = 0;
-            //TODO: Verify bill amount.
+            //TODO: Verify pay amount.
             try
             {
                 await UpdateStockOfProductsAsync(orderDetail.ProductsConsumed);
@@ -86,7 +83,7 @@ namespace HyperStoreServiceAPP.Controllers
                     CustomerId = orderDetail.CustomerId,
                     TransactionAmount = Math.Abs(deductWalletAmount),
                     IsCredit = deductWalletAmount > 0 ? true : false,
-                    Description=customerOrder.CustomerOrderNo,
+                    Description = customerOrder.CustomerOrderNo,
                 };
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
 
@@ -143,22 +140,24 @@ namespace HyperStoreServiceAPP.Controllers
                 if (customer == null)
                     throw new Exception(String.Format("Customer {0} not found", orderDetails.CustomerId));
 
+                var payAmount = (decimal)orderDetails.CustomerBillingSummary.PayAmount;
                 if (orderDetails.IsPayingNow == true)
                 {
                     if (orderDetails.IsUsingWallet == true)
-                        walletAmountToBeDeducted = Math.Min((decimal)orderDetails.DiscountedAmount, (decimal)customer.WalletBalance);
+                        walletAmountToBeDeducted = Math.Min((decimal)payAmount, (decimal)customer.WalletBalance);
                     else
                         walletAmountToBeDeducted = 0;
-                    var remainingAmount = orderDetails.DiscountedAmount - walletAmountToBeDeducted;
+                    var remainingAmount = payAmount - walletAmountToBeDeducted;
                     if (orderDetails.PayingAmount < remainingAmount)
                         throw new Exception(String.Format("Customer {0} payment {1} cannot be less than payment {2}", customer.Name, orderDetails.PayingAmount, remainingAmount));
                     walletAmountToBeAdded = (decimal)(orderDetails.PayingAmount - remainingAmount);
                 }
                 else
                 {
-                    if (orderDetails.PayingAmount > orderDetails.DiscountedAmount)
-                        throw new Exception(String.Format("Customer {0} paying {1} cannot be greater than discountedBillAmount {2} in Pay Later Mode ", orderDetails.CustomerId, orderDetails.PayingAmount, orderDetails.DiscountedAmount));
-                    walletAmountToBeDeducted = (decimal)orderDetails.DiscountedAmount - (decimal)orderDetails.PayingAmount;
+                    if (orderDetails.PayingAmount > payAmount)
+                        throw new Exception(String.Format("Customer {0} paying {1} cannot be greater than discountedBillAmount {2} in Pay Later Mode ",
+                            orderDetails.CustomerId, orderDetails.PayingAmount, payAmount));
+                    walletAmountToBeDeducted = payAmount - (decimal)orderDetails.PayingAmount;
                 }
             }
             catch (Exception e)
@@ -170,13 +169,18 @@ namespace HyperStoreServiceAPP.Controllers
 
         private CustomerOrder CreateNewCustomerOrder(CustomerOrderDTO orderDetail, decimal usingWalletAmount)
         {
+            var CBS = orderDetail.CustomerBillingSummary;
             var customerOrder = new CustomerOrder()
             {
                 CustomerOrderId = Guid.NewGuid(),
                 CustomerOrderNo = Utility.GenerateCustomerOrderNo(),
                 OrderDate = DateTime.Now,
-                BillAmount = (decimal)orderDetail.BillAmount,
-                DiscountedAmount = (decimal)orderDetail.DiscountedAmount,
+                TotalItems = (int)CBS.TotalItems,
+                TotalQuantity = (decimal)CBS.TotalQuantity,
+                CartAmount = (decimal)CBS.CartAmount,
+                DiscountAmount = (decimal)CBS.DiscountAmount,
+                Tax = (decimal)CBS.Tax,
+                PayAmount = (decimal)CBS.PayAmount,
                 IsPayingNow = (bool)orderDetail.IsPayingNow,
                 IsUsingWallet = (bool)orderDetail.IsUsingWallet,
                 PayingAmount = (decimal)orderDetail.PayingAmount,
@@ -209,19 +213,19 @@ namespace HyperStoreServiceAPP.Controllers
                     var product = await db.Products.FindAsync(productConsumed.ProductId);
                     if (product == null)
                         throw new Exception(String.Format("product with id {0} not found while adding product in CustomerOrderProduct", productConsumed.ProductId));
+                    var sellingPrice = (decimal)(product.DisplayPrice * (decimal)((100 - product.DiscountPer) * (100 + product.CGSTPer + product.SGSTPer) / 10000));
                     var customerOrderProduct = new CustomerOrderProduct
                     {
                         CustomerOrderProductId = Guid.NewGuid(),
                         CustomerOrderId = customerOrderId,
                         ProductId = product.ProductId,
-                        DiscountPerSnapShot = (float)product.DiscountPer,
+                        DiscountPerSnapShot = (decimal)product.DiscountPer,
                         DisplayCostSnapShot = (decimal)product.DisplayPrice,
-                        CGSTPerSnapShot = (float)product.CGSTPer,
-                        SGSTPerSnapshot = (float)product.SGSTPer,
-                        QuantityConsumed = (float)productConsumed.QuantityConsumed,
-                        NetValue = (decimal)(product.DisplayPrice
-                                                    * (decimal)((100 - product.DiscountPer) * (100 + product.CGSTPer + product.SGSTPer) / 10000
-                                                    * productConsumed.QuantityConsumed))
+                        CGSTPerSnapShot = (decimal)product.CGSTPer,
+                        SGSTPerSnapshot = (decimal)product.SGSTPer,
+                        QuantityConsumed = (decimal)productConsumed.QuantityConsumed,
+                        SellingPrice = sellingPrice,
+                        NetValue = sellingPrice * (decimal)productConsumed.QuantityConsumed,
                     };
                     db.CustomerOrderProducts.Add(customerOrderProduct);
                 }

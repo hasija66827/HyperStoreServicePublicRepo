@@ -13,15 +13,17 @@ namespace HyperStoreService.Models
         [Required]
         public string CustomerOrderNo { get; set; }
         
-        public DateTime OrderDate { get; set; } 
+        public DateTime OrderDate { get; set; }
 
-       
-        public decimal BillAmount { get; set; }
-        
-        public decimal DiscountedAmount { get; set; }
+        public decimal TotalQuantity { get; set; }
+        public int TotalItems { get; set; }
+        public decimal CartAmount { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal Tax { get; set; }
+        public decimal PayAmount { get; set; }
 
         // PayingNow = DiscountedBillAmount + AddingMoneyToWallet - UsingWalletAmount
-      
+
         public bool IsPayingNow { get; set; }
         
         public bool IsUsingWallet { get; set; }

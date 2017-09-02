@@ -59,20 +59,39 @@ namespace HyperStoreServiceAPP.Controllers
         public decimal? QuantityConsumed { get; set; }
     }
 
+    public class CustomerBillingSummary
+    {
+        [Required]
+        public decimal? TotalQuantity { get; set; }
+
+        [Required]
+        public int? TotalItems { get; set; }
+
+        [Required]
+        public decimal? CartAmount { get; set; }
+
+        [Required]
+        public decimal? DiscountAmount { get; set; }
+
+        [Required]
+        public decimal? Tax { get; set; }
+
+        [Required]
+        public decimal? PayAmount { get; set; }
+    }
+
     public class CustomerOrderDTO
     {
         [Required]
         public List<ProductConsumed> ProductsConsumed { get; set; }
 
         [Required]
+        public CustomerBillingSummary CustomerBillingSummary { get; set; }
+
+        [Required]
         public Guid? CustomerId { get; set; }
 
-        [Required]
-        public decimal? BillAmount { get; set; }
-
-        [Required]
-        public decimal? DiscountedAmount { get; set; }
-
+        
         [Required]
         public bool? IsPayingNow { get; set; }
 
