@@ -15,6 +15,12 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
+        /// <summary>
+        /// Finds all the supplier from which the retailer has purchased the given product,
+        /// Computes the last/latest purchase price of product.
+        /// </summary>
+        /// <param name="id">id of the product</param>
+        /// <returns>returns the list of Price Quoted By each supplier for the given product</returns>
         [HttpGet]
         [ResponseType(typeof(List<PriceQuotedBySupplier>))]
         public async Task<IHttpActionResult> LatestPriceQuotedBySupplier(Guid id)
