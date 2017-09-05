@@ -43,6 +43,8 @@ namespace HyperStoreService.Models
 
         public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierOrderTransaction> SupplierOrderTransactions { get; set; }
 
+        public System.Data.Entity.DbSet<HyperStoreService.Models.DeficientStockHit> DeficientStockHits { get; set; }
+
         public System.Data.Entity.DbSet<HyperStoreService.Models.Tag> Tags { get; set; }
     }
 }

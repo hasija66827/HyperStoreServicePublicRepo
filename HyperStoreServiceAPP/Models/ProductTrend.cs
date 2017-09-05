@@ -15,4 +15,17 @@ namespace HyperStoreService.Models
             this.Quantity = quantity;
         }
     }
+
+    public class ProductDeficiencyHitTrend
+    {
+        public DayOfWeek Day { get; set; }
+        // Number of days hit of the particular @Day of the week.
+        public int NumberOfDaysHit { get; set; }
+        public ProductDeficiencyHitTrend(DayOfWeek day, int numberOfDaysHit)
+        {
+            this.Day = day;
+            this.NumberOfDaysHit = numberOfDaysHit;
+        }
+    }
+
 }

@@ -3,7 +3,7 @@ namespace HyperStoreServiceAPP.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class second : DbMigration
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
@@ -119,6 +119,19 @@ namespace HyperStoreServiceAPP.Migrations
                 .Index(t => t.CustomerId);
             
             CreateTable(
+                "dbo.DeficientStockHits",
+                c => new
+                    {
+                        DeficientStockHitId = c.Guid(nullable: false),
+                        QuantitySnapshot = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        ProductId = c.Guid(nullable: false),
+                        TimeStamp = c.DateTime(nullable: false),
+                    })
+                .PrimaryKey(t => t.DeficientStockHitId)
+                .ForeignKey("dbo.Products", t => t.ProductId, cascadeDelete: true)
+                .Index(t => new { t.ProductId, t.TimeStamp }, unique: true, name: "IX_ProductIdAndTimeStamp");
+            
+            CreateTable(
                 "dbo.ProductTags",
                 c => new
                     {
@@ -219,7 +232,7 @@ namespace HyperStoreServiceAPP.Migrations
                         SupplierId = c.Guid(nullable: false),
                     })
                 .PrimaryKey(t => t.SupplierTransactionId)
-                .ForeignKey("dbo.Suppliers", t => t.SupplierId, cascadeDelete: false)
+                .ForeignKey("dbo.Suppliers", t => t.SupplierId, cascadeDelete: true)
                 .Index(t => t.SupplierId);
             
         }
@@ -234,6 +247,7 @@ namespace HyperStoreServiceAPP.Migrations
             DropForeignKey("dbo.SupplierOrderProducts", "ProductId", "dbo.Products");
             DropForeignKey("dbo.ProductTags", "TagId", "dbo.Tags");
             DropForeignKey("dbo.ProductTags", "ProductId", "dbo.Products");
+            DropForeignKey("dbo.DeficientStockHits", "ProductId", "dbo.Products");
             DropForeignKey("dbo.CustomerOrderTransactions", "CustomerTransaction_CustomerTransactionId", "dbo.CustomerTransactions");
             DropForeignKey("dbo.CustomerTransactions", "CustomerId", "dbo.Customers");
             DropForeignKey("dbo.CustomerOrderTransactions", "CustomerOrderId", "dbo.CustomerOrders");
@@ -250,6 +264,7 @@ namespace HyperStoreServiceAPP.Migrations
             DropIndex("dbo.Tags", new[] { "TagName" });
             DropIndex("dbo.ProductTags", new[] { "TagId" });
             DropIndex("dbo.ProductTags", new[] { "ProductId" });
+            DropIndex("dbo.DeficientStockHits", "IX_ProductIdAndTimeStamp");
             DropIndex("dbo.CustomerTransactions", new[] { "CustomerId" });
             DropIndex("dbo.CustomerOrderTransactions", new[] { "CustomerTransaction_CustomerTransactionId" });
             DropIndex("dbo.CustomerOrderTransactions", new[] { "CustomerOrderId" });
@@ -267,6 +282,7 @@ namespace HyperStoreServiceAPP.Migrations
             DropTable("dbo.SupplierOrderProducts");
             DropTable("dbo.Tags");
             DropTable("dbo.ProductTags");
+            DropTable("dbo.DeficientStockHits");
             DropTable("dbo.CustomerTransactions");
             DropTable("dbo.CustomerOrderTransactions");
             DropTable("dbo.Products");

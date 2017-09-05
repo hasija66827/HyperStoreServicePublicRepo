@@ -260,12 +260,39 @@ namespace HyperStoreServiceAPP.Controllers
                         " please update the product in stock", product.Name, productConsumed.QuantityConsumed - product.TotalQuantity));
                 product.TotalQuantity -= (decimal)productConsumed.QuantityConsumed;
                 db.Entry(product).State = EntityState.Modified;
+
+                if (product.TotalQuantity < DeficientStockHit.DeficientStockCriteria)
+                {
+                    AddProductToDeficientStockHit(product);
+                }
             }
             catch (Exception e)
             {
                 throw e;
             }
             return true;
+        }
+
+        private void AddProductToDeficientStockHit(Product product)
+        {
+            if (product == null)
+                throw new Exception("Product should not have been null, while adding the product to DeficientStock\n");
+            var currentDate = DateTime.Now.Date;
+            var IsExist = db.DeficientStockHits.Count(p => p.ProductId == product.ProductId &&
+                                                        p.TimeStamp == currentDate) > 0;
+
+            // Preserving Unique key constraints on DeficientStockHit
+            if (!IsExist)
+            {
+                var deficientStock = new DeficientStockHit()
+                {
+                    DeficientStockHitId = Guid.NewGuid(),
+                    ProductId = product.ProductId,
+                    QuantitySnapshot = product.TotalQuantity,
+                    TimeStamp = DateTime.Now.Date,
+                };
+                db.DeficientStockHits.Add(deficientStock);
+            }
         }
     }
 }
