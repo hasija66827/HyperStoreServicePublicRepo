@@ -51,7 +51,7 @@ namespace HyperStoreServiceAPP.Controllers
 
                 if (SOFC.PartiallyPaidOrderOnly == true)
                 {
-                    query = query.Where(order => order.PaidAmount < order.BillAmount);
+                    query = query.Where(order => order.PayingAmount < order.BillAmount);
                 }
 
                 result = await query.ToListAsync();
@@ -83,8 +83,10 @@ namespace HyperStoreServiceAPP.Controllers
             }
             if (orderDetail == null)
                 return BadRequest("OrderDetails should not have been null while placing the supplier order");
-            if (orderDetail.PaidAmount > orderDetail.BillAmount)
-                return BadRequest(String.Format("PaidAmount {0} should be less than Bill Amount {1}", orderDetail.PaidAmount, orderDetail.BillAmount));
+            var payingAmount = orderDetail.PayingAmount;
+            var billAmount = orderDetail.SupplierBillingSummary.BillAmount;
+            if (payingAmount > billAmount)
+                return BadRequest(String.Format("Paying Amount {0} should be less than Bill Amount {1}", payingAmount, billAmount));
             if (orderDetail.DueDate < DateTime.Now)
                 return BadRequest(String.Format("DueDate{0} cannot be before current Date {1}", orderDetail.DueDate, DateTime.Now));
             //TODO: Verify bill amount.
@@ -95,8 +97,8 @@ namespace HyperStoreServiceAPP.Controllers
                 {
                     IsCredit = true,
                     SupplierId = orderDetail.SupplierId,
-                    TransactionAmount = orderDetail.BillAmount - orderDetail.PaidAmount,
-                    Description= supplierOrder.SupplierOrderNo,
+                    TransactionAmount = billAmount - payingAmount,
+                    Description = supplierOrder.SupplierOrderNo,
                 };
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
 
@@ -156,7 +158,7 @@ namespace HyperStoreServiceAPP.Controllers
                 SupplierOrderTransactionId = Guid.NewGuid(),
                 TransactionId = transaction.SupplierTransactionId,
                 SupplierOrderId = supplierOrder.SupplierOrderId,
-                IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.PaidAmount ? true : false,
+                IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.PayingAmount ? true : false,
                 PaidAmount = null
             };
             db.SupplierOrderTransactions.Add(supplierOrderTransaction);
@@ -168,12 +170,15 @@ namespace HyperStoreServiceAPP.Controllers
             var supplierOrder = new SupplierOrder
             {
                 SupplierOrderId = Guid.NewGuid(),
-                BillAmount = (decimal)orderDetail.BillAmount,
                 DueDate = (DateTime)orderDetail.DueDate,
+                InterestRate = orderDetail.IntrestRate,
                 OrderDate = DateTime.Now,
-                PaidAmount = (decimal)orderDetail.PaidAmount,
+                BillAmount = (decimal)orderDetail.SupplierBillingSummary.BillAmount,
+                PayingAmount = (decimal)orderDetail.PayingAmount,
                 SupplierOrderNo = Utility.GenerateSupplierOrderNo(),
-                SupplierId = (Guid)orderDetail.SupplierId
+                SupplierId = (Guid)orderDetail.SupplierId,
+                TotalItems = (int)orderDetail.SupplierBillingSummary.TotalItems,
+                TotalQuantity = (decimal)orderDetail.SupplierBillingSummary.TotalQuantity,
             };
             db.SupplierOrders.Add(supplierOrder);
             return supplierOrder;

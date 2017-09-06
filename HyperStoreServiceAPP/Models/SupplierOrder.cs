@@ -12,7 +12,10 @@ namespace HyperStoreService.Models
         public decimal BillAmount { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime OrderDate { get; set; }
-        public decimal PaidAmount { get; set; }
+        public decimal PayingAmount { get; set; }
+        public decimal InterestRate { get; set; }
+        public int TotalItems { get; set; }
+        public decimal TotalQuantity { get; set; }
         [Required]
         public string SupplierOrderNo { get; set; }
         public Guid SupplierId { get; set; }

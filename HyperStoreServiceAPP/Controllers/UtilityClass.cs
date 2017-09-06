@@ -187,6 +187,18 @@ namespace HyperStoreServiceAPP.Controllers
         public decimal? PurchasePricePerUnit { get; set; }
     }
 
+    public class SupplierBillingSummary
+    {
+        [Required]
+        public decimal? BillAmount { get; set; }
+        
+        [Required]
+        public int? TotalItems { get; set; }
+
+        [Required]
+        public decimal? TotalQuantity { get; set; }
+    }
+
     public class SupplierOrderDTO
     {
         [Required]
@@ -194,19 +206,18 @@ namespace HyperStoreServiceAPP.Controllers
 
         [Required]
         public Guid? SupplierId { get; set; }
-
-        [Required]
-        public decimal? BillAmount { get; set; }
-
-        [Required]
-        public decimal? PaidAmount { get; set; }
-
+  
         [Required]
         public DateTime? DueDate { get; set; }
 
+        public SupplierBillingSummary SupplierBillingSummary { get; set; }
+
+        [Required]
+        public decimal? PayingAmount { get; set; }
+
         [Required]
         [Range(0, 100)]
-        public float IntrestRate { get; set; }
+        public decimal IntrestRate { get; set; }
     }
 
     public class SupplierOrderFilterCriteria
@@ -399,14 +410,14 @@ namespace HyperStoreServiceAPP.Controllers
             if (transaction.IsCredit)
                 throw new Exception(String.Format("While settling up the orders transaction {0} cannot be of type credit", transaction.SupplierTransactionId));
             var partiallyPaidOrders = db.SupplierOrders.Where(so => so.SupplierId == transaction.SupplierId &&
-                                                                   so.BillAmount - so.PaidAmount > 0)
+                                                                   so.BillAmount - so.PayingAmount > 0)
                                                        .OrderBy(wo => wo.OrderDate);
             var debitTransactionAmount = transaction.TransactionAmount;
             foreach (var partiallyPaidOrder in partiallyPaidOrders)
             {
                 if (debitTransactionAmount <= 0)
                     break;
-                var remainingAmount = partiallyPaidOrder.BillAmount - partiallyPaidOrder.PaidAmount;
+                var remainingAmount = partiallyPaidOrder.BillAmount - partiallyPaidOrder.PayingAmount;
                 if (remainingAmount < 0)
                     throw new Exception(string.Format("Supplier OrderNo {0}, Amount remaining to be paid: {1} cannot be less than zero", partiallyPaidOrder.SupplierOrderNo, remainingAmount));
                 decimal payingAmountForOrder = Math.Min(remainingAmount, debitTransactionAmount);
@@ -427,9 +438,9 @@ namespace HyperStoreServiceAPP.Controllers
 
         private bool SettleUpOrder(SupplierOrder supplierOrder, decimal settleUpAmount, HyperStoreServiceContext db)
         {
-            supplierOrder.PaidAmount += settleUpAmount;
+            supplierOrder.PayingAmount += settleUpAmount;
             db.Entry(supplierOrder).State = EntityState.Modified;
-            if (supplierOrder.PaidAmount == supplierOrder.BillAmount)
+            if (supplierOrder.PayingAmount == supplierOrder.BillAmount)
                 return true;
             return false;
         }
