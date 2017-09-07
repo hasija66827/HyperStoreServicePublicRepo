@@ -14,10 +14,12 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
     public class ProductConsumptionTrendController : ApiController, ProductTrendInterface
     {
+        //Average number of THE day in a month
+        private readonly float AvgNoOfTheDayInMonth = 4.2f;
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         [HttpGet]
-        [ResponseType(typeof(IEnumerable<ProductConsumptionTrend>))]
+        [ResponseType(typeof(IEnumerable<ProductConsumptionDeficientTrend>))]
         public async Task<IHttpActionResult> GetProductTrend(ProductConsumptionTrendDTO parameter)
         {
             if (!ModelState.IsValid)
@@ -25,27 +27,59 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             if (parameter == null)
                 return BadRequest("The parameter should not have been NULL");
 
-            IEnumerable<ProductConsumptionTrend> result;
             try
             {
-                var startingOrderDate = DateTime.Now.AddMonths(-(int)parameter.MonthsCount);
-                var query = db.CustomerOrderProducts
-                            .Include(cop => cop.CustomerOrder)
-                            .Where(cop => cop.ProductId == parameter.ProductId
-                                            && cop.CustomerOrder.OrderDate >= startingOrderDate);
-                var queryResult = await query.ToListAsync();
-                var groupByQueryResult = queryResult
-                                            .GroupBy(cop => cop.CustomerOrder.OrderDate.DayOfWeek);
-                result = groupByQueryResult.Select(c => AggregateQuantity(c));
-
-                var deficiencyHitRate = await ComputeDeficiencyHits(parameter);
+                var productConsumptionTrends = await ComputeProductConsumptionTrend(parameter);
+                var productDeficiencyHitTrends = await ComputeDeficiencyHits(parameter);
+                var result = ComputeProductConsumptionDeficientTrend(productConsumptionTrends, productDeficiencyHitTrends, parameter.MonthsCount);
+                return Ok(result);
             }
             catch
             { throw; }
-            return Ok(result);
         }
 
-        private ProductConsumptionTrend AggregateQuantity(IGrouping<DayOfWeek, CustomerOrderProduct> items)
+        private IEnumerable<ProductConsumptionDeficientTrend> ComputeProductConsumptionDeficientTrend(IEnumerable<ProductConsumptionTrend> productConsumptionTrends, IEnumerable<ProductDeficiencyHitTrend> productDeficiencyHitTrends, int? monthsCount)
+        {
+            List<ProductConsumptionDeficientTrend> result = new List<ProductConsumptionDeficientTrend>(7);
+            float noOfTheDay = (float)(AvgNoOfTheDayInMonth * monthsCount);
+            for (var index = 0; index < 7; index++)
+            {
+                result.Add(new ProductConsumptionDeficientTrend() {
+                    Day = (DayOfWeek)index,
+                    AvgConsumption = 0,
+                    AvgHitRate = 0,
+                });
+            }
+
+            foreach (var item in productConsumptionTrends)
+            {
+                Int32 index = Convert.ToInt16(item.Day);
+                result[index].AvgConsumption = item.TotalQuantityConsumed / noOfTheDay;
+            }
+
+            foreach (var item in productDeficiencyHitTrends)
+            {
+                Int32 index = Convert.ToInt16(item.Day);
+                result[index].AvgHitRate = Math.Min(1, item.TotalDaysHit / noOfTheDay);
+            }
+            return result;
+        }
+
+        private async Task<IEnumerable<ProductConsumptionTrend>> ComputeProductConsumptionTrend(ProductConsumptionTrendDTO parameter)
+        {
+            var startingOrderDate = DateTime.Now.AddMonths(-(int)parameter.MonthsCount);
+            var query = db.CustomerOrderProducts
+                        .Include(cop => cop.CustomerOrder)
+                        .Where(cop => cop.ProductId == parameter.ProductId
+                                        && cop.CustomerOrder.OrderDate >= startingOrderDate);
+            var queryResult = await query.ToListAsync();
+            var groupByQueryResult = queryResult
+                                        .GroupBy(cop => cop.CustomerOrder.OrderDate.DayOfWeek);
+            var productConsumptionTrends = groupByQueryResult.Select(c => AggregateSumQuantity(c));
+            return productConsumptionTrends;
+        }
+
+        private ProductConsumptionTrend AggregateSumQuantity(IGrouping<DayOfWeek, CustomerOrderProduct> items)
         {
             return new ProductConsumptionTrend(items.Key, items.Sum(cop => (float)cop.QuantityConsumed));
         }
@@ -54,7 +88,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         {
             var startingTimeStamp = DateTime.Now.AddMonths(-(int)parameter.MonthsCount).Date;
             var xQuery = await db.DeficientStockHits.Where(ds => ds.ProductId == parameter.ProductId &&
-                                                        ds.TimeStamp >= startingTimeStamp).ToListAsync();
+                                                            ds.TimeStamp >= startingTimeStamp).ToListAsync();
             var yQuery = xQuery.GroupBy(ds => ds.TimeStamp.DayOfWeek);
             var deficiencyHits = yQuery.Select(ds => CountDaysHitOfTheDay(ds));
             return deficiencyHits;

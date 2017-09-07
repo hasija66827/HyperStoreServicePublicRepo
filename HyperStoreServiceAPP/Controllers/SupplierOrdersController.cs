@@ -54,7 +54,7 @@ namespace HyperStoreServiceAPP.Controllers
                     query = query.Where(order => order.PayingAmount < order.BillAmount);
                 }
 
-                result = await query.ToListAsync();
+                result = await query.OrderByDescending(order=>order.OrderDate).ToListAsync();
             }
             catch (Exception e)
             {
