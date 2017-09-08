@@ -410,14 +410,14 @@ namespace HyperStoreServiceAPP.Controllers
             if (transaction.IsCredit)
                 throw new Exception(String.Format("While settling up the orders transaction {0} cannot be of type credit", transaction.SupplierTransactionId));
             var partiallyPaidOrders = db.SupplierOrders.Where(so => so.SupplierId == transaction.SupplierId &&
-                                                                   so.BillAmount - so.PayingAmount > 0)
+                                                                   so.BillAmount - so.PayedAmountIncTx > 0)
                                                        .OrderBy(wo => wo.OrderDate);
             var debitTransactionAmount = transaction.TransactionAmount;
             foreach (var partiallyPaidOrder in partiallyPaidOrders)
             {
                 if (debitTransactionAmount <= 0)
                     break;
-                var remainingAmount = partiallyPaidOrder.BillAmount - partiallyPaidOrder.PayingAmount;
+                var remainingAmount = partiallyPaidOrder.BillAmount - partiallyPaidOrder.PayedAmountIncTx;
                 if (remainingAmount < 0)
                     throw new Exception(string.Format("Supplier OrderNo {0}, Amount remaining to be paid: {1} cannot be less than zero", partiallyPaidOrder.SupplierOrderNo, remainingAmount));
                 decimal payingAmountForOrder = Math.Min(remainingAmount, debitTransactionAmount);
@@ -438,9 +438,9 @@ namespace HyperStoreServiceAPP.Controllers
 
         private bool SettleUpOrder(SupplierOrder supplierOrder, decimal settleUpAmount, HyperStoreServiceContext db)
         {
-            supplierOrder.PayingAmount += settleUpAmount;
+            supplierOrder.PayedAmountIncTx += settleUpAmount;
             db.Entry(supplierOrder).State = EntityState.Modified;
-            if (supplierOrder.PayingAmount == supplierOrder.BillAmount)
+            if (supplierOrder.PayedAmountIncTx == supplierOrder.BillAmount)
                 return true;
             return false;
         }

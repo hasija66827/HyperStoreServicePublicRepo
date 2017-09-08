@@ -233,6 +233,10 @@
     <Compile Include="Migrations\201709061949119_Init.Designer.cs">
       <DependentUpon>201709061949119_Init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709081935351_Thirdd.cs" />
+    <Compile Include="Migrations\201709081935351_Thirdd.Designer.cs">
+      <DependentUpon>201709081935351_Thirdd.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\CustomerOrderTransaction.cs" />
@@ -329,6 +333,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201709061949119_Init.resx">
       <DependentUpon>201709061949119_Init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709081935351_Thirdd.resx">
+      <DependentUpon>201709081935351_Thirdd.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

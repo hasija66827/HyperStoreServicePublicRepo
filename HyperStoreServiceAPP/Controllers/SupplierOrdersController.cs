@@ -51,7 +51,7 @@ namespace HyperStoreServiceAPP.Controllers
 
                 if (SOFC.PartiallyPaidOrderOnly == true)
                 {
-                    query = query.Where(order => order.PayingAmount < order.BillAmount);
+                    query = query.Where(order => order.PayedAmountIncTx < order.BillAmount);
                 }
 
                 result = await query.OrderByDescending(order=>order.OrderDate).ToListAsync();
@@ -158,7 +158,7 @@ namespace HyperStoreServiceAPP.Controllers
                 SupplierOrderTransactionId = Guid.NewGuid(),
                 TransactionId = transaction.SupplierTransactionId,
                 SupplierOrderId = supplierOrder.SupplierOrderId,
-                IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.PayingAmount ? true : false,
+                IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.PayedAmountIncTx ? true : false,
                 PaidAmount = null
             };
             db.SupplierOrderTransactions.Add(supplierOrderTransaction);
@@ -174,7 +174,8 @@ namespace HyperStoreServiceAPP.Controllers
                 InterestRate = orderDetail.IntrestRate,
                 OrderDate = DateTime.Now,
                 BillAmount = (decimal)orderDetail.SupplierBillingSummary.BillAmount,
-                PayingAmount = (decimal)orderDetail.PayingAmount,
+                PayedAmount=(decimal)orderDetail.PayingAmount,
+                PayedAmountIncTx = (decimal)orderDetail.PayingAmount,
                 SupplierOrderNo = Utility.GenerateSupplierOrderNo(),
                 SupplierId = (Guid)orderDetail.SupplierId,
                 TotalItems = (int)orderDetail.SupplierBillingSummary.TotalItems,
