@@ -223,7 +223,7 @@ namespace HyperStoreServiceAPP.Controllers
                 {
                     SupplierOrderProductId = Guid.NewGuid(),
                     PurchasePrice = (decimal)productPurchased.PurchasePricePerUnit,
-                    QuantityPurchased = (float)productPurchased.QuantityPurchased,
+                    QuantityPurchased = (decimal)productPurchased.QuantityPurchased,
                     SupplierOrderId = supplierOrderId,
                     ProductId = productPurchased.ProductId
                 };
