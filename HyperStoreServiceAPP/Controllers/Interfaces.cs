@@ -67,7 +67,7 @@ namespace HyperStoreServiceAPP.Controllers
     {
         Task<IHttpActionResult> GetSuppliers(SupplierFilterCriteria sfc);
         Task<IHttpActionResult> GetSupplier(Guid id);
-        Task<IHttpActionResult> PutSupplier(Guid id, Supplier supplier);
+        Task<IHttpActionResult> PutSupplier(Guid id, SupplierDTO supplierDTO);
         Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO);
         Task<IHttpActionResult> DeleteSupplier(Guid id);
     }

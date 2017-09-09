@@ -61,7 +61,6 @@ namespace HyperStoreServiceAPP.Controllers
                 throw new Exception(String.Format("Customer of id {0} not found while updating the customer", id));
             var updatedCustomer = _UpdateCustomer(customer, customerDTO);
             db.Entry(updatedCustomer).State = EntityState.Modified;
-
             try
             {
                 await db.SaveChangesAsync();
@@ -82,11 +81,12 @@ namespace HyperStoreServiceAPP.Controllers
 
         private Customer _UpdateCustomer(Customer customer, CustomerDTO customerDTO)
         {
-            customer.Address = customerDTO.Address;
-            customer.MobileNo = customerDTO.MobileNo;
-            customer.Name = customerDTO.Name;
-            customer.GSTIN = customerDTO.GSTIN;
-            return customer;
+            var updatedCustomer = customer;
+            updatedCustomer.Address = customerDTO.Address;
+            updatedCustomer.MobileNo = customerDTO.MobileNo;
+            updatedCustomer.Name = customerDTO.Name;
+            updatedCustomer.GSTIN = customerDTO.GSTIN;
+            return updatedCustomer;
         }
         // POST: api/Customers
         [ResponseType(typeof(Customer))]

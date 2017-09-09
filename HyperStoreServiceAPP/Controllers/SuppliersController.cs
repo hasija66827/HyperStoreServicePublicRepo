@@ -59,21 +59,21 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         // PUT: api/Suppliers/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutSupplier(Guid id, Supplier supplier)
+        [HttpPut]
+        [ResponseType(typeof(Supplier))]
+        public async Task<IHttpActionResult> PutSupplier(Guid id, SupplierDTO supplierDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            if (id != supplier.SupplierId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(supplier).State = EntityState.Modified;
-
+            if (supplierDTO == null)
+                throw new Exception("SupplierDTO should not have been null");
+            var supplier = await db.Suppliers.FindAsync(id);
+            if (supplier == null)
+                throw new Exception(String.Format("Supplier of id {0} not found", id));
+            var updatedSupplier = _UpdateSupplier(supplier, supplierDTO);
+            db.Entry(updatedSupplier).State = EntityState.Modified;
             try
             {
                 await db.SaveChangesAsync();
@@ -89,10 +89,18 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(updatedSupplier);
         }
 
+        private Supplier _UpdateSupplier(Supplier supplier, SupplierDTO supplierDTO)
+        {
+            var updatedSupplier = supplier;
+            updatedSupplier.Address = supplierDTO.Address;
+            updatedSupplier.GSTIN = supplierDTO.GSTIN;
+            updatedSupplier.MobileNo = supplierDTO.MobileNo;
+            updatedSupplier.Name = supplierDTO.Name;
+            return updatedSupplier;
+        }
         // POST: api/Suppliers
         [ResponseType(typeof(Supplier))]
         public async Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO)
