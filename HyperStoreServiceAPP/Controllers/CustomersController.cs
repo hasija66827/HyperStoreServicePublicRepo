@@ -44,20 +44,23 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         // PUT: api/Customers/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutCustomer(Guid id, Customer customer)
+        [HttpPut]
+        [ResponseType(typeof(Customer))]
+        public async Task<IHttpActionResult> PutCustomer(Guid id, CustomerDTO customerDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            if (id != customer.CustomerId)
+            if (customerDTO == null)
             {
-                return BadRequest();
+                throw new Exception("CustomerDTO should not have been null");
             }
-
-            db.Entry(customer).State = EntityState.Modified;
+            var customer = await db.Customers.FindAsync(id);
+            if (customer == null)
+                throw new Exception(String.Format("Customer of id {0} not found while updating the customer", id));
+            var updatedCustomer = _UpdateCustomer(customer, customerDTO);
+            db.Entry(updatedCustomer).State = EntityState.Modified;
 
             try
             {
@@ -74,10 +77,17 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(updatedCustomer);
         }
 
+        private Customer _UpdateCustomer(Customer customer, CustomerDTO customerDTO)
+        {
+            customer.Address = customerDTO.Address;
+            customer.MobileNo = customerDTO.MobileNo;
+            customer.Name = customerDTO.Name;
+            customer.GSTIN = customerDTO.GSTIN;
+            return customer;
+        }
         // POST: api/Customers
         [ResponseType(typeof(Customer))]
         public async Task<IHttpActionResult> PostCustomer(CustomerDTO customerDTO)
