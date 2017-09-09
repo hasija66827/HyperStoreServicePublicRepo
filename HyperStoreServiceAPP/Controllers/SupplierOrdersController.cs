@@ -51,10 +51,10 @@ namespace HyperStoreServiceAPP.Controllers
 
                 if (SOFC.PartiallyPaidOrderOnly == true)
                 {
-                    query = query.Where(order => order.PayedAmountIncTx < order.BillAmount);
+                    query = query.Where(order => order.SettledPayedAmount < order.BillAmount);
                 }
 
-                result = await query.OrderByDescending(order=>order.OrderDate).ToListAsync();
+                result = await query.OrderByDescending(order => order.OrderDate).ToListAsync();
             }
             catch (Exception e)
             {
@@ -82,17 +82,17 @@ namespace HyperStoreServiceAPP.Controllers
                 return BadRequest(ModelState);
             }
             if (orderDetail == null)
-                return BadRequest("OrderDetails should not have been null while placing the supplier order");
+                throw new Exception("OrderDetails should not have been null while placing the supplier order");
+            if (orderDetail.DueDate < DateTime.Now)
+                return BadRequest(String.Format("DueDate {0} cannot be before current Date {1}", orderDetail.DueDate, DateTime.Now.Date));
             var payingAmount = orderDetail.PayingAmount;
             var billAmount = orderDetail.SupplierBillingSummary.BillAmount;
             if (payingAmount > billAmount)
                 return BadRequest(String.Format("Paying Amount {0} should be less than Bill Amount {1}", payingAmount, billAmount));
-            if (orderDetail.DueDate < DateTime.Now)
-                return BadRequest(String.Format("DueDate{0} cannot be before current Date {1}", orderDetail.DueDate, DateTime.Now));
             //TODO: Verify bill amount.
             try
             {
-                var supplierOrder = CreateNewSupplierOrder(orderDetail);
+                var supplierOrder = await CreateNewSupplierOrderAsync(orderDetail);
                 SupplierTransactionDTO transactionDTO = new SupplierTransactionDTO
                 {
                     IsCredit = true,
@@ -158,15 +158,31 @@ namespace HyperStoreServiceAPP.Controllers
                 SupplierOrderTransactionId = Guid.NewGuid(),
                 TransactionId = transaction.SupplierTransactionId,
                 SupplierOrderId = supplierOrder.SupplierOrderId,
-                IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.PayedAmountIncTx ? true : false,
+                IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.SettledPayedAmount ? true : false,
                 PaidAmount = null
             };
             db.SupplierOrderTransactions.Add(supplierOrderTransaction);
             return supplierOrderTransaction;
         }
 
-        private SupplierOrder CreateNewSupplierOrder(SupplierOrderDTO orderDetail)
+        private async Task<SupplierOrder> CreateNewSupplierOrderAsync(SupplierOrderDTO orderDetail)
         {
+            var billAmount = orderDetail.SupplierBillingSummary.BillAmount;
+            var payingAmount = (decimal)orderDetail.PayingAmount;
+
+            var supplier = await db.Suppliers.FindAsync(orderDetail.SupplierId);
+            if (supplier == null)
+                throw new Exception(String.Format("Supplier with Id {0} does not exist", orderDetail.SupplierId));
+            decimal payedAmountByWallet = 0;
+            // If Supplier owes the Retailer.
+            if (supplier.WalletBalance < 0)
+                payedAmountByWallet = Math.Min(Math.Abs(supplier.WalletBalance), (decimal)(billAmount - payingAmount));
+
+            var settledPayedAmount = payingAmount + payedAmountByWallet;
+
+            if (settledPayedAmount > billAmount)
+                throw new Exception(String.Format("Settled Payed Amount {0} can never be less than bill amount {1}", settledPayedAmount, billAmount));
+
             var supplierOrder = new SupplierOrder
             {
                 SupplierOrderId = Guid.NewGuid(),
@@ -174,8 +190,9 @@ namespace HyperStoreServiceAPP.Controllers
                 InterestRate = orderDetail.IntrestRate,
                 OrderDate = DateTime.Now,
                 BillAmount = (decimal)orderDetail.SupplierBillingSummary.BillAmount,
-                PayedAmount=(decimal)orderDetail.PayingAmount,
-                PayedAmountIncTx = (decimal)orderDetail.PayingAmount,
+                PayedAmount = payingAmount,
+                PayedAmountByWallet = payedAmountByWallet,
+                SettledPayedAmount = settledPayedAmount,
                 SupplierOrderNo = Utility.GenerateSupplierOrderNo(),
                 SupplierId = (Guid)orderDetail.SupplierId,
                 TotalItems = (int)orderDetail.SupplierBillingSummary.TotalItems,
