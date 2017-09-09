@@ -469,8 +469,6 @@ namespace HyperStoreServiceAPP.Controllers
         public string MobileNo { get; set; }
         [Required]
         public string Name { get; set; }
-        [Required]
-        public decimal? WalletBalance { get; set; }
     }
 
     #endregion

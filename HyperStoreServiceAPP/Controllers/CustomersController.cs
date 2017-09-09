@@ -98,7 +98,7 @@ namespace HyperStoreServiceAPP.Controllers
                 MobileNo = customerDTO.MobileNo,
                 Name = customerDTO.Name,
                 NetWorth = 0,
-                WalletBalance = customerDTO.WalletBalance,
+                WalletBalance = 0,
             };
             db.Customers.Add(customer);
 

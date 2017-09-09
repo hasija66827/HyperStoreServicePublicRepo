@@ -39,7 +39,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                            });
             var groupPrices_By_SupplierId = await query.GroupBy(s => s.SupplierId).ToListAsync();
             var latestPurchasePriceQuotedBySuppliers = groupPrices_By_SupplierId.Select(w_ps => SelectLatestPriceQuoted(w_ps));
-            var result = latestPurchasePriceQuotedBySuppliers;
+            var result = latestPurchasePriceQuotedBySuppliers.OrderBy(pqs=>pqs.PurchasePrice);
             return Ok(result);
         }
 
