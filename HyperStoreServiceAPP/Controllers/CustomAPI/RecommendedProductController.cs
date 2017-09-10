@@ -18,7 +18,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         public DateTime LastOrderDate { get; set; }
     }
 
-    public class RecommendedProductsController : ApiController
+    public class RecommendedProductsController : ApiController, IRecommendedProduct
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

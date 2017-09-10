@@ -14,7 +14,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public partial class CustomerOrdersController : ApiController, CustomerOrderInterface
+    public partial class CustomerOrdersController : ApiController, ICustomerOrder
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
@@ -125,7 +125,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
     }
 
-    public partial class CustomerOrdersController : ApiController, CustomerOrderInterface
+    public partial class CustomerOrdersController : ApiController, ICustomerOrder
     {
         private async Task<Boolean> UpdateStockOfProductsAsync(List<ProductConsumed> productsConsumed)
         {

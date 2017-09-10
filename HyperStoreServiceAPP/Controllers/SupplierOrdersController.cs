@@ -14,7 +14,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public partial class SupplierOrdersController : ApiController, SupplierOrderInterface
+    public partial class SupplierOrdersController : ApiController, ISupplierOrder
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
@@ -132,7 +132,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
     }
 
-    public partial class SupplierOrdersController : ApiController, SupplierOrderInterface
+    public partial class SupplierOrdersController : ApiController, ISupplierOrder
     {
         private SupplierOrderTransaction CreateNewSupplierOrderTransaction(SupplierOrder supplierOrder, SupplierTransaction transaction)
         {

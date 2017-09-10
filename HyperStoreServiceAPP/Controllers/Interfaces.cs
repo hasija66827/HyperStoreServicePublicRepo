@@ -7,18 +7,18 @@ using System.Web.Http;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public interface CustomerOrderInterface
+    public interface ICustomerOrder
     {
         Task<IHttpActionResult> Get(CustomerOrderFilterCriteria customerOrderFilterCriteria);
         Task<IHttpActionResult> Post(CustomerOrderDTO orderDetail);
     }
 
-    public interface CustomerOrderDetailInterface
+    public interface ICustomerOrderDetail
     {
         Task<IHttpActionResult> Get(Guid? id);
     }
 
-    public interface CustomerInterface
+    public interface ICustomer
     {
         Task<IHttpActionResult> Get(CustomerFilterCriteria cfc);
         Task<IHttpActionResult> Put(Guid id, CustomerDTO customerDTO);
@@ -26,37 +26,37 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> GetWalletBalanceRange();
     }
 
-    public interface CustomerTransactionInterface
+    public interface ICustomerTransaction
     {
         Task<IHttpActionResult> Get(CustomerTransactionFilterCriteria transactionFilterCriteria);
         Task<IHttpActionResult> Post(CustomerTransactionDTO transactionDTO);
     };
 
-    public interface TagInterface
+    public interface ITag
     {
         IQueryable<Tag> Get();
         Task<IHttpActionResult> Post(TagDTO tagDTO);
     }
 
-    public interface ProductInterface
+    public interface IProduct
     {
         Task<IHttpActionResult> Get(ProductFilterCriteria filterProductCriteria);
         Task<IHttpActionResult> Put(Guid id, Product product);
         Task<IHttpActionResult> Post(ProductDTO product);
     }
 
-    public interface SupplierOrderDetailInterface
+    public interface ISupplierOrderProduct
     {
-         Task<IHttpActionResult> Get(Guid? supplierOrderId);
+        Task<IHttpActionResult> Get(Guid? supplierOrderId);
     }
 
-    public interface SupplierOrderInterface
+    public interface ISupplierOrder
     {
         Task<IHttpActionResult> Get(SupplierOrderFilterCriteria SOFC);
         Task<IHttpActionResult> Post(SupplierOrderDTO orderDetail);
     }
 
-    public interface SupplierInterface
+    public interface ISupplier
     {
         Task<IHttpActionResult> Get(SupplierFilterCriteria sfc);
         Task<IHttpActionResult> Put(Guid id, SupplierDTO supplierDTO);
@@ -64,19 +64,24 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> GetWalletBalanceRange();
     }
 
-    public interface SupplierTransactionInterface
+    public interface ISupplierTransaction
     {
         Task<IHttpActionResult> Get(SupplierTransactionFilterCriteria transactionFilterCriteria);
         Task<IHttpActionResult> Post(SupplierTransactionDTO transactionDTO);
     }
 
-    public interface CustomerPurchaseTrendInterface
+    public interface ICustomerPurchaseTrend
     {
         Task<IHttpActionResult> Get(CustomerPurchaseTrendDTO parameter);
     }
 
-    public interface ProductTrendInterface
+    public interface IProductTrend
     {
         Task<IHttpActionResult> Get(ProductConsumptionTrendDTO parameter);
+    }
+
+    public interface IRecommendedProduct
+    {
+        Task<IHttpActionResult> Get(Guid id);
     }
 }

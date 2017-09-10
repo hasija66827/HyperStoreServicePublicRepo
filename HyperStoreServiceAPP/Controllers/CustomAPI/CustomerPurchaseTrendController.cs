@@ -12,7 +12,7 @@ using System.Web.Http.Description;
 
 namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
-    public class CustomerPurchaseTrendController : ApiController, CustomerPurchaseTrendInterface
+    public class CustomerPurchaseTrendController : ApiController, ICustomerPurchaseTrend
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

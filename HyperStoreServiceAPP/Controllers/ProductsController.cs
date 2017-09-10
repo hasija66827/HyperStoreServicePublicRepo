@@ -14,7 +14,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public partial class ProductsController : ApiController, ProductInterface
+    public partial class ProductsController : ApiController, IProduct
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
@@ -166,7 +166,7 @@ namespace HyperStoreServiceAPP.Controllers
 
     }
 
-    public partial class ProductsController : ApiController, ProductInterface
+    public partial class ProductsController : ApiController, IProduct
     {
 
         private bool ProductExists(Guid? id)

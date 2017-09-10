@@ -13,7 +13,7 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class CustomerOrderProductsController : ApiController, CustomerOrderDetailInterface
+    public class CustomerOrderProductsController : ApiController, ICustomerOrderDetail
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

@@ -14,7 +14,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class SuppliersController : ApiController, SupplierInterface
+    public class SuppliersController : ApiController, ISupplier
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 

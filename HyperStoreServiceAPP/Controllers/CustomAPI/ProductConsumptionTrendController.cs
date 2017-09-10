@@ -12,7 +12,7 @@ using System.Web.Http.Description;
 
 namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
-    public class ProductConsumptionTrendController : ApiController, ProductTrendInterface
+    public class ProductConsumptionTrendController : ApiController, IProductTrend
     {
         //Average number of THE day in a month
         private readonly float AvgNoOfTheDayInMonth = 4.2f;
