@@ -156,7 +156,6 @@ namespace HyperStoreServiceAPP.Controllers
     {
         public Guid? ProductId { get; set; }
         public List<Guid?> TagIds { get; set; }
-        [Required]
         public FilterProductQDT FilterProductQDT { get; set; }
     }
 

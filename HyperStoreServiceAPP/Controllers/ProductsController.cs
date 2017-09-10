@@ -28,31 +28,34 @@ namespace HyperStoreServiceAPP.Controllers
             IQueryable<Product> query = db.Products;
             if (pfc == null)
                 return Ok(await query.ToListAsync());
-            var productId = pfc.ProductId;
-            var tagIds = pfc.TagIds;
-            var filterProductQDT = pfc.FilterProductQDT;
-            var discountPerRange = filterProductQDT.DiscountPerRange;
-            var quantity = filterProductQDT.QuantityRange;
 
             IEnumerable<Product> result;
             try
             {
-
-                query = query.Where(p => p.DiscountPer >= discountPerRange.LB &&
-                                                              p.DiscountPer <= discountPerRange.UB &&
-                                                              p.TotalQuantity >= quantity.LB &&
-                                                              p.TotalQuantity <= quantity.UB);
-                if (filterProductQDT.IncludeDeficientItemsOnly == true)
-                    query = query.Where(p => p.TotalQuantity <= p.Threshold);
-
+                var productId = pfc.ProductId;
                 if (productId != null)
                 {
                     query = query.Where(p => p.ProductId == productId);
                 }
+
+                var tagIds = pfc.TagIds;
                 if (tagIds != null && tagIds.Count() != 0)
                 {
                     var productIds_tag = await RetrieveProductIdsAsync(tagIds);
                     query = query.Where(p => productIds_tag.Contains(p.ProductId));
+                }
+
+                var filterProductQDT = pfc.FilterProductQDT;
+                if (filterProductQDT != null)
+                {
+                    var discountPerRange = filterProductQDT.DiscountPerRange;
+                    var quantity = filterProductQDT.QuantityRange;
+                    query = query.Where(p => p.DiscountPer >= discountPerRange.LB &&
+                                                                p.DiscountPer <= discountPerRange.UB &&
+                                                                p.TotalQuantity >= quantity.LB &&
+                                                                p.TotalQuantity <= quantity.UB);
+                    if (filterProductQDT.IncludeDeficientItemsOnly == true)
+                        query = query.Where(p => p.TotalQuantity <= p.Threshold);
                 }
                 result = await query.ToListAsync();
             }
@@ -156,7 +159,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         [HttpGet]
-        [ResponseType(typeof(ProductMetadata))]
+        [ResponseType(typeof(List<ProductMetadata>))]
         public async Task<IHttpActionResult> GetProductMetadata()
         {
             var minQty = await db.Products.MinAsync(p => p.TotalQuantity);
@@ -165,10 +168,13 @@ namespace HyperStoreServiceAPP.Controllers
             var maxDiscountPer = await db.Products.MaxAsync(p => p.DiscountPer);
             var productMetadata = new ProductMetadata()
             {
-                QuantityRange = new IRange<decimal>( minQty,  maxQty),
-                DiscountPerRange = new IRange<decimal?>( minDiscountPer,  maxDiscountPer)
+                QuantityRange = new IRange<decimal>(minQty, maxQty),
+                DiscountPerRange = new IRange<decimal?>(minDiscountPer, maxDiscountPer)
             };
-            return Ok(productMetadata);
+            // Need to send the list as the client is expecting that.
+            List<ProductMetadata> result = new List<ProductMetadata>();
+            result.Add(productMetadata);
+            return Ok(result);
         }
 
         protected override void Dispose(bool disposing)
