@@ -19,32 +19,32 @@ namespace HyperStoreService.Models
         {
         }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.Product> Products { get; set; }
+        public System.Data.Entity.DbSet<Product> Products { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.ProductTag> ProductTags { get; set; }
+        public System.Data.Entity.DbSet<ProductTag> ProductTags { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.Supplier> Suppliers { get; set; }
+        public System.Data.Entity.DbSet<Supplier> Suppliers { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.Customer> Customers { get; set; }
+        public System.Data.Entity.DbSet<Customer> Customers { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.CustomerOrder> CustomerOrders { get; set; }
+        public System.Data.Entity.DbSet<CustomerOrder> CustomerOrders { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierOrder> SupplierOrders { get; set; }
+        public System.Data.Entity.DbSet<SupplierOrder> SupplierOrders { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.CustomerOrderProduct> CustomerOrderProducts { get; set; }
+        public System.Data.Entity.DbSet<CustomerOrderProduct> CustomerOrderProducts { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierOrderProduct> SupplierOrderProducts { get; set; }
+        public System.Data.Entity.DbSet<SupplierOrderProduct> SupplierOrderProducts { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.CustomerTransaction> CustomerTransactions { get; set; }
+        public System.Data.Entity.DbSet<CustomerTransaction> CustomerTransactions { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierTransaction> SupplierTransactions { get; set; }
+        public System.Data.Entity.DbSet<SupplierTransaction> SupplierTransactions { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.CustomerOrderTransaction> CustomerOrderTransactions { get; set; }
+        public System.Data.Entity.DbSet<CustomerOrderTransaction> CustomerOrderTransactions { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.SupplierOrderTransaction> SupplierOrderTransactions { get; set; }
+        public System.Data.Entity.DbSet<SupplierOrderTransaction> SupplierOrderTransactions { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.DeficientStockHit> DeficientStockHits { get; set; }
+        public System.Data.Entity.DbSet<DeficientStockHit> DeficientStockHits { get; set; }
 
-        public System.Data.Entity.DbSet<HyperStoreService.Models.Tag> Tags { get; set; }
+        public System.Data.Entity.DbSet<Tag> Tags { get; set; }
     }
 }

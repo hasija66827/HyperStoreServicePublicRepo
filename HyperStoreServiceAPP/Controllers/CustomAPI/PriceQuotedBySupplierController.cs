@@ -1,4 +1,5 @@
-﻿using HyperStoreService.Models;
+﻿using HyperStoreService.CustomModels;
+using HyperStoreService.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;

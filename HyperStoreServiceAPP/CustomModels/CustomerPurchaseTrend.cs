@@ -1,9 +1,10 @@
-﻿using System;
+﻿using HyperStoreService.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace HyperStoreService.Models
+namespace HyperStoreService.CustomModels
 {
     public class CustomerPurchaseTrend
     {

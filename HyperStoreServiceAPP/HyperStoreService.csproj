@@ -225,6 +225,8 @@
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Controllers\SupplierTransactionsController.cs" />
     <Compile Include="Controllers\UtilityClass.cs" />
+    <Compile Include="CustomModels\ProductMetadata.cs" />
+    <Compile Include="CustomModels\RecommendedProduct.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -247,16 +249,16 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\CustomerOrderTransaction.cs" />
-    <Compile Include="Models\CustomerPurchaseTrend.cs" />
+    <Compile Include="CustomModels\CustomerPurchaseTrend.cs" />
     <Compile Include="Models\CustomerTransaction.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\CustomerOrder.cs" />
     <Compile Include="Models\CustomerOrderProduct.cs" />
-    <Compile Include="Models\PriceQuotedBySupplier.cs" />
+    <Compile Include="CustomModels\PriceQuotedBySupplier.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductTag.cs" />
-    <Compile Include="Models\ProductTrend.cs" />
+    <Compile Include="CustomModels\ProductTrend.cs" />
     <Compile Include="Models\Supplier.cs" />
     <Compile Include="Models\SupplierOrder.cs" />
     <Compile Include="Models\SupplierOrderProduct.cs" />

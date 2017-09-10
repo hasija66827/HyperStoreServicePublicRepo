@@ -11,6 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using HyperStoreService.Models;
 using System.ComponentModel.DataAnnotations;
+using HyperStoreServiceAPP.CustomModels;
 
 namespace HyperStoreServiceAPP.Controllers
 {
@@ -48,7 +49,7 @@ namespace HyperStoreServiceAPP.Controllers
                 {
                     query = query.Where(p => p.ProductId == productId);
                 }
-                if (tagIds != null && tagIds.Count()!=0)
+                if (tagIds != null && tagIds.Count() != 0)
                 {
                     var productIds_tag = await RetrieveProductIdsAsync(tagIds);
                     query = query.Where(p => productIds_tag.Contains(p.ProductId));
@@ -91,7 +92,6 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -99,7 +99,7 @@ namespace HyperStoreServiceAPP.Controllers
         [ResponseType(typeof(Product))]
         public async Task<IHttpActionResult> Post(ProductDTO productDTO)
         {
-            if (!ModelState.IsValid )
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -153,6 +153,22 @@ namespace HyperStoreServiceAPP.Controllers
                 }
             }
             return CreatedAtRoute("DefaultApi", new { id = product.ProductId }, product);
+        }
+
+        [HttpGet]
+        [ResponseType(typeof(ProductMetadata))]
+        public async Task<IHttpActionResult> GetProductMetadata()
+        {
+            var minQty = db.Products.MinAsync(p => p.TotalQuantity);
+            var maxQty = db.Products.MaxAsync(p => p.TotalQuantity);
+            var minDiscountPer = db.Products.MinAsync(p => p.DiscountPer);
+            var maxDiscountPer = db.Products.MaxAsync(p => p.DiscountPer);
+            var productMetadata = new ProductMetadata()
+            {
+                QuantityRange = new IRange<decimal>(await minQty, await maxQty),
+                DiscountPerRange = new IRange<decimal?>(await minDiscountPer, await maxDiscountPer)
+            };
+            return Ok(productMetadata);
         }
 
         protected override void Dispose(bool disposing)

@@ -105,6 +105,7 @@ namespace HyperStoreServiceAPP.Controllers
     #region Product Controller
     public class ProductDTO
     {
+        [Required]
         public decimal? CGSTPer { get; set; }
         [Required]
         public string Code { get; set; }

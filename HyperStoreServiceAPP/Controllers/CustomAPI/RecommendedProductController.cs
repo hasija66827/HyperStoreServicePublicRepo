@@ -1,4 +1,5 @@
 ﻿using HyperStoreService.Models;
+using HyperStoreService.CustomModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -11,13 +12,6 @@ using System.Web.Http.Description;
 
 namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
-    public class RecommendedProduct
-    {
-        public Guid? ProductId { get; set; }
-        public string ProductName { get; set; }
-        public DateTime LastOrderDate { get; set; }
-    }
-
     public class RecommendedProductsController : ApiController, IRecommendedProduct
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
