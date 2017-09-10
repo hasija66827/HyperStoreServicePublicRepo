@@ -20,7 +20,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [HttpGet]
         [ResponseType(typeof(List<Product>))]
-        public async Task<IHttpActionResult> GetProducts(ProductFilterCriteria pfc)
+        public async Task<IHttpActionResult> Get(ProductFilterCriteria pfc)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -62,7 +62,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         // PUT: api/Products/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutProduct(Guid id, Product product)
+        public async Task<IHttpActionResult> Put(Guid id, Product product)
         {
             if (!ModelState.IsValid)
             {
@@ -95,9 +95,9 @@ namespace HyperStoreServiceAPP.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Products
+        // Post: api/Products
         [ResponseType(typeof(Product))]
-        public async Task<IHttpActionResult> PostProduct(ProductDTO productDTO)
+        public async Task<IHttpActionResult> Post(ProductDTO productDTO)
         {
             if (!ModelState.IsValid )
             {

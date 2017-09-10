@@ -18,7 +18,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
         [HttpGet]
         [ResponseType(typeof(IEnumerable<CustomerPurchaseTrend>))]
-        public async Task<IHttpActionResult> CustomerPurchaseTrend(CustomerPurchaseTrendDTO parameter)
+        public async Task<IHttpActionResult> Get(CustomerPurchaseTrendDTO parameter)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -17,12 +17,6 @@ namespace HyperStoreServiceAPP.Controllers
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
-        // GET: api/CustomerOrderProducts
-        public IQueryable<CustomerOrderProduct> GetCustomerOrderProducts()
-        {
-            return db.CustomerOrderProducts;
-        }
-
         /// <summary>
         /// Returns the order detail of the customer order.
         /// </summary>
@@ -30,7 +24,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// <returns></returns>
         [ResponseType(typeof(List<CustomerOrderProduct>))]
         [HttpGet]
-        public async Task<IHttpActionResult> GetCustomerOrderDetail(Guid? id)
+        public async Task<IHttpActionResult> Get(Guid? id)
         {
             if (id == null)
                 throw new Exception("CustomerOrderId should not have been NULL");

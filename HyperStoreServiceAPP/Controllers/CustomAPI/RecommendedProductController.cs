@@ -29,7 +29,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// <returns></returns>
         [HttpGet]
         [ResponseType(typeof(IEnumerable<RecommendedProduct>))]
-        public async Task<IHttpActionResult> RecommendedProducts(Guid id)
+        public async Task<IHttpActionResult> Get(Guid id)
         {
             var customerId = id;
             var query = db.CustomerOrderProducts.Include(cop => cop.CustomerOrder)

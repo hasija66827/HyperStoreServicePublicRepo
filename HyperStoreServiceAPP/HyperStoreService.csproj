@@ -221,7 +221,6 @@
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\SupplierOrderProductsController.cs" />
     <Compile Include="Controllers\SupplierOrdersController.cs" />
-    <Compile Include="Controllers\SupplierOrderTransactionsController.cs" />
     <Compile Include="Controllers\SuppliersController.cs" />
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Controllers\SupplierTransactionsController.cs" />

@@ -20,7 +20,7 @@ namespace HyperStoreServiceAPP.Controllers
         // GET: api/CustomerTransactions/5
         [ResponseType(typeof(List<CustomerTransaction>))]
         [HttpGet]
-        public async Task<IHttpActionResult> GetTransactions(CustomerTransactionFilterCriteria transactionFilterCriteria)
+        public async Task<IHttpActionResult> Get(CustomerTransactionFilterCriteria transactionFilterCriteria)
         {
             if (transactionFilterCriteria == null)
                 return BadRequest("TransactionFilterCriteria cannont be null while retreiving the transaction for Customer");
@@ -42,7 +42,7 @@ namespace HyperStoreServiceAPP.Controllers
         // POST: api/CustomerTransactions
         [ResponseType(typeof(CustomerTransaction))]
         [HttpPost]
-        public async Task<IHttpActionResult> PostCustomerTransaction(CustomerTransactionDTO transactionDTO)
+        public async Task<IHttpActionResult> Post(CustomerTransactionDTO transactionDTO)
         {
             if (transactionDTO == null)
                 return BadRequest("TransactionDTO cannot be null, on creating transaction for customer");

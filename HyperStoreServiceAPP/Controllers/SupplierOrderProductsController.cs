@@ -17,15 +17,9 @@ namespace HyperStoreServiceAPP.Controllers
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
-        // GET: api/SupplierOrderProducts
-        public IQueryable<SupplierOrderProduct> GetSupplierOrderProducts()
-        {
-            return db.SupplierOrderProducts;
-        }
-
         // GET: api/SupplierOrderProducts/5
         [ResponseType(typeof(List<SupplierOrderProduct>))]
-        public async Task<IHttpActionResult> GetSupplierOrderDetail(Guid? id)
+        public async Task<IHttpActionResult> Get(Guid? id)
         {
             if (id == null)
                 return BadRequest("SupplierOrderId should not be null");

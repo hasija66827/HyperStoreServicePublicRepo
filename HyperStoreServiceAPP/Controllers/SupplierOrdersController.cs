@@ -20,7 +20,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [HttpGet]
         [ResponseType(typeof(List<SupplierOrder>))]
-        public async Task<IHttpActionResult> GetSupplierOrders(SupplierOrderFilterCriteria SOFC)
+        public async Task<IHttpActionResult> Get(SupplierOrderFilterCriteria SOFC)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -75,7 +75,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// <returns>Using wallet amount</returns>
         [ResponseType(typeof(decimal))]
         [HttpPost]
-        public async Task<IHttpActionResult> PostSupplierOrder(SupplierOrderDTO orderDetail)
+        public async Task<IHttpActionResult> Post(SupplierOrderDTO orderDetail)
         {
             if (!ModelState.IsValid)
             {
@@ -115,23 +115,6 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 throw;
             }
-        }
-
-        //TODO: Need To Check
-        // DELETE: api/SupplierOrders/5
-        [ResponseType(typeof(SupplierOrder))]
-        public async Task<IHttpActionResult> DeleteSupplierOrder(Guid id)
-        {
-            SupplierOrder supplierOrder = await db.SupplierOrders.FindAsync(id);
-            if (supplierOrder == null)
-            {
-                return NotFound();
-            }
-
-            db.SupplierOrders.Remove(supplierOrder);
-            await db.SaveChangesAsync();
-
-            return Ok(supplierOrder);
         }
 
         protected override void Dispose(bool disposing)

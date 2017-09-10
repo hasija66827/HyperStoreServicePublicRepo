@@ -18,27 +18,14 @@ namespace HyperStoreServiceAPP.Controllers
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         // GET: api/Tags
-        public IQueryable<Tag> GetTags()
+        public IQueryable<Tag> Get()
         {
             return db.Tags;
         }
 
-        // GET: api/Tags/5
-        [ResponseType(typeof(Tag))]
-        public async Task<IHttpActionResult> GetTag(Guid id)
-        {
-            Tag tag = await db.Tags.FindAsync(id);
-            if (tag == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(tag);
-        }
-
         // PUT: api/Tags/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutTag(Guid id, Tag tag)
+        public async Task<IHttpActionResult> Put(Guid id, Tag tag)
         {
             if (!ModelState.IsValid)
             {
@@ -71,9 +58,9 @@ namespace HyperStoreServiceAPP.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Tags
+        // Post: api/Tags
         [ResponseType(typeof(Tag))]
-        public async Task<IHttpActionResult> PostTag(TagDTO tagDTO)
+        public async Task<IHttpActionResult> Post(TagDTO tagDTO)
         {
             if (tagDTO == null)
                 return BadRequest("TagDTO should not be null while creating a new tag");
@@ -103,22 +90,6 @@ namespace HyperStoreServiceAPP.Controllers
                 }
             }
             return CreatedAtRoute("DefaultApi", new { id = tag.TagId }, tag);
-        }
-
-        // DELETE: api/Tags/5
-        [ResponseType(typeof(Tag))]
-        public async Task<IHttpActionResult> DeleteTag(Guid id)
-        {
-            Tag tag = await db.Tags.FindAsync(id);
-            if (tag == null)
-            {
-                return NotFound();
-            }
-
-            db.Tags.Remove(tag);
-            await db.SaveChangesAsync();
-
-            return Ok(tag);
         }
 
         protected override void Dispose(bool disposing)

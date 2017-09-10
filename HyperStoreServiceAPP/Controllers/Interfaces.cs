@@ -9,85 +9,72 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public interface CustomerOrderInterface
     {
-        Task<IHttpActionResult> GetCustomerOrders(CustomerOrderFilterCriteria customerOrderFilterCriteria);
-        Task<IHttpActionResult> PlaceCustomerOrder(CustomerOrderDTO orderDetail);
+        Task<IHttpActionResult> Get(CustomerOrderFilterCriteria customerOrderFilterCriteria);
+        Task<IHttpActionResult> Post(CustomerOrderDTO orderDetail);
     }
 
     public interface CustomerOrderDetailInterface
     {
-        IQueryable<CustomerOrderProduct> GetCustomerOrderProducts();
-        Task<IHttpActionResult> GetCustomerOrderDetail(Guid? id);
+        Task<IHttpActionResult> Get(Guid? id);
     }
 
     public interface CustomerInterface
     {
-        Task<IHttpActionResult> GetCustomers(CustomerFilterCriteria cfc);
-        Task<IHttpActionResult> PutCustomer(Guid id, CustomerDTO customerDTO);
-        Task<IHttpActionResult> PostCustomer(CustomerDTO customerDTO);
+        Task<IHttpActionResult> Get(CustomerFilterCriteria cfc);
+        Task<IHttpActionResult> Put(Guid id, CustomerDTO customerDTO);
+        Task<IHttpActionResult> Post(CustomerDTO customerDTO);
     }
 
     public interface CustomerTransactionInterface
     {
-        Task<IHttpActionResult> GetTransactions(CustomerTransactionFilterCriteria transactionFilterCriteria);
-        Task<IHttpActionResult> PostCustomerTransaction(CustomerTransactionDTO transactionDTO);
+        Task<IHttpActionResult> Get(CustomerTransactionFilterCriteria transactionFilterCriteria);
+        Task<IHttpActionResult> Post(CustomerTransactionDTO transactionDTO);
     };
 
     public interface TagInterface
     {
-        IQueryable<Tag> GetTags();
-        Task<IHttpActionResult> GetTag(Guid id);
-        Task<IHttpActionResult> PutTag(Guid id, Tag tag);
-        Task<IHttpActionResult> PostTag(TagDTO tagDTO);
-        Task<IHttpActionResult> DeleteTag(Guid id);
+        IQueryable<Tag> Get();
+        Task<IHttpActionResult> Post(TagDTO tagDTO);
     }
 
     public interface ProductInterface
     {
-        Task<IHttpActionResult> GetProducts(ProductFilterCriteria filterProductCriteria);
-        Task<IHttpActionResult> PutProduct(Guid id, Product product);
-        Task<IHttpActionResult> PostProduct(ProductDTO product);
+        Task<IHttpActionResult> Get(ProductFilterCriteria filterProductCriteria);
+        Task<IHttpActionResult> Put(Guid id, Product product);
+        Task<IHttpActionResult> Post(ProductDTO product);
     }
 
     public interface SupplierOrderDetailInterface
     {
-        IQueryable<SupplierOrderProduct> GetSupplierOrderProducts();
-        Task<IHttpActionResult> GetSupplierOrderDetail(Guid? supplierOrderId);
+         Task<IHttpActionResult> Get(Guid? supplierOrderId);
     }
 
     public interface SupplierOrderInterface
     {
-        Task<IHttpActionResult> GetSupplierOrders(SupplierOrderFilterCriteria SOFC);
-        Task<IHttpActionResult> PostSupplierOrder(SupplierOrderDTO orderDetail);
-        Task<IHttpActionResult> DeleteSupplierOrder(Guid id);
+        Task<IHttpActionResult> Get(SupplierOrderFilterCriteria SOFC);
+        Task<IHttpActionResult> Post(SupplierOrderDTO orderDetail);
     }
 
     public interface SupplierControllerInterface
     {
-        Task<IHttpActionResult> GetSuppliers(SupplierFilterCriteria sfc);
-        Task<IHttpActionResult> GetSupplier(Guid id);
-        Task<IHttpActionResult> PutSupplier(Guid id, SupplierDTO supplierDTO);
-        Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO);
+        Task<IHttpActionResult> Get(SupplierFilterCriteria sfc);
+        Task<IHttpActionResult> Put(Guid id, SupplierDTO supplierDTO);
+        Task<IHttpActionResult> Post(SupplierDTO supplierDTO);
     }
 
     public interface SupplierTransactionInterface
     {
-        Task<IHttpActionResult> GetTransactions(SupplierTransactionFilterCriteria transactionFilterCriteria);
-        Task<IHttpActionResult> PostTransaction(SupplierTransactionDTO transactionDTO);
-    }
-
-    public interface SupplierOrderTransactionInterface
-    {
-        Task<IHttpActionResult> GetTransactionsOfSupplierOrder(Guid supplierOrderId);
-        Task<IHttpActionResult> GetSupplierOrdersOfTransaction(Guid transactionId);
+        Task<IHttpActionResult> Get(SupplierTransactionFilterCriteria transactionFilterCriteria);
+        Task<IHttpActionResult> Post(SupplierTransactionDTO transactionDTO);
     }
 
     public interface CustomerPurchaseTrendInterface
     {
-        Task<IHttpActionResult> CustomerPurchaseTrend(CustomerPurchaseTrendDTO parameter);
+        Task<IHttpActionResult> Get(CustomerPurchaseTrendDTO parameter);
     }
 
     public interface ProductTrendInterface
     {
-        Task<IHttpActionResult> GetProductTrend(ProductConsumptionTrendDTO parameter);
+        Task<IHttpActionResult> Get(ProductConsumptionTrendDTO parameter);
     }
 }

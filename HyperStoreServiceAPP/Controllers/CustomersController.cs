@@ -19,7 +19,7 @@ namespace HyperStoreServiceAPP.Controllers
         // GET: api/Customers/5
         [HttpGet]
         [ResponseType(typeof(List<Customer>))]
-        public async Task<IHttpActionResult> GetCustomers(CustomerFilterCriteria cfc)
+        public async Task<IHttpActionResult> Get(CustomerFilterCriteria cfc)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -46,7 +46,7 @@ namespace HyperStoreServiceAPP.Controllers
         // PUT: api/Customers/5
         [HttpPut]
         [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> PutCustomer(Guid id, CustomerDTO customerDTO)
+        public async Task<IHttpActionResult> Put(Guid id, CustomerDTO customerDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -89,8 +89,9 @@ namespace HyperStoreServiceAPP.Controllers
             return updatedCustomer;
         }
         // POST: api/Customers
+        [HttpPost]
         [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> PostCustomer(CustomerDTO customerDTO)
+        public async Task<IHttpActionResult> Post(CustomerDTO customerDTO)
         {
             if (customerDTO == null)
                 throw new Exception("CustomerDTO should not be null");

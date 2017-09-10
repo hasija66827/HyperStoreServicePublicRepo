@@ -23,7 +23,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// <returns>returns the list of Price Quoted By each supplier for the given product</returns>
         [HttpGet]
         [ResponseType(typeof(List<PriceQuotedBySupplier>))]
-        public async Task<IHttpActionResult> LatestPriceQuotedBySupplier(Guid id)
+        public async Task<IHttpActionResult> Get(Guid id)
         {
             var productId = id;
             var query = db.SupplierOrderProducts

@@ -21,7 +21,7 @@ namespace HyperStoreServiceAPP.Controllers
         // GET: api/Suppliers
         [HttpGet]
         [ResponseType(typeof(List<Supplier>))]
-        public async Task<IHttpActionResult> GetSuppliers(SupplierFilterCriteria sfc)
+        public async Task<IHttpActionResult> Get(SupplierFilterCriteria sfc)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -45,23 +45,10 @@ namespace HyperStoreServiceAPP.Controllers
             }
         }
 
-        // GET: api/Suppliers/5
-        [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> GetSupplier(Guid id)
-        {
-            Supplier supplier = await db.Suppliers.FindAsync(id);
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(supplier);
-        }
-
         // PUT: api/Suppliers/5
         [HttpPut]
         [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> PutSupplier(Guid id, SupplierDTO supplierDTO)
+        public async Task<IHttpActionResult> Put(Guid id, SupplierDTO supplierDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -103,7 +90,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
         // POST: api/Suppliers
         [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO)
+        public async Task<IHttpActionResult> Post(SupplierDTO supplierDTO)
         {
             if (!ModelState.IsValid)
             {

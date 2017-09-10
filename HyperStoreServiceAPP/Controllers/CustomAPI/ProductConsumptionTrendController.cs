@@ -20,8 +20,9 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
         [HttpGet]
         [ResponseType(typeof(IEnumerable<ProductConsumptionDeficientTrend>))]
-        public async Task<IHttpActionResult> GetProductTrend(ProductConsumptionTrendDTO parameter)
+        public async Task<IHttpActionResult> Get(ProductConsumptionTrendDTO parameter)
         {
+            //TODO: check if the product exist
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             if (parameter == null)

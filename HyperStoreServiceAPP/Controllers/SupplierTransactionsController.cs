@@ -21,7 +21,7 @@ namespace HyperStoreServiceAPP.Controllers
         // GET: api/Transactions/5
         [ResponseType(typeof(List<SupplierTransaction>))]
         [HttpGet]
-        public async Task<IHttpActionResult> GetTransactions(SupplierTransactionFilterCriteria transactionFilterCriteria)
+        public async Task<IHttpActionResult> Get(SupplierTransactionFilterCriteria transactionFilterCriteria)
         {
             if (transactionFilterCriteria == null)
                 return BadRequest("TransactionFilterCriteria cannont be null while retreiving the transaction for supplier");
@@ -43,7 +43,7 @@ namespace HyperStoreServiceAPP.Controllers
         // POST: api/Transactions
         [ResponseType(typeof(SupplierTransaction))]
         [HttpPost]
-        public async Task<IHttpActionResult> PostTransaction(SupplierTransactionDTO transactionDTO)
+        public async Task<IHttpActionResult> Post(SupplierTransactionDTO transactionDTO)
         {
             if (transactionDTO == null)
                 return BadRequest("TransactionDTO cannot be null, on creating transaction for supplier");
@@ -73,11 +73,6 @@ namespace HyperStoreServiceAPP.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool TransactionExists(Guid? id)
-        {
-            return db.SupplierTransactions.Count(e => e.SupplierTransactionId == id) > 0;
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Routing;
 
 namespace HyperStoreServiceAPP
 {
@@ -13,12 +15,37 @@ namespace HyperStoreServiceAPP
 
             // Web API routes
             config.MapHttpAttributeRoutes();
-
+            
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                routeTemplate: "api/{controller}/{id}"
             );
+
+            config.Routes.MapHttpRoute(
+              name: "DefaultAPIWithAction",
+              routeTemplate: "api/{controller}/{action}"
+              );
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultAPIGet",
+                routeTemplate: "api/{controller}",
+                defaults: new { action = "Get" },
+                constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Get) }
+                );
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultAPIPost",
+                routeTemplate: "api/{controller}",
+                defaults: new { action = "Post" },
+                constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
+                );
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultAPIPut",
+                routeTemplate: "api/{controller}",
+                defaults: new { action = "Put" },
+                constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Put) }
+                );        
         }
     }
 }
