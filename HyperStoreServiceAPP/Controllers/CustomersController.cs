@@ -88,6 +88,7 @@ namespace HyperStoreServiceAPP.Controllers
             updatedCustomer.GSTIN = customerDTO.GSTIN;
             return updatedCustomer;
         }
+
         // POST: api/Customers
         [HttpPost]
         [ResponseType(typeof(Customer))]
@@ -129,6 +130,17 @@ namespace HyperStoreServiceAPP.Controllers
                 }
             }
             return CreatedAtRoute("DefaultApi", new { id = customer.CustomerId }, customer);
+        }
+
+        [HttpGet]
+        [ResponseType(typeof(IRange<decimal>))]
+        public async Task<IHttpActionResult> GetWalletBalanceRange()
+        {
+            var minWalletBalance = await db.Customers.MinAsync(w => w.WalletBalance);
+            var maxWalletBalance = await db.Customers.MaxAsync(w => w.WalletBalance);
+
+            var walletBalanceRange = new IRange<decimal?>(minWalletBalance,maxWalletBalance);
+            return Ok(walletBalanceRange);
         }
 
         protected override void Dispose(bool disposing)

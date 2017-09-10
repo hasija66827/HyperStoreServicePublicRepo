@@ -15,23 +15,16 @@ namespace HyperStoreServiceAPP
 
             // Web API routes
             config.MapHttpAttributeRoutes();
-            
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}"
-            );
 
-            config.Routes.MapHttpRoute(
-              name: "DefaultAPIWithAction",
-              routeTemplate: "api/{controller}/{action}"
-              );
+
+
 
             config.Routes.MapHttpRoute(
                 name: "DefaultAPIGet",
                 routeTemplate: "api/{controller}",
                 defaults: new { action = "Get" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Get) }
-                );
+              );
 
             config.Routes.MapHttpRoute(
                 name: "DefaultAPIPost",
@@ -45,7 +38,21 @@ namespace HyperStoreServiceAPP
                 routeTemplate: "api/{controller}",
                 defaults: new { action = "Put" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Put) }
-                );        
+                );
+
+            config.Routes.MapHttpRoute(
+             name: "DefaultApi",
+             routeTemplate: "api/{controller}/{id}",
+              defaults: new { id = RouteParameter.Optional },
+             constraints: new { id = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}" }
+         );
+
+            config.Routes.MapHttpRoute(
+             name: "DefaultAPIWithAction",
+             routeTemplate: "api/{controller}/{action}"
+
+             );
+
         }
     }
 }
