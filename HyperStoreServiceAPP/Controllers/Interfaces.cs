@@ -23,6 +23,7 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> Get(CustomerFilterCriteria cfc);
         Task<IHttpActionResult> Put(Guid id, CustomerDTO customerDTO);
         Task<IHttpActionResult> Post(CustomerDTO customerDTO);
+        Task<IHttpActionResult> GetWalletBalanceRange();
     }
 
     public interface CustomerTransactionInterface
@@ -55,11 +56,12 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> Post(SupplierOrderDTO orderDetail);
     }
 
-    public interface SupplierControllerInterface
+    public interface SupplierInterface
     {
         Task<IHttpActionResult> Get(SupplierFilterCriteria sfc);
         Task<IHttpActionResult> Put(Guid id, SupplierDTO supplierDTO);
         Task<IHttpActionResult> Post(SupplierDTO supplierDTO);
+        Task<IHttpActionResult> GetWalletBalanceRange();
     }
 
     public interface SupplierTransactionInterface

@@ -16,9 +16,6 @@ namespace HyperStoreServiceAPP
             // Web API routes
             config.MapHttpAttributeRoutes();
 
-
-
-
             config.Routes.MapHttpRoute(
                 name: "DefaultAPIGet",
                 routeTemplate: "api/{controller}",
@@ -50,7 +47,6 @@ namespace HyperStoreServiceAPP
             config.Routes.MapHttpRoute(
              name: "DefaultAPIWithAction",
              routeTemplate: "api/{controller}/{action}"
-
              );
 
         }

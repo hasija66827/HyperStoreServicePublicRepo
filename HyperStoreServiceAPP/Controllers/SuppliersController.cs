@@ -14,7 +14,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class SuppliersController : ApiController, SupplierControllerInterface
+    public class SuppliersController : ApiController, SupplierInterface
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
@@ -122,6 +122,17 @@ namespace HyperStoreServiceAPP.Controllers
                 }
             }
             return CreatedAtRoute("DefaultApi", new { id = supplier.SupplierId }, supplier);
+        }
+
+        [HttpGet]
+        [ResponseType(typeof(IRange<decimal>))]
+        public async Task<IHttpActionResult> GetWalletBalanceRange()
+        {
+            var minWalletBalance = await db.Suppliers.MinAsync(w => w.WalletBalance);
+            var maxWalletBalance = await db.Suppliers.MaxAsync(w => w.WalletBalance);
+
+            var walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
+            return Ok(walletBalanceRange);
         }
 
         protected override void Dispose(bool disposing)
