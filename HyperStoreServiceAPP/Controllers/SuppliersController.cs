@@ -137,22 +137,6 @@ namespace HyperStoreServiceAPP.Controllers
             return CreatedAtRoute("DefaultApi", new { id = supplier.SupplierId }, supplier);
         }
 
-        // DELETE: api/Suppliers/5
-        [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> DeleteSupplier(Guid id)
-        {
-            Supplier supplier = await db.Suppliers.FindAsync(id);
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-
-            db.Suppliers.Remove(supplier);
-            await db.SaveChangesAsync();
-
-            return Ok(supplier);
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)

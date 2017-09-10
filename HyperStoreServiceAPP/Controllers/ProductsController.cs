@@ -155,22 +155,6 @@ namespace HyperStoreServiceAPP.Controllers
             return CreatedAtRoute("DefaultApi", new { id = product.ProductId }, product);
         }
 
-        // DELETE: api/Products/5
-        [ResponseType(typeof(Product))]
-        public async Task<IHttpActionResult> DeleteProduct(Guid id)
-        {
-            Product product = await db.Products.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            db.Products.Remove(product);
-            await db.SaveChangesAsync();
-
-            return Ok(product);
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)

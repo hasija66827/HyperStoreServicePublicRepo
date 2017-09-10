@@ -130,22 +130,6 @@ namespace HyperStoreServiceAPP.Controllers
             return CreatedAtRoute("DefaultApi", new { id = customer.CustomerId }, customer);
         }
 
-        // DELETE: api/Customers/5
-        [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> DeleteCustomer(Guid id)
-        {
-            Customer customer = await db.Customers.FindAsync(id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-
-            db.Customers.Remove(customer);
-            await db.SaveChangesAsync();
-
-            return Ok(customer);
-        }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)

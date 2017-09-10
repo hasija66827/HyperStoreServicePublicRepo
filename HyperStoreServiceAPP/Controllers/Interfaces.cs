@@ -24,7 +24,6 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> GetCustomers(CustomerFilterCriteria cfc);
         Task<IHttpActionResult> PutCustomer(Guid id, CustomerDTO customerDTO);
         Task<IHttpActionResult> PostCustomer(CustomerDTO customerDTO);
-        Task<IHttpActionResult> DeleteCustomer(Guid id);
     }
 
     public interface CustomerTransactionInterface
@@ -47,7 +46,6 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> GetProducts(ProductFilterCriteria filterProductCriteria);
         Task<IHttpActionResult> PutProduct(Guid id, Product product);
         Task<IHttpActionResult> PostProduct(ProductDTO product);
-        Task<IHttpActionResult> DeleteProduct(Guid id);
     }
 
     public interface SupplierOrderDetailInterface
@@ -69,7 +67,6 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> GetSupplier(Guid id);
         Task<IHttpActionResult> PutSupplier(Guid id, SupplierDTO supplierDTO);
         Task<IHttpActionResult> PostSupplier(SupplierDTO supplierDTO);
-        Task<IHttpActionResult> DeleteSupplier(Guid id);
     }
 
     public interface SupplierTransactionInterface
