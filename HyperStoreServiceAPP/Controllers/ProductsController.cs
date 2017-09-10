@@ -159,14 +159,14 @@ namespace HyperStoreServiceAPP.Controllers
         [ResponseType(typeof(ProductMetadata))]
         public async Task<IHttpActionResult> GetProductMetadata()
         {
-            var minQty = db.Products.MinAsync(p => p.TotalQuantity);
-            var maxQty = db.Products.MaxAsync(p => p.TotalQuantity);
-            var minDiscountPer = db.Products.MinAsync(p => p.DiscountPer);
-            var maxDiscountPer = db.Products.MaxAsync(p => p.DiscountPer);
+            var minQty = await db.Products.MinAsync(p => p.TotalQuantity);
+            var maxQty = await db.Products.MaxAsync(p => p.TotalQuantity);
+            var minDiscountPer = await db.Products.MinAsync(p => p.DiscountPer);
+            var maxDiscountPer = await db.Products.MaxAsync(p => p.DiscountPer);
             var productMetadata = new ProductMetadata()
             {
-                QuantityRange = new IRange<decimal>(await minQty, await maxQty),
-                DiscountPerRange = new IRange<decimal?>(await minDiscountPer, await maxDiscountPer)
+                QuantityRange = new IRange<decimal>( minQty,  maxQty),
+                DiscountPerRange = new IRange<decimal?>( minDiscountPer,  maxDiscountPer)
             };
             return Ok(productMetadata);
         }
