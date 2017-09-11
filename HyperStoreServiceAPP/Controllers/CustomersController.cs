@@ -140,7 +140,9 @@ namespace HyperStoreServiceAPP.Controllers
             var maxWalletBalance = await db.Customers.MaxAsync(w => w.WalletBalance);
 
             var walletBalanceRange = new IRange<decimal?>(minWalletBalance,maxWalletBalance);
-            return Ok(walletBalanceRange);
+            var result = new List<IRange<decimal?>>();
+            result.Add(walletBalanceRange);
+            return Ok(result);
         }
 
         protected override void Dispose(bool disposing)
