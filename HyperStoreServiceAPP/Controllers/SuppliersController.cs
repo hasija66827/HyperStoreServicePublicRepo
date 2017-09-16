@@ -10,48 +10,57 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using HyperStoreService.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class SuppliersController : ApiController
+    public class SuppliersController : ApiController, ISupplier
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         // GET: api/Suppliers
-        public IQueryable<Supplier> GetSuppliers()
+        [HttpGet]
+        [ResponseType(typeof(List<Supplier>))]
+        public async Task<IHttpActionResult> Get(SupplierFilterCriteria sfc)
         {
-            return db.Suppliers;
-        }
-
-        // GET: api/Suppliers/5
-        [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> GetSupplier(Guid id)
-        {
-            Supplier supplier = await db.Suppliers.FindAsync(id);
-            if (supplier == null)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            IQueryable<Supplier> query = db.Suppliers;
+            if (sfc == null)
+                return Ok(await query.ToListAsync());
+            try
             {
-                return NotFound();
-            }
+                if (sfc.WalletAmount != null)
+                    query = db.Suppliers.Where(s => s.WalletBalance >= sfc.WalletAmount.LB &&
+                                                    s.WalletBalance <= sfc.WalletAmount.UB);
 
-            return Ok(supplier);
+                if (sfc.SupplierId != null)
+                    query = query.Where(s => s.SupplierId == sfc.SupplierId);
+                var result = await query.ToListAsync();
+                return Ok(result);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         // PUT: api/Suppliers/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutSupplier(Guid id, Supplier supplier)
+        [HttpPut]
+        [ResponseType(typeof(Supplier))]
+        public async Task<IHttpActionResult> Put(Guid id, SupplierDTO supplierDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            if (id != supplier.SupplierId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(supplier).State = EntityState.Modified;
-
+            if (supplierDTO == null)
+                throw new Exception("SupplierDTO should not have been null");
+            var supplier = await db.Suppliers.FindAsync(id);
+            if (supplier == null)
+                throw new Exception(String.Format("Supplier of id {0} not found", id));
+            var updatedSupplier = _UpdateSupplier(supplier, supplierDTO);
+            db.Entry(updatedSupplier).State = EntityState.Modified;
             try
             {
                 await db.SaveChangesAsync();
@@ -67,21 +76,36 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(updatedSupplier);
         }
 
+        private Supplier _UpdateSupplier(Supplier supplier, SupplierDTO supplierDTO)
+        {
+            var updatedSupplier = supplier;
+            updatedSupplier.Address = supplierDTO.Address;
+            updatedSupplier.GSTIN = supplierDTO.GSTIN;
+            updatedSupplier.MobileNo = supplierDTO.MobileNo;
+            updatedSupplier.Name = supplierDTO.Name;
+            return updatedSupplier;
+        }
         // POST: api/Suppliers
         [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> PostSupplier(Supplier supplier)
+        public async Task<IHttpActionResult> Post(SupplierDTO supplierDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            var supplier = new Supplier()
+            {
+                SupplierId = Guid.NewGuid(),
+                Address = supplierDTO.Address,
+                GSTIN = supplierDTO.GSTIN,
+                MobileNo = supplierDTO.MobileNo,
+                Name = supplierDTO.Name,
+                WalletBalance = 0,
+            };
             db.Suppliers.Add(supplier);
-
             try
             {
                 await db.SaveChangesAsync();
@@ -97,24 +121,20 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
             return CreatedAtRoute("DefaultApi", new { id = supplier.SupplierId }, supplier);
         }
 
-        // DELETE: api/Suppliers/5
-        [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> DeleteSupplier(Guid id)
+        [HttpGet]
+        [ResponseType(typeof(List<IRange<decimal>>))]
+        public async Task<IHttpActionResult> GetWalletBalanceRange()
         {
-            Supplier supplier = await db.Suppliers.FindAsync(id);
-            if (supplier == null)
-            {
-                return NotFound();
-            }
+            var minWalletBalance = await db.Suppliers.MinAsync(w => w.WalletBalance);
+            var maxWalletBalance = await db.Suppliers.MaxAsync(w => w.WalletBalance);
 
-            db.Suppliers.Remove(supplier);
-            await db.SaveChangesAsync();
-
-            return Ok(supplier);
+            var walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
+            var result = new List<IRange<decimal?>>();
+            result.Add(walletBalanceRange);
+            return Ok(result);
         }
 
         protected override void Dispose(bool disposing)
@@ -126,7 +146,7 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool SupplierExists(Guid id)
+        private bool SupplierExists(Guid? id)
         {
             return db.Suppliers.Count(e => e.SupplierId == id) > 0;
         }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -7,15 +9,13 @@ namespace HyperStoreService.Models
 {
     public class Tag
     {
-        public Guid TagId { get; set; }
+        public Guid? TagId { get; set; }
+
+        [Required]
+        [Index(IsUnique = true)]
+        [StringLength(24)]
         public string TagName { get; set; }
 
-        public Tag()
-        {
-            TagId = Guid.NewGuid();
-            TagName = "";
-        }
-
-        public List<ProductTag> ProductTags { get; set; }
+        public Tag() { }
     }
 }

@@ -7,13 +7,13 @@ namespace HyperStoreServiceAPP.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class second : IMigrationMetadata
+    public sealed partial class AddingUserEntity : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(second));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddingUserEntity));
         
         string IMigrationMetadata.Id
         {
-            get { return "201708060906296_second"; }
+            get { return "201709160729039_AddingUserEntity"; }
         }
         
         string IMigrationMetadata.Source

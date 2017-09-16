@@ -13,32 +13,19 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class TagsController : ApiController
+    public class TagsController : ApiController, ITag
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         // GET: api/Tags
-        public IQueryable<Tag> GetTags()
+        public IQueryable<Tag> Get()
         {
             return db.Tags;
         }
 
-        // GET: api/Tags/5
-        [ResponseType(typeof(Tag))]
-        public async Task<IHttpActionResult> GetTag(Guid id)
-        {
-            Tag tag = await db.Tags.FindAsync(id);
-            if (tag == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(tag);
-        }
-
         // PUT: api/Tags/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutTag(Guid id, Tag tag)
+        public async Task<IHttpActionResult> Put(Guid id, Tag tag)
         {
             if (!ModelState.IsValid)
             {
@@ -71,17 +58,22 @@ namespace HyperStoreServiceAPP.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Tags
+        // Post: api/Tags
         [ResponseType(typeof(Tag))]
-        public async Task<IHttpActionResult> PostTag(Tag tag)
+        public async Task<IHttpActionResult> Post(TagDTO tagDTO)
         {
+            if (tagDTO == null)
+                return BadRequest("TagDTO should not be null while creating a new tag");
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
+            var tag = new Tag()
+            {
+                TagId = Guid.NewGuid(),
+                TagName = tagDTO.TagName,
+            };
             db.Tags.Add(tag);
-
             try
             {
                 await db.SaveChangesAsync();
@@ -97,24 +89,7 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
             return CreatedAtRoute("DefaultApi", new { id = tag.TagId }, tag);
-        }
-
-        // DELETE: api/Tags/5
-        [ResponseType(typeof(Tag))]
-        public async Task<IHttpActionResult> DeleteTag(Guid id)
-        {
-            Tag tag = await db.Tags.FindAsync(id);
-            if (tag == null)
-            {
-                return NotFound();
-            }
-
-            db.Tags.Remove(tag);
-            await db.SaveChangesAsync();
-
-            return Ok(tag);
         }
 
         protected override void Dispose(bool disposing)
@@ -126,7 +101,7 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool TagExists(Guid id)
+        private bool TagExists(Guid? id)
         {
             return db.Tags.Count(e => e.TagId == id) > 0;
         }

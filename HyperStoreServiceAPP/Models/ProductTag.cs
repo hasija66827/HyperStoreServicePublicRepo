@@ -8,14 +8,17 @@ namespace HyperStoreService.Models
 {
     public class ProductTag
     {
-        public Guid ProductTagId { get; set; }
+        [Required]
+        public Guid? ProductTagId { get; set; }
+
+        public ProductTag() { }
 
         [Required]
-        public Nullable<Guid> ProductId { get; set; }
-        public Product Product;
+        public Guid? ProductId { get; set; }
+        public Product Product { get; set; }
 
         [Required]
-        public Nullable<Guid> TagId { get; set; }
-        public Tag Tag;
+        public Guid? TagId { get; set; }
+        public Tag Tag { get; set; }
     }
 }

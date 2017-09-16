@@ -3,35 +3,39 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
-
+using HyperStoreServiceAPP;
 namespace HyperStoreService.Models
 {
     public class CustomerOrder
     {
         public Guid CustomerOrderId { get; set; }
-        public string CustomerOrderNo { get; set; }
-        public DateTime OrderDate { get; set; }
-
-        public float BillAmount { get; set; }
-        public float DiscountedAmount { get; set; }
-
-        // PayingNow = DiscountedBillAmount + AddingMoneyToWallet - UsingWalletAmount
-        public bool IsPaidNow { get; set; }
-        public float PayingNow { get; set; }
-        public float AddingMoneyToWallet { get; set; }
-
-        public bool IsUseWallet { get; set; }
-        public float UsingWalletAmount { get; set; }
-
-        // DiscountedBillAmt = PartiallyPaid + PayingLater
-        public float PartiallyPaid { get; set; }
-        public float PayingLater { get; set; }
-
-        public CustomerOrder() { }
 
         [Required]
-        public Nullable<Guid> CustomerId;
-        public Customer Customer;
-        public List<CustomerOrderProduct> CustomerOrderProducts { get; set; }
+        public string CustomerOrderNo { get; set; }
+        
+        public DateTime OrderDate { get; set; }
+
+        public decimal TotalQuantity { get; set; }
+        public int TotalItems { get; set; }
+        public decimal CartAmount { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal Tax { get; set; }
+        public decimal PayAmount { get; set; }
+
+        // PayingNow = DiscountedBillAmount + AddingMoneyToWallet - UsingWalletAmount
+
+        public bool IsPayingNow { get; set; }
+        
+        public bool IsUsingWallet { get; set; }
+        
+        public decimal PayingAmount { get; set; }
+        public decimal UsingWalletAmount { get; set; }
+        
+        public CustomerOrder()
+        {
+        }
+
+        public Guid CustomerId { get; set; }
+        public Customer Customer { get; set; }
     }
 }

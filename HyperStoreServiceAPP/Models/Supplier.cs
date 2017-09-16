@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -7,18 +9,32 @@ namespace HyperStoreService.Models
 {
     public class Supplier
     {
-        public Guid SupplierId { get; set; }
+        public Guid? SupplierId { get; set; }
         public string Address { get; set; }
         public string GSTIN { get; set; }
+
+        [Required]
+        [Index(IsUnique = true)]
+        [StringLength(10)]
         public string MobileNo { get; set; }
+
+        [Required]
+        [StringLength(24)]
         public string Name { get; set; }
-        public float WalletBalance { get; set; }
+        public decimal WalletBalance { get; set; }
 
-        public Supplier() { }
+        public Supplier() {
+        }
+    }
 
-        public List<SupplierOrder> SupplierOrders { get; set; }
-        //This is used by Retailer to mark the product to be prurchased from Wholeseller.
-        public List<Product> Products { get; set; }
-        public List<Transaction> Transactions { get; set; }
+    public class SupplierDTO
+    {
+        public string Address { get; set; }
+        public string GSTIN { get; set; }
+        [Required]
+        [RegularExpression(@"[987]\d{9}")]
+        public string MobileNo { get; set; }
+        [Required]
+        public string Name { get; set; }
     }
 }

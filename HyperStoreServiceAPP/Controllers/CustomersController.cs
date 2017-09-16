@@ -13,45 +13,54 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class CustomersController : ApiController
+    public class CustomersController : ApiController, ICustomer
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
-
-        // GET: api/Customers
-        public IQueryable<Customer> GetCustomers()
-        {
-            return db.Customers;
-        }
-
         // GET: api/Customers/5
-        [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> GetCustomer(Guid id)
+        [HttpGet]
+        [ResponseType(typeof(List<Customer>))]
+        public async Task<IHttpActionResult> Get(CustomerFilterCriteria cfc)
         {
-            Customer customer = await db.Customers.FindAsync(id);
-            if (customer == null)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            IQueryable<Customer> query = db.Customers;
+            if (cfc == null)
+                return Ok(await query.ToListAsync());
+            try
             {
-                return NotFound();
-            }
+                if (cfc.WalletAmount != null)
+                    query = db.Customers.Where(s => s.WalletBalance >= cfc.WalletAmount.LB &&
+                                                    s.WalletBalance <= cfc.WalletAmount.UB);
 
-            return Ok(customer);
+                if (cfc.CustomerId != null)
+                    query = query.Where(c => c.CustomerId == cfc.CustomerId);
+                var result = await query.ToListAsync();
+                return Ok(result);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         // PUT: api/Customers/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutCustomer(Guid id, Customer customer)
+        [HttpPut]
+        [ResponseType(typeof(Customer))]
+        public async Task<IHttpActionResult> Put(Guid id, CustomerDTO customerDTO)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            if (id != customer.CustomerId)
+            if (customerDTO == null)
             {
-                return BadRequest();
+                throw new Exception("CustomerDTO should not have been null");
             }
-
-            db.Entry(customer).State = EntityState.Modified;
-
+            var customer = await db.Customers.FindAsync(id);
+            if (customer == null)
+                throw new Exception(String.Format("Customer of id {0} not found while updating the customer", id));
+            var updatedCustomer = _UpdateCustomer(customer, customerDTO);
+            db.Entry(updatedCustomer).State = EntityState.Modified;
             try
             {
                 await db.SaveChangesAsync();
@@ -67,19 +76,42 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
+            return Ok(updatedCustomer);
+        }
 
-            return StatusCode(HttpStatusCode.NoContent);
+        private Customer _UpdateCustomer(Customer customer, CustomerDTO customerDTO)
+        {
+            var updatedCustomer = customer;
+            updatedCustomer.Address = customerDTO.Address;
+            updatedCustomer.MobileNo = customerDTO.MobileNo;
+            updatedCustomer.Name = customerDTO.Name;
+            updatedCustomer.GSTIN = customerDTO.GSTIN;
+            return updatedCustomer;
         }
 
         // POST: api/Customers
+        [HttpPost]
         [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> PostCustomer(Customer customer)
+        public async Task<IHttpActionResult> Post(CustomerDTO customerDTO)
         {
+            if (customerDTO == null)
+                throw new Exception("CustomerDTO should not be null");
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            var customer = new Customer()
+            {
+                CustomerId = Guid.NewGuid(),
+                Address = customerDTO.Address,
+                GSTIN = customerDTO.GSTIN,
+                MobileNo = customerDTO.MobileNo,
+                Name = customerDTO.Name,
+                NetWorth = 0,
+                WalletBalance = 0,
+            };
             db.Customers.Add(customer);
 
             try
@@ -97,24 +129,20 @@ namespace HyperStoreServiceAPP.Controllers
                     throw;
                 }
             }
-
             return CreatedAtRoute("DefaultApi", new { id = customer.CustomerId }, customer);
         }
 
-        // DELETE: api/Customers/5
-        [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> DeleteCustomer(Guid id)
+        [HttpGet]
+        [ResponseType(typeof(IRange<decimal>))]
+        public async Task<IHttpActionResult> GetWalletBalanceRange()
         {
-            Customer customer = await db.Customers.FindAsync(id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
+            var minWalletBalance = await db.Customers.MinAsync(w => w.WalletBalance);
+            var maxWalletBalance = await db.Customers.MaxAsync(w => w.WalletBalance);
 
-            db.Customers.Remove(customer);
-            await db.SaveChangesAsync();
-
-            return Ok(customer);
+            var walletBalanceRange = new IRange<decimal?>(minWalletBalance,maxWalletBalance);
+            var result = new List<IRange<decimal?>>();
+            result.Add(walletBalanceRange);
+            return Ok(result);
         }
 
         protected override void Dispose(bool disposing)
@@ -126,7 +154,7 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool CustomerExists(Guid id)
+        private bool CustomerExists(Guid? id)
         {
             return db.Customers.Count(e => e.CustomerId == id) > 0;
         }
