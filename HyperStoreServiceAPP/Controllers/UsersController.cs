@@ -89,7 +89,9 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 if (string.Compare(user.Password, authenticateUserDTO.Password) == 0)
                 {
-                    eauthenitcation = EAuthentication.TwoFactorAuthenticated;
+                    eauthenitcation = EAuthentication.OneFactorAuthenticated;
+                    if (string.Compare(user.DeviceId, authenticateUserDTO.DeviceId) == 0)
+                        eauthenitcation = EAuthentication.TwoFactorAuthenticated;
                 }
             }
             var result = new List<EAuthentication>();

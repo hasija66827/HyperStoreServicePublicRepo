@@ -252,6 +252,10 @@
     <Compile Include="Migrations\201709160729039_AddingUserEntity.Designer.cs">
       <DependentUpon>201709160729039_AddingUserEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709161921329_AddingdeviceIdInUserEntity.cs" />
+    <Compile Include="Migrations\201709161921329_AddingdeviceIdInUserEntity.Designer.cs">
+      <DependentUpon>201709161921329_AddingdeviceIdInUserEntity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\CustomerOrderTransaction.cs" />
@@ -361,6 +365,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709160729039_AddingUserEntity.resx">
       <DependentUpon>201709160729039_AddingUserEntity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709161921329_AddingdeviceIdInUserEntity.resx">
+      <DependentUpon>201709161921329_AddingdeviceIdInUserEntity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
