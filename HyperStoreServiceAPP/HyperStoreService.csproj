@@ -224,37 +224,15 @@
     <Compile Include="Controllers\SuppliersController.cs" />
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Controllers\SupplierTransactionsController.cs" />
-    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\UtilityClass.cs" />
     <Compile Include="CustomModels\ProductMetadata.cs" />
     <Compile Include="CustomModels\RecommendedProduct.cs" />
-    <Compile Include="DTO\UserDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201709061949119_Init.cs" />
-    <Compile Include="Migrations\201709061949119_Init.Designer.cs">
-      <DependentUpon>201709061949119_Init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709081935351_Thirdd.cs" />
-    <Compile Include="Migrations\201709081935351_Thirdd.Designer.cs">
-      <DependentUpon>201709081935351_Thirdd.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709090618323_updatingdatatypeofSOP.cs" />
-    <Compile Include="Migrations\201709090618323_updatingdatatypeofSOP.Designer.cs">
-      <DependentUpon>201709090618323_updatingdatatypeofSOP.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709090934103_Forth.cs" />
-    <Compile Include="Migrations\201709090934103_Forth.Designer.cs">
-      <DependentUpon>201709090934103_Forth.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709160729039_AddingUserEntity.cs" />
-    <Compile Include="Migrations\201709160729039_AddingUserEntity.Designer.cs">
-      <DependentUpon>201709160729039_AddingUserEntity.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709161921329_AddingdeviceIdInUserEntity.cs" />
-    <Compile Include="Migrations\201709161921329_AddingdeviceIdInUserEntity.Designer.cs">
-      <DependentUpon>201709161921329_AddingdeviceIdInUserEntity.cs</DependentUpon>
+    <Compile Include="Migrations\201709170812070_Initial.cs" />
+    <Compile Include="Migrations\201709170812070_Initial.Designer.cs">
+      <DependentUpon>201709170812070_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
@@ -275,7 +253,6 @@
     <Compile Include="Models\SupplierOrderTransaction.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\SupplierTransaction.cs" />
-    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utility\Utility.cs" />
@@ -351,23 +328,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201709061949119_Init.resx">
-      <DependentUpon>201709061949119_Init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709081935351_Thirdd.resx">
-      <DependentUpon>201709081935351_Thirdd.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709090618323_updatingdatatypeofSOP.resx">
-      <DependentUpon>201709090618323_updatingdatatypeofSOP.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709090934103_Forth.resx">
-      <DependentUpon>201709090934103_Forth.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709160729039_AddingUserEntity.resx">
-      <DependentUpon>201709160729039_AddingUserEntity.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709161921329_AddingdeviceIdInUserEntity.resx">
-      <DependentUpon>201709161921329_AddingdeviceIdInUserEntity.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709170812070_Initial.resx">
+      <DependentUpon>201709170812070_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

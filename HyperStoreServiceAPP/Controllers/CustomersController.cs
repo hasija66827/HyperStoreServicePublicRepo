@@ -15,7 +15,12 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public class CustomersController : ApiController, ICustomer
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db;
+
+        public CustomersController() {
+            db = new HyperStoreServiceContext();
+        }
+        
         // GET: api/Customers/5
         [HttpGet]
         [ResponseType(typeof(List<Customer>))]

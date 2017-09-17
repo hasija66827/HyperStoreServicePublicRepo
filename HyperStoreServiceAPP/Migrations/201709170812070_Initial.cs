@@ -3,7 +3,7 @@ namespace HyperStoreServiceAPP.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Init : DbMigration
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
@@ -161,7 +161,7 @@ namespace HyperStoreServiceAPP.Migrations
                     {
                         SupplierOrderProductId = c.Guid(nullable: false),
                         PurchasePrice = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        QuantityPurchased = c.Single(nullable: false),
+                        QuantityPurchased = c.Decimal(nullable: false, precision: 18, scale: 2),
                         SupplierOrderId = c.Guid(nullable: false),
                         ProductId = c.Guid(nullable: false),
                     })
@@ -179,7 +179,9 @@ namespace HyperStoreServiceAPP.Migrations
                         BillAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         DueDate = c.DateTime(nullable: false),
                         OrderDate = c.DateTime(nullable: false),
-                        PayingAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        PayedAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        PayedAmountByWallet = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        SettledPayedAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         InterestRate = c.Decimal(nullable: false, precision: 18, scale: 2),
                         TotalItems = c.Int(nullable: false),
                         TotalQuantity = c.Decimal(nullable: false, precision: 18, scale: 2),
