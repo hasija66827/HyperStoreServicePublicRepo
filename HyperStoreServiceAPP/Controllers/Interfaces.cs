@@ -41,7 +41,6 @@ namespace HyperStoreServiceAPP.Controllers
     public interface IProduct
     {
         Task<IHttpActionResult> Get(Guid userId, ProductFilterCriteria filterProductCriteria);
-        Task<IHttpActionResult> Put(Guid userId, Guid id, Product product);
         Task<IHttpActionResult> Post(Guid userId, ProductDTO product);
         Task<IHttpActionResult> GetProductMetadata(Guid userId);
     }

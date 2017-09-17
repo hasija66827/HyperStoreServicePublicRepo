@@ -16,7 +16,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public partial class SupplierOrdersController : ApiController, ISupplierOrder
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db ;
 
         [HttpGet]
         [ResponseType(typeof(List<SupplierOrder>))]
@@ -29,8 +29,10 @@ namespace HyperStoreServiceAPP.Controllers
             if (SOFC.DueDateRange.LB < SOFC.OrderDateRange.LB)
                 return BadRequest(String.Format("Order DueDate {0} Cannot be less than OrdeDate {1}",
                     SOFC.DueDateRange.LB, SOFC.OrderDateRange.LB));
-            List<SupplierOrder> result;
+            db = UtilityAPI.RetrieveDBContext(userId);
 
+            List<SupplierOrder> result;
+            db = UtilityAPI.RetrieveDBContext(userId);
             try
             {
                 var query = db.SupplierOrders.Where(order => order.OrderDate >= SOFC.OrderDateRange.LB.Date &&
@@ -85,11 +87,14 @@ namespace HyperStoreServiceAPP.Controllers
                 throw new Exception("OrderDetails should not have been null while placing the supplier order");
             if (orderDetail.DueDate < DateTime.Now)
                 return BadRequest(String.Format("DueDate {0} cannot be before current Date {1}", orderDetail.DueDate, DateTime.Now.Date));
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             var payingAmount = orderDetail.PayingAmount;
             var billAmount = orderDetail.SupplierBillingSummary.BillAmount;
             if (payingAmount > billAmount)
                 return BadRequest(String.Format("Paying Amount {0} should be less than Bill Amount {1}", payingAmount, billAmount));
             //TODO: Verify bill amount.
+            db = UtilityAPI.RetrieveDBContext(userId);
             try
             {
                 var supplierOrder = await CreateNewSupplierOrderAsync(orderDetail);

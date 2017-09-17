@@ -16,7 +16,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public partial class CustomerOrdersController : ApiController, ICustomerOrder
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db ;
 
         /// <summary>
         /// 
@@ -31,11 +31,14 @@ namespace HyperStoreServiceAPP.Controllers
                 return BadRequest(ModelState);
             if (customerOrderFilterCriteria == null)
                 return BadRequest("A filter criteria object should not be null for retrieving list of customer orders");
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             var selectedCustomerId = customerOrderFilterCriteria.CustomerId;
             var selectedCustomerOrderNo = customerOrderFilterCriteria.CustomerOrderNo;
             var selectedDateRange = customerOrderFilterCriteria.OrderDateRange;
 
             List<CustomerOrder> result;
+
             try
             {
                 var query = db.CustomerOrders
@@ -70,6 +73,8 @@ namespace HyperStoreServiceAPP.Controllers
                 return BadRequest(ModelState);
             if (orderDetail == null)
                 return BadRequest("OrderDetails should not have been null while placing the customer order");
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             decimal deductWalletAmount = 0;
             //TODO: Verify pay amount.
             try

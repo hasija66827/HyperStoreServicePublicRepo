@@ -15,7 +15,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public class SupplierOrderProductsController : ApiController, ISupplierOrderProduct
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db ;
 
         // GET: api/SupplierOrderProducts/5
         [ResponseType(typeof(List<SupplierOrderProduct>))]
@@ -23,6 +23,7 @@ namespace HyperStoreServiceAPP.Controllers
         {
             if (id == null)
                 return BadRequest("SupplierOrderId should not be null");
+            db = UtilityAPI.RetrieveDBContext(userId);
 
             List<SupplierOrderProduct> queryResult;
             try

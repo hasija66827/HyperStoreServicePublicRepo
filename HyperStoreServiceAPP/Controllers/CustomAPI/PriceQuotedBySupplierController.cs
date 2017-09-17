@@ -14,7 +14,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
     public class PriceQuotedBySupplierController : ApiController, IPriceQuotedBySupplier
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db;
 
         /// <summary>
         /// Finds all the supplier from which the retailer has purchased the given product,
@@ -26,6 +26,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         [ResponseType(typeof(List<PriceQuotedBySupplier>))]
         public async Task<IHttpActionResult> Get(Guid userId, Guid id)
         {
+            db = UtilityAPI.RetrieveDBContext(userId);
             var productId = id;
             var query = db.SupplierOrderProducts
                                            .Where(sop => sop.ProductId == productId)

@@ -15,7 +15,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
     public class CustomerPurchaseTrendController : ApiController, ICustomerPurchaseTrend
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db;
 
         [HttpGet]
         [ResponseType(typeof(IEnumerable<CustomerPurchaseTrend>))]
@@ -25,6 +25,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                 return BadRequest(ModelState);
             if (parameter == null)
                 return BadRequest("CustomerPurchaseTrend parameter should not have been null");
+            db = UtilityAPI.RetrieveDBContext(userId);
 
             IEnumerable<CustomerPurchaseTrend> queryResult;
             try

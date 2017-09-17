@@ -15,7 +15,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public class CustomerTransactionsController : ApiController, ICustomerTransaction
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db ;
 
         // GET: api/CustomerTransactions/5
         [ResponseType(typeof(List<CustomerTransaction>))]
@@ -26,6 +26,8 @@ namespace HyperStoreServiceAPP.Controllers
                 return BadRequest("TransactionFilterCriteria cannont be null while retreiving the transaction for Customer");
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             var customerId = transactionFilterCriteria.CustomerId;
             var transactions = await db.CustomerTransactions.Where(t => t.CustomerId == customerId)
                                                           .OrderByDescending(t => t.TransactionDate).ToListAsync();
@@ -52,6 +54,8 @@ namespace HyperStoreServiceAPP.Controllers
 
             if (transactionDTO.IsCredit == true)
                 throw new Exception("Currently transaction of type credit is not supported through this API");
+
+            db = UtilityAPI.RetrieveDBContext(userId);
 
             var transaction = await transactionDTO.CreateNewTransactionAsync(db);
             await db.SaveChangesAsync();

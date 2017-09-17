@@ -14,7 +14,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
     public class RecommendedProductsController : ApiController, IRecommendedProduct
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db;
 
         /// <summary>
         /// 
@@ -25,6 +25,8 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         [ResponseType(typeof(IEnumerable<RecommendedProduct>))]
         public async Task<IHttpActionResult> Get(Guid userId, Guid id)
         {
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             var customerId = id;
             var query = db.CustomerOrderProducts.Include(cop => cop.CustomerOrder)
                                                                 .Where(cop => cop.CustomerOrder.CustomerId == id)

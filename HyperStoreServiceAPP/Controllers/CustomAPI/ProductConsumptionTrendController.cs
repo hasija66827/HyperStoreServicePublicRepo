@@ -17,7 +17,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
     {
         //Average number of THE day in a month
         private readonly float AvgNoOfTheDayInMonth = 4.2f;
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db;
 
         [HttpGet]
         [ResponseType(typeof(IEnumerable<ProductConsumptionDeficientTrend>))]
@@ -28,6 +28,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                 return BadRequest(ModelState);
             if (parameter == null)
                 return BadRequest("The parameter should not have been NULL");
+            db = UtilityAPI.RetrieveDBContext(userId);
 
             try
             {

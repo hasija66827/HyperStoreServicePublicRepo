@@ -17,7 +17,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public partial class ProductsController : ApiController, IProduct
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db ;
 
         [HttpGet]
         [ResponseType(typeof(List<Product>))]
@@ -25,10 +25,11 @@ namespace HyperStoreServiceAPP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             IQueryable<Product> query = db.Products;
             if (pfc == null)
                 return Ok(await query.ToListAsync());
-
             IEnumerable<Product> result;
             try
             {
@@ -64,40 +65,6 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(result);
         }
 
-        // PUT: api/Products/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> Put(Guid userId, Guid id, Product product)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != product.ProductId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
         // Post: api/Products
         [ResponseType(typeof(Product))]
         public async Task<IHttpActionResult> Post(Guid userId, ProductDTO productDTO)
@@ -108,6 +75,7 @@ namespace HyperStoreServiceAPP.Controllers
             }
             if (productDTO == null)
                 return BadRequest("ProductDTO cannot be null");
+            db = UtilityAPI.RetrieveDBContext(userId);
 
             var newProductId = Guid.NewGuid();
             Product product = new Product()
@@ -162,6 +130,7 @@ namespace HyperStoreServiceAPP.Controllers
         [ResponseType(typeof(List<ProductMetadata>))]
         public async Task<IHttpActionResult> GetProductMetadata(Guid userId)
         {
+            db = UtilityAPI.RetrieveDBContext(userId);
             var minQty = await db.Products.MinAsync(p => p.TotalQuantity);
             var maxQty = await db.Products.MaxAsync(p => p.TotalQuantity);
             var minDiscountPer = await db.Products.MinAsync(p => p.DiscountPer);

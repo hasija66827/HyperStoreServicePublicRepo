@@ -19,6 +19,10 @@ namespace HyperStoreService.Models
         {
         }
 
+        public HyperStoreServiceContext(string name) : base(name)
+        {
+        }
+
         public System.Data.Entity.DbSet<Product> Products { get; set; }
 
         public System.Data.Entity.DbSet<ProductTag> ProductTags { get; set; }

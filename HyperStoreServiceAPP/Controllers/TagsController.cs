@@ -15,47 +15,13 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public class TagsController : ApiController, ITag
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db ;
 
         // GET: api/Tags
         public IQueryable<Tag> Get(Guid userId)
         {
+            db = UtilityAPI.RetrieveDBContext(userId);
             return db.Tags;
-        }
-
-        // PUT: api/Tags/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> Put(Guid id, Tag tag)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != tag.TagId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(tag).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TagExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
         }
 
         // Post: api/Tags
@@ -68,6 +34,8 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 return BadRequest(ModelState);
             }
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             var tag = new Tag()
             {
                 TagId = Guid.NewGuid(),

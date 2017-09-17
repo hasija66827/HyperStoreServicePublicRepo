@@ -17,11 +17,6 @@ namespace HyperStoreServiceAPP.Controllers
     {
         private HyperStoreServiceContext db;
 
-        public CustomersController()
-        {
-            db = new HyperStoreServiceContext();
-        }
-
         // GET: api/Customers/5
         [HttpGet]
         [ResponseType(typeof(List<Customer>))]
@@ -29,6 +24,8 @@ namespace HyperStoreServiceAPP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             IQueryable<Customer> query = db.Customers;
             if (cfc == null)
                 return Ok(await query.ToListAsync());
@@ -62,6 +59,8 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 throw new Exception("CustomerDTO should not have been null");
             }
+            db = UtilityAPI.RetrieveDBContext(userId);
+            
             var customer = await db.Customers.FindAsync(id);
             if (customer == null)
                 throw new Exception(String.Format("Customer of id {0} not found while updating the customer", id));
@@ -107,6 +106,7 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 return BadRequest(ModelState);
             }
+            db = UtilityAPI.RetrieveDBContext(userId);
 
             var customer = new Customer()
             {
@@ -142,6 +142,7 @@ namespace HyperStoreServiceAPP.Controllers
         [ResponseType(typeof(IRange<decimal>))]
         public async Task<IHttpActionResult> GetWalletBalanceRange(Guid userId)
         {
+            db = UtilityAPI.RetrieveDBContext(userId);
             var minWalletBalance = await db.Customers.MinAsync(w => w.WalletBalance);
             var maxWalletBalance = await db.Customers.MaxAsync(w => w.WalletBalance);
             var walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);

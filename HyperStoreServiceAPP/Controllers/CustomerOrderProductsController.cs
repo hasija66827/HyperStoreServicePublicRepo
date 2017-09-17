@@ -15,7 +15,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public class CustomerOrderProductsController : ApiController, ICustomerOrderDetail
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db ;
 
         /// <summary>
         /// Returns the order detail of the customer order.
@@ -28,6 +28,7 @@ namespace HyperStoreServiceAPP.Controllers
         {
             if (id == null)
                 throw new Exception("CustomerOrderId should not have been NULL");
+            db = UtilityAPI.RetrieveDBContext(userId);
 
             List<CustomerOrderProduct> queryResult;
             try

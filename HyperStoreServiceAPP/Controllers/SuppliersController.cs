@@ -16,7 +16,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public class SuppliersController : ApiController, ISupplier
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db;
 
         // GET: api/Suppliers
         [HttpGet]
@@ -25,6 +25,8 @@ namespace HyperStoreServiceAPP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             IQueryable<Supplier> query = db.Suppliers;
             if (sfc == null)
                 return Ok(await query.ToListAsync());
@@ -56,6 +58,8 @@ namespace HyperStoreServiceAPP.Controllers
             }
             if (supplierDTO == null)
                 throw new Exception("SupplierDTO should not have been null");
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             var supplier = await db.Suppliers.FindAsync(id);
             if (supplier == null)
                 throw new Exception(String.Format("Supplier of id {0} not found", id));
@@ -96,6 +100,10 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 return BadRequest(ModelState);
             }
+            if (supplierDTO == null)
+                return BadRequest("SupplierDTO should not have been null");
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             var supplier = new Supplier()
             {
                 SupplierId = Guid.NewGuid(),
@@ -128,6 +136,8 @@ namespace HyperStoreServiceAPP.Controllers
         [ResponseType(typeof(List<IRange<decimal>>))]
         public async Task<IHttpActionResult> GetWalletBalanceRange(Guid userId)
         {
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             var minWalletBalance = await db.Suppliers.MinAsync(w => w.WalletBalance);
             var maxWalletBalance = await db.Suppliers.MaxAsync(w => w.WalletBalance);
 
