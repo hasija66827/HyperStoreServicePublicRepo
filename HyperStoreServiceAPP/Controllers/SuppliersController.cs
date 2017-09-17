@@ -21,7 +21,7 @@ namespace HyperStoreServiceAPP.Controllers
         // GET: api/Suppliers
         [HttpGet]
         [ResponseType(typeof(List<Supplier>))]
-        public async Task<IHttpActionResult> Get(SupplierFilterCriteria sfc)
+        public async Task<IHttpActionResult> Get(Guid userId, SupplierFilterCriteria sfc)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -48,7 +48,7 @@ namespace HyperStoreServiceAPP.Controllers
         // PUT: api/Suppliers/5
         [HttpPut]
         [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> Put(Guid id, SupplierDTO supplierDTO)
+        public async Task<IHttpActionResult> Put(Guid userId, Guid id, SupplierDTO supplierDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -90,7 +90,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
         // POST: api/Suppliers
         [ResponseType(typeof(Supplier))]
-        public async Task<IHttpActionResult> Post(SupplierDTO supplierDTO)
+        public async Task<IHttpActionResult> Post(Guid userId, SupplierDTO supplierDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -126,7 +126,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [HttpGet]
         [ResponseType(typeof(List<IRange<decimal>>))]
-        public async Task<IHttpActionResult> GetWalletBalanceRange()
+        public async Task<IHttpActionResult> GetWalletBalanceRange(Guid userId)
         {
             var minWalletBalance = await db.Suppliers.MinAsync(w => w.WalletBalance);
             var maxWalletBalance = await db.Suppliers.MaxAsync(w => w.WalletBalance);

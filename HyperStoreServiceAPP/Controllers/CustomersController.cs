@@ -17,14 +17,15 @@ namespace HyperStoreServiceAPP.Controllers
     {
         private HyperStoreServiceContext db;
 
-        public CustomersController() {
+        public CustomersController()
+        {
             db = new HyperStoreServiceContext();
         }
-        
+
         // GET: api/Customers/5
         [HttpGet]
         [ResponseType(typeof(List<Customer>))]
-        public async Task<IHttpActionResult> Get(CustomerFilterCriteria cfc)
+        public async Task<IHttpActionResult> Get(Guid userId, CustomerFilterCriteria cfc)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -51,7 +52,7 @@ namespace HyperStoreServiceAPP.Controllers
         // PUT: api/Customers/5
         [HttpPut]
         [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> Put(Guid id, CustomerDTO customerDTO)
+        public async Task<IHttpActionResult> Put(Guid userId, Guid id, CustomerDTO customerDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -97,7 +98,7 @@ namespace HyperStoreServiceAPP.Controllers
         // POST: api/Customers
         [HttpPost]
         [ResponseType(typeof(Customer))]
-        public async Task<IHttpActionResult> Post(CustomerDTO customerDTO)
+        public async Task<IHttpActionResult> Post(Guid userId, CustomerDTO customerDTO)
         {
             if (customerDTO == null)
                 throw new Exception("CustomerDTO should not be null");
@@ -139,12 +140,11 @@ namespace HyperStoreServiceAPP.Controllers
 
         [HttpGet]
         [ResponseType(typeof(IRange<decimal>))]
-        public async Task<IHttpActionResult> GetWalletBalanceRange()
+        public async Task<IHttpActionResult> GetWalletBalanceRange(Guid userId)
         {
             var minWalletBalance = await db.Customers.MinAsync(w => w.WalletBalance);
             var maxWalletBalance = await db.Customers.MaxAsync(w => w.WalletBalance);
-
-            var walletBalanceRange = new IRange<decimal?>(minWalletBalance,maxWalletBalance);
+            var walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
             var result = new List<IRange<decimal?>>();
             result.Add(walletBalanceRange);
             return Ok(result);

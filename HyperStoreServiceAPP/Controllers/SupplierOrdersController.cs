@@ -20,7 +20,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [HttpGet]
         [ResponseType(typeof(List<SupplierOrder>))]
-        public async Task<IHttpActionResult> Get(SupplierOrderFilterCriteria SOFC)
+        public async Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteria SOFC)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -75,7 +75,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// <returns>Using wallet amount</returns>
         [ResponseType(typeof(decimal))]
         [HttpPost]
-        public async Task<IHttpActionResult> Post(SupplierOrderDTO orderDetail)
+        public async Task<IHttpActionResult> Post(Guid userId, SupplierOrderDTO orderDetail)
         {
             if (!ModelState.IsValid)
             {

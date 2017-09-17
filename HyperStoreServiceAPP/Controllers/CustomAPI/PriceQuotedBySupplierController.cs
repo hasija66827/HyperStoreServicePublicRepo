@@ -12,7 +12,7 @@ using System.Web.Http.Description;
 
 namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
-    public class PriceQuotedBySupplierController : ApiController
+    public class PriceQuotedBySupplierController : ApiController, IPriceQuotedBySupplier
     {
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
@@ -24,7 +24,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// <returns>returns the list of Price Quoted By each supplier for the given product</returns>
         [HttpGet]
         [ResponseType(typeof(List<PriceQuotedBySupplier>))]
-        public async Task<IHttpActionResult> Get(Guid id)
+        public async Task<IHttpActionResult> Get(Guid userId, Guid id)
         {
             var productId = id;
             var query = db.SupplierOrderProducts

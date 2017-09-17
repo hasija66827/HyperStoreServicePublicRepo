@@ -25,7 +25,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// <returns></returns>
         [ResponseType(typeof(List<CustomerOrder>))]
         [HttpGet]
-        public async Task<IHttpActionResult> Get(CustomerOrderFilterCriteria customerOrderFilterCriteria)
+        public async Task<IHttpActionResult> Get(Guid userId, CustomerOrderFilterCriteria customerOrderFilterCriteria)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -64,7 +64,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// <returns></returns>
         [ResponseType(typeof(decimal))]
         [HttpPost]
-        public async Task<IHttpActionResult> Post(CustomerOrderDTO orderDetail)
+        public async Task<IHttpActionResult> Post(Guid userId,CustomerOrderDTO orderDetail)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -19,7 +19,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         // GET: api/SupplierOrderProducts/5
         [ResponseType(typeof(List<SupplierOrderProduct>))]
-        public async Task<IHttpActionResult> Get(Guid? id)
+        public async Task<IHttpActionResult> Get(Guid userId, Guid? id)
         {
             if (id == null)
                 return BadRequest("SupplierOrderId should not be null");
@@ -38,7 +38,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         // PUT: api/SupplierOrderProducts/5
-      
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

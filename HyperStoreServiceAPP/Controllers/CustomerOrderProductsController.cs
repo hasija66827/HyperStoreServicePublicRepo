@@ -24,7 +24,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// <returns></returns>
         [ResponseType(typeof(List<CustomerOrderProduct>))]
         [HttpGet]
-        public async Task<IHttpActionResult> Get(Guid? id)
+        public async Task<IHttpActionResult> Get(Guid userId, Guid? id)
         {
             if (id == null)
                 throw new Exception("CustomerOrderId should not have been NULL");
@@ -32,9 +32,9 @@ namespace HyperStoreServiceAPP.Controllers
             List<CustomerOrderProduct> queryResult;
             try
             {
-               var  query = db.CustomerOrderProducts
-                            .Where(cop => cop.CustomerOrderId == id)
-                            .Include(cop => cop.Product);
+                var query = db.CustomerOrderProducts
+                             .Where(cop => cop.CustomerOrderId == id)
+                             .Include(cop => cop.Product);
                 queryResult = await query.ToListAsync();
             }
             catch (Exception e)
@@ -42,7 +42,7 @@ namespace HyperStoreServiceAPP.Controllers
 
             return (Ok(queryResult));
         }
-   
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

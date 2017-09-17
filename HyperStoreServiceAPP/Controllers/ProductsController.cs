@@ -21,7 +21,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [HttpGet]
         [ResponseType(typeof(List<Product>))]
-        public async Task<IHttpActionResult> Get(ProductFilterCriteria pfc)
+        public async Task<IHttpActionResult> Get(Guid userId, ProductFilterCriteria pfc)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -66,7 +66,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         // PUT: api/Products/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> Put(Guid id, Product product)
+        public async Task<IHttpActionResult> Put(Guid userId, Guid id, Product product)
         {
             if (!ModelState.IsValid)
             {
@@ -100,7 +100,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         // Post: api/Products
         [ResponseType(typeof(Product))]
-        public async Task<IHttpActionResult> Post(ProductDTO productDTO)
+        public async Task<IHttpActionResult> Post(Guid userId, ProductDTO productDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -160,7 +160,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [HttpGet]
         [ResponseType(typeof(List<ProductMetadata>))]
-        public async Task<IHttpActionResult> GetProductMetadata()
+        public async Task<IHttpActionResult> GetProductMetadata(Guid userId)
         {
             var minQty = await db.Products.MinAsync(p => p.TotalQuantity);
             var maxQty = await db.Products.MaxAsync(p => p.TotalQuantity);

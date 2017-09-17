@@ -9,80 +9,84 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public interface ICustomerOrder
     {
-        Task<IHttpActionResult> Get(CustomerOrderFilterCriteria customerOrderFilterCriteria);
-        Task<IHttpActionResult> Post(CustomerOrderDTO orderDetail);
+        Task<IHttpActionResult> Get(Guid userId, CustomerOrderFilterCriteria customerOrderFilterCriteria);
+        Task<IHttpActionResult> Post(Guid userId, CustomerOrderDTO orderDetail);
     }
 
     public interface ICustomerOrderDetail
     {
-        Task<IHttpActionResult> Get(Guid? id);
+        Task<IHttpActionResult> Get(Guid userId, Guid? id);
     }
 
     public interface ICustomer
     {
-        Task<IHttpActionResult> Get(CustomerFilterCriteria cfc);
-        Task<IHttpActionResult> Put(Guid id, CustomerDTO customerDTO);
-        Task<IHttpActionResult> Post(CustomerDTO customerDTO);
-        Task<IHttpActionResult> GetWalletBalanceRange();
+        Task<IHttpActionResult> Get(Guid userId, CustomerFilterCriteria cfc);
+        Task<IHttpActionResult> Put(Guid userId, Guid id, CustomerDTO customerDTO);
+        Task<IHttpActionResult> Post(Guid userId, CustomerDTO customerDTO);
+        Task<IHttpActionResult> GetWalletBalanceRange(Guid userId);
     }
 
     public interface ICustomerTransaction
     {
-        Task<IHttpActionResult> Get(CustomerTransactionFilterCriteria transactionFilterCriteria);
-        Task<IHttpActionResult> Post(CustomerTransactionDTO transactionDTO);
+        Task<IHttpActionResult> Get(Guid userId, CustomerTransactionFilterCriteria transactionFilterCriteria);
+        Task<IHttpActionResult> Post(Guid userId, CustomerTransactionDTO transactionDTO);
     };
 
     public interface ITag
     {
-        IQueryable<Tag> Get();
-        Task<IHttpActionResult> Post(TagDTO tagDTO);
+        IQueryable<Tag> Get(Guid userId);
+        Task<IHttpActionResult> Post(Guid userId, TagDTO tagDTO);
     }
 
     public interface IProduct
     {
-        Task<IHttpActionResult> Get(ProductFilterCriteria filterProductCriteria);
-        Task<IHttpActionResult> Put(Guid id, Product product);
-        Task<IHttpActionResult> Post(ProductDTO product);
-        Task<IHttpActionResult> GetProductMetadata();
+        Task<IHttpActionResult> Get(Guid userId, ProductFilterCriteria filterProductCriteria);
+        Task<IHttpActionResult> Put(Guid userId, Guid id, Product product);
+        Task<IHttpActionResult> Post(Guid userId, ProductDTO product);
+        Task<IHttpActionResult> GetProductMetadata(Guid userId);
     }
 
     public interface ISupplierOrderProduct
     {
-        Task<IHttpActionResult> Get(Guid? supplierOrderId);
+        Task<IHttpActionResult> Get(Guid userId, Guid? supplierOrderId);
     }
 
     public interface ISupplierOrder
     {
-        Task<IHttpActionResult> Get(SupplierOrderFilterCriteria SOFC);
-        Task<IHttpActionResult> Post(SupplierOrderDTO orderDetail);
+        Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteria SOFC);
+        Task<IHttpActionResult> Post(Guid userId, SupplierOrderDTO orderDetail);
     }
 
     public interface ISupplier
     {
-        Task<IHttpActionResult> Get(SupplierFilterCriteria sfc);
-        Task<IHttpActionResult> Put(Guid id, SupplierDTO supplierDTO);
-        Task<IHttpActionResult> Post(SupplierDTO supplierDTO);
-        Task<IHttpActionResult> GetWalletBalanceRange();
+        Task<IHttpActionResult> Get(Guid userId, SupplierFilterCriteria sfc);
+        Task<IHttpActionResult> Put(Guid userId, Guid id, SupplierDTO supplierDTO);
+        Task<IHttpActionResult> Post(Guid userId, SupplierDTO supplierDTO);
+        Task<IHttpActionResult> GetWalletBalanceRange(Guid userId);
     }
 
     public interface ISupplierTransaction
     {
-        Task<IHttpActionResult> Get(SupplierTransactionFilterCriteria transactionFilterCriteria);
-        Task<IHttpActionResult> Post(SupplierTransactionDTO transactionDTO);
+        Task<IHttpActionResult> Get(Guid userId, SupplierTransactionFilterCriteria transactionFilterCriteria);
+        Task<IHttpActionResult> Post(Guid userId, SupplierTransactionDTO transactionDTO);
     }
 
     public interface ICustomerPurchaseTrend
     {
-        Task<IHttpActionResult> Get(CustomerPurchaseTrendDTO parameter);
+        Task<IHttpActionResult> Get(Guid userId, CustomerPurchaseTrendDTO parameter);
     }
 
     public interface IProductTrend
     {
-        Task<IHttpActionResult> Get(ProductConsumptionTrendDTO parameter);
+        Task<IHttpActionResult> Get(Guid userId, ProductConsumptionTrendDTO parameter);
     }
 
     public interface IRecommendedProduct
     {
-        Task<IHttpActionResult> Get(Guid id);
+        Task<IHttpActionResult> Get(Guid userId, Guid id);
+    }
+    public interface IPriceQuotedBySupplier
+    {
+        Task<IHttpActionResult> Get(Guid userId, Guid id);
     }
 }

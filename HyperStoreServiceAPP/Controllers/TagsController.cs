@@ -18,7 +18,7 @@ namespace HyperStoreServiceAPP.Controllers
         private HyperStoreServiceContext db = new HyperStoreServiceContext();
 
         // GET: api/Tags
-        public IQueryable<Tag> Get()
+        public IQueryable<Tag> Get(Guid userId)
         {
             return db.Tags;
         }
@@ -60,7 +60,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         // Post: api/Tags
         [ResponseType(typeof(Tag))]
-        public async Task<IHttpActionResult> Post(TagDTO tagDTO)
+        public async Task<IHttpActionResult> Post(Guid userId,TagDTO tagDTO)
         {
             if (tagDTO == null)
                 return BadRequest("TagDTO should not be null while creating a new tag");
