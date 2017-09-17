@@ -10,7 +10,8 @@ namespace HyperStoreServiceAPP
     {
         public static HyperStoreServiceContext RetrieveDBContext(Guid userId)
         {
-            if (userId == Guid.Empty)
+            //9977752717@abc123
+            if (userId == new Guid("7f010986-2bf2-4564-bcba-26109c9e1b22"))
                 return new HyperStoreServiceContext("name=AHyperStoreServiceContext");
             else
                 return new HyperStoreServiceContext("name=HyperStoreServiceContext");
