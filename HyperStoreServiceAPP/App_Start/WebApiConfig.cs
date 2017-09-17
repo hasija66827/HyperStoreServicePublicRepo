@@ -18,37 +18,57 @@ namespace HyperStoreServiceAPP
 
             config.Routes.MapHttpRoute(
                 name: "DefaultAPIGet",
-                routeTemplate: "api/{controller}",
+                routeTemplate: "api/{userId}/{controller}",
                 defaults: new { action = "Get" },
-                constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Get) }
+                constraints: new
+                {
+                    httpMethod = new HttpMethodConstraint(HttpMethod.Get),
+                    userId = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}"
+                }
               );
 
             config.Routes.MapHttpRoute(
                 name: "DefaultAPIPost",
-                routeTemplate: "api/{controller}",
+                routeTemplate: "api/{userId}/{controller}",
                 defaults: new { action = "Post" },
-                constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
+                constraints: new
+                {
+                    httpMethod = new HttpMethodConstraint(HttpMethod.Post),
+                    userId = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}"
+                }
                 );
 
             config.Routes.MapHttpRoute(
                 name: "DefaultAPIPut",
-                routeTemplate: "api/{controller}",
+                routeTemplate: "api/{userId}/{controller}",
                 defaults: new { action = "Put" },
-                constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Put) }
+                constraints: new
+                {
+                    httpMethod = new HttpMethodConstraint(HttpMethod.Put),
+                    userId = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}"
+                }
                 );
 
             config.Routes.MapHttpRoute(
              name: "DefaultApi",
-             routeTemplate: "api/{controller}/{id}",
-              defaults: new { id = RouteParameter.Optional },
-             constraints: new { id = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}" }
+             routeTemplate: "api/{userId}/{controller}/{id}",
+             defaults: new { id = RouteParameter.Optional },
+             constraints: new
+             {
+                 id = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}",
+                 userId = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}"
+             }
          );
 
             config.Routes.MapHttpRoute(
              name: "DefaultAPIWithAction",
-             routeTemplate: "api/{controller}/{action}"
+             routeTemplate: "api/{userId}/{controller}/{action}",
+             defaults: new { },
+             constraints: new
+             {
+                 userId = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}"
+             }
              );
-
         }
     }
 }
