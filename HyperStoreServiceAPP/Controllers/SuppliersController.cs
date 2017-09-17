@@ -133,17 +133,18 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         [HttpGet]
-        [ResponseType(typeof(List<IRange<decimal>>))]
+        [ResponseType(typeof(List<IRange<decimal?>>))]
         public async Task<IHttpActionResult> GetWalletBalanceRange(Guid userId)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
-
-            var minWalletBalance = await db.Suppliers.MinAsync(w => w.WalletBalance);
-            var maxWalletBalance = await db.Suppliers.MaxAsync(w => w.WalletBalance);
-
-            var walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
             var result = new List<IRange<decimal?>>();
-            result.Add(walletBalanceRange);
+            if (db.Suppliers.Count() != 0)
+            {
+                var minWalletBalance = await db.Suppliers.MinAsync(w => w.WalletBalance);
+                var maxWalletBalance = await db.Suppliers.MaxAsync(w => w.WalletBalance);
+                var walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
+                result.Add(walletBalanceRange);
+            }
             return Ok(result);
         }
 

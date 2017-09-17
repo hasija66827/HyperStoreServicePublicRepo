@@ -131,18 +131,21 @@ namespace HyperStoreServiceAPP.Controllers
         public async Task<IHttpActionResult> GetProductMetadata(Guid userId)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
-            var minQty = await db.Products.MinAsync(p => p.TotalQuantity);
-            var maxQty = await db.Products.MaxAsync(p => p.TotalQuantity);
-            var minDiscountPer = await db.Products.MinAsync(p => p.DiscountPer);
-            var maxDiscountPer = await db.Products.MaxAsync(p => p.DiscountPer);
-            var productMetadata = new ProductMetadata()
-            {
-                QuantityRange = new IRange<decimal>(minQty, maxQty),
-                DiscountPerRange = new IRange<decimal?>(minDiscountPer, maxDiscountPer)
-            };
-            // Need to send the list as the client is expecting that.
             List<ProductMetadata> result = new List<ProductMetadata>();
-            result.Add(productMetadata);
+            if (db.Products.Count() != 0)
+            {
+                var minQty = await db.Products.MinAsync(p => p.TotalQuantity);
+                var maxQty = await db.Products.MaxAsync(p => p.TotalQuantity);
+                var minDiscountPer = await db.Products.MinAsync(p => p.DiscountPer);
+                var maxDiscountPer = await db.Products.MaxAsync(p => p.DiscountPer);
+                var productMetadata = new ProductMetadata()
+                {
+                    QuantityRange = new IRange<decimal>(minQty, maxQty),
+                    DiscountPerRange = new IRange<decimal?>(minDiscountPer, maxDiscountPer)
+                };
+                // Need to send the list as the client is expecting that.
+                result.Add(productMetadata);
+            }
             return Ok(result);
         }
 

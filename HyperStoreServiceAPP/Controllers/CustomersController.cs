@@ -139,16 +139,19 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         [HttpGet]
-        [ResponseType(typeof(IRange<decimal>))]
+        [ResponseType(typeof(IRange<decimal?>))]
         public async Task<IHttpActionResult> GetWalletBalanceRange(Guid userId)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
-            var minWalletBalance = await db.Customers.MinAsync(w => w.WalletBalance);
-            var maxWalletBalance = await db.Customers.MaxAsync(w => w.WalletBalance);
-            var walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
             var result = new List<IRange<decimal?>>();
-            result.Add(walletBalanceRange);
-            return Ok(result);
+            if (db.Customers.Count() != 0)
+            {
+                var minWalletBalance = await db.Customers.MinAsync(w => w.WalletBalance);
+                var maxWalletBalance = await db.Customers.MaxAsync(w => w.WalletBalance);
+                var walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
+                result.Add(walletBalanceRange);
+            }
+                return Ok(result);
         }
 
         protected override void Dispose(bool disposing)
