@@ -60,7 +60,7 @@ namespace HyperStoreServiceAPP.Controllers
                 throw new Exception("CustomerDTO should not have been null");
             }
             db = UtilityAPI.RetrieveDBContext(userId);
-            
+
             var customer = await db.Customers.FindAsync(id);
             if (customer == null)
                 throw new Exception(String.Format("Customer of id {0} not found while updating the customer", id));
@@ -143,15 +143,15 @@ namespace HyperStoreServiceAPP.Controllers
         public async Task<IHttpActionResult> GetWalletBalanceRange(Guid userId)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
-            var result = new List<IRange<decimal?>>();
+            IRange<decimal?> walletBalanceRange = null;
             if (db.Customers.Count() != 0)
             {
                 var minWalletBalance = await db.Customers.MinAsync(w => w.WalletBalance);
                 var maxWalletBalance = await db.Customers.MaxAsync(w => w.WalletBalance);
-                var walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
-                result.Add(walletBalanceRange);
+                walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
+
             }
-                return Ok(result);
+            return Ok(walletBalanceRange);
         }
 
         protected override void Dispose(bool disposing)

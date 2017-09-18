@@ -17,7 +17,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public partial class ProductsController : ApiController, IProduct
     {
-        private HyperStoreServiceContext db ;
+        private HyperStoreServiceContext db;
 
         [HttpGet]
         [ResponseType(typeof(List<Product>))]
@@ -127,26 +127,24 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         [HttpGet]
-        [ResponseType(typeof(List<ProductMetadata>))]
+        [ResponseType(typeof(ProductMetadata))]
         public async Task<IHttpActionResult> GetProductMetadata(Guid userId)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
-            List<ProductMetadata> result = new List<ProductMetadata>();
+            ProductMetadata productMetadata = null;
             if (db.Products.Count() != 0)
             {
                 var minQty = await db.Products.MinAsync(p => p.TotalQuantity);
                 var maxQty = await db.Products.MaxAsync(p => p.TotalQuantity);
                 var minDiscountPer = await db.Products.MinAsync(p => p.DiscountPer);
                 var maxDiscountPer = await db.Products.MaxAsync(p => p.DiscountPer);
-                var productMetadata = new ProductMetadata()
+                productMetadata = new ProductMetadata()
                 {
                     QuantityRange = new IRange<decimal>(minQty, maxQty),
                     DiscountPerRange = new IRange<decimal?>(minDiscountPer, maxDiscountPer)
                 };
-                // Need to send the list as the client is expecting that.
-                result.Add(productMetadata);
             }
-            return Ok(result);
+            return Ok(productMetadata);
         }
 
         protected override void Dispose(bool disposing)
