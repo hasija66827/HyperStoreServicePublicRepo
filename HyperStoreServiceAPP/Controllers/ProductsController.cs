@@ -85,9 +85,9 @@ namespace HyperStoreServiceAPP.Controllers
                 Code = productDTO.Code,
                 CGSTPer = productDTO.CGSTPer,
                 DiscountPer = productDTO.DiscountPer,
-                DisplayPrice = productDTO.DisplayPrice,
+                MRP = productDTO.MRP,
                 Name = productDTO.Name,
-                RefillTime = productDTO.RefillTime,
+                HSN = productDTO.HSN,
                 SGSTPer = productDTO.SGSTPer,
                 Threshold = productDTO.Threshold
             };

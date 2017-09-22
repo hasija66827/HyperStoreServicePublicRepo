@@ -234,6 +234,14 @@
     <Compile Include="Migrations\201709170812070_Initial.Designer.cs">
       <DependentUpon>201709170812070_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709221933319_updating productentity.cs" />
+    <Compile Include="Migrations\201709221933319_updating productentity.Designer.cs">
+      <DependentUpon>201709221933319_updating productentity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201709221958164_updating dataytpeofhsn.cs" />
+    <Compile Include="Migrations\201709221958164_updating dataytpeofhsn.Designer.cs">
+      <DependentUpon>201709221958164_updating dataytpeofhsn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\CustomerOrderTransaction.cs" />
@@ -331,6 +339,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201709170812070_Initial.resx">
       <DependentUpon>201709170812070_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709221933319_updating productentity.resx">
+      <DependentUpon>201709221933319_updating productentity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709221958164_updating dataytpeofhsn.resx">
+      <DependentUpon>201709221958164_updating dataytpeofhsn.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -231,14 +231,14 @@ namespace HyperStoreServiceAPP.Controllers
                     var product = await db.Products.FindAsync(productConsumed.ProductId);
                     if (product == null)
                         throw new Exception(String.Format("product with id {0} not found while adding product in CustomerOrderProduct", productConsumed.ProductId));
-                    var sellingPrice = (decimal)(product.DisplayPrice * (decimal)((100 - product.DiscountPer) * (100 + product.CGSTPer + product.SGSTPer) / 10000));
+                    var sellingPrice = (decimal)(product.MRP * (decimal)((100 - product.DiscountPer) * (100 + product.CGSTPer + product.SGSTPer) / 10000));
                     var customerOrderProduct = new CustomerOrderProduct
                     {
                         CustomerOrderProductId = Guid.NewGuid(),
                         CustomerOrderId = customerOrderId,
                         ProductId = product.ProductId,
                         DiscountPerSnapShot = (decimal)product.DiscountPer,
-                        DisplayCostSnapShot = (decimal)product.DisplayPrice,
+                        DisplayCostSnapShot = (decimal)product.MRP,
                         CGSTPerSnapShot = (decimal)product.CGSTPer,
                         SGSTPerSnapshot = (decimal)product.SGSTPer,
                         QuantityConsumed = (decimal)productConsumed.QuantityConsumed,

@@ -21,7 +21,7 @@ namespace HyperStoreService.Models
         public string Code { get; set; }
 
         [Required]
-        public decimal? DisplayPrice { get; set; }
+        public decimal? MRP { get; set; }
 
         [Required]
         public decimal? DiscountPer { get; set; }
@@ -31,7 +31,7 @@ namespace HyperStoreService.Models
         [StringLength(24)]
         public string Name { get; set; }
 
-        public Int32 RefillTime { get; set; }
+        public Int32? HSN { get; set; }
 
         [Required]
         public decimal? SGSTPer { get; set; }
