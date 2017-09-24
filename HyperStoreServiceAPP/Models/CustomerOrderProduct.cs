@@ -10,18 +10,14 @@ namespace HyperStoreService.Models
     {
         public Guid CustomerOrderProductId { get; set; }
 
-        public decimal DisplayCostSnapShot { get; set; }
+        public decimal MRPSnapShot { get; set; }
         public decimal DiscountPerSnapShot { get; set; }
         public decimal CGSTPerSnapShot { get; set; }
         public decimal SGSTPerSnapshot { get; set; }
         public decimal QuantityConsumed { get; set; }
-        public decimal SellingPrice { get; set; }
-        public decimal NetValue { get; set; }
-        /*
-         * cop.DisplayCostSnapShot
-                ((100 - cop.DiscountPerSnapShot) * (100 + cop.CGSTPerSnapShot + cop.SGSTPerSnapshot) / 10000
-                * cop.QuantityConsumed)
-         */
+        public decimal ValueIncTaxSnapShot { get; set; }//derived attr
+        public decimal NetValue { get; set; }//derived attri
+
         public CustomerOrderProduct() { }
 
         public Guid CustomerOrderId { get; set; }

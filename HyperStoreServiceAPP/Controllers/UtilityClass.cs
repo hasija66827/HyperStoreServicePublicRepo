@@ -217,7 +217,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [Required]
         [Range(0, 100)]
-        public decimal IntrestRate { get; set; }
+        public decimal? IntrestRate { get; set; }
     }
 
     public class SupplierOrderFilterCriteria

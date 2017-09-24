@@ -16,7 +16,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public partial class CustomerOrdersController : ApiController, ICustomerOrder
     {
-        private HyperStoreServiceContext db ;
+        private HyperStoreServiceContext db;
 
         /// <summary>
         /// 
@@ -67,7 +67,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// <returns></returns>
         [ResponseType(typeof(decimal))]
         [HttpPost]
-        public async Task<IHttpActionResult> Post(Guid userId,CustomerOrderDTO orderDetail)
+        public async Task<IHttpActionResult> Post(Guid userId, CustomerOrderDTO orderDetail)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -231,19 +231,19 @@ namespace HyperStoreServiceAPP.Controllers
                     var product = await db.Products.FindAsync(productConsumed.ProductId);
                     if (product == null)
                         throw new Exception(String.Format("product with id {0} not found while adding product in CustomerOrderProduct", productConsumed.ProductId));
-                    var sellingPrice = (decimal)(product.MRP * (decimal)((100 - product.DiscountPer) * (100 + product.CGSTPer + product.SGSTPer) / 10000));
+                    var valueIncTax = product.MRP * (100 - product.DiscountPer) / 100;
                     var customerOrderProduct = new CustomerOrderProduct
                     {
                         CustomerOrderProductId = Guid.NewGuid(),
                         CustomerOrderId = customerOrderId,
                         ProductId = product.ProductId,
                         DiscountPerSnapShot = (decimal)product.DiscountPer,
-                        DisplayCostSnapShot = (decimal)product.MRP,
+                        MRPSnapShot = (decimal)product.MRP,
                         CGSTPerSnapShot = (decimal)product.CGSTPer,
                         SGSTPerSnapshot = (decimal)product.SGSTPer,
                         QuantityConsumed = (decimal)productConsumed.QuantityConsumed,
-                        SellingPrice = sellingPrice,
-                        NetValue = sellingPrice * (decimal)productConsumed.QuantityConsumed,
+                        ValueIncTaxSnapShot = (decimal)valueIncTax,
+                        NetValue = (decimal)(valueIncTax * productConsumed.QuantityConsumed),
                     };
                     db.CustomerOrderProducts.Add(customerOrderProduct);
                 }

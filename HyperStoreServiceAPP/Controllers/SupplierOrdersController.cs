@@ -16,7 +16,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public partial class SupplierOrdersController : ApiController, ISupplierOrder
     {
-        private HyperStoreServiceContext db ;
+        private HyperStoreServiceContext db;
 
         [HttpGet]
         [ResponseType(typeof(List<SupplierOrder>))]
@@ -175,7 +175,7 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 SupplierOrderId = Guid.NewGuid(),
                 DueDate = (DateTime)orderDetail.DueDate,
-                InterestRate = orderDetail.IntrestRate,
+                InterestRate = (decimal)orderDetail.IntrestRate,
                 OrderDate = DateTime.Now,
                 BillAmount = (decimal)orderDetail.SupplierBillingSummary.BillAmount,
                 PayedAmount = payingAmount,
