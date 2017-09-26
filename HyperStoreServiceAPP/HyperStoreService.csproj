@@ -246,6 +246,10 @@
     <Compile Include="Migrations\201709240909078_UpdatingAttributeCustomerOrder.Designer.cs">
       <DependentUpon>201709240909078_UpdatingAttributeCustomerOrder.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709261918548_addingcashback.cs" />
+    <Compile Include="Migrations\201709261918548_addingcashback.Designer.cs">
+      <DependentUpon>201709261918548_addingcashback.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\CustomerOrderTransaction.cs" />
@@ -301,7 +305,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Properties\PublishProfiles\HyperStoreServiceWebAPP20170924073947 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\HyperStoreServiceWebApp20170924100256 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -353,6 +357,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709240909078_UpdatingAttributeCustomerOrder.resx">
       <DependentUpon>201709240909078_UpdatingAttributeCustomerOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709261918548_addingcashback.resx">
+      <DependentUpon>201709261918548_addingcashback.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

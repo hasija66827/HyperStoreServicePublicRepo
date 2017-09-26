@@ -258,6 +258,10 @@ namespace HyperStoreServiceAPP.Controllers
         public decimal? TransactionAmount { get; set; }
 
         public string Description { get; set; }
+
+        [Required]
+        public bool? IsCashbackTransaction { get; set; }
+
         /// <summary>
         /// 1. Updates the wallet balance of the supplier.
         /// 2. Creates a transaction entity associated with the supplier.
@@ -313,6 +317,7 @@ namespace HyperStoreServiceAPP.Controllers
                 TransactionNo = Utility.GenerateCustomerTransactionNo(),
                 WalletSnapshot = walletSnapshot,
                 TransactionDate = DateTime.Now,
+                IsCashbackTransaction = (bool)this.IsCashbackTransaction
             };
             db.CustomerTransactions.Add(transaction);
             return transaction;

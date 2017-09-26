@@ -26,6 +26,7 @@ namespace HyperStoreService.Models
 
         public decimal WalletSnapshot { get; set; }
         public Guid CustomerId { get; set; }
+        public bool IsCashbackTransaction { get; set; }
         public Customer Customer { get; set; }
         public CustomerTransaction() { }
     }
