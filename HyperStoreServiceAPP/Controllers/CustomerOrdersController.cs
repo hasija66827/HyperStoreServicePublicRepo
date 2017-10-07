@@ -60,6 +60,14 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [ResponseType(typeof(Int32))]
+        public IHttpActionResult GetTotalRecordsCount(Guid userId)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+            return Ok(db.CustomerOrders.Count());
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -87,7 +95,7 @@ namespace HyperStoreServiceAPP.Controllers
                 {
                     CustomerId = orderDetail.CustomerId,
                     IsCredit = deductWalletAmount > 0 ? true : false,
-                    IsCashbackTransaction=false,
+                    IsCashbackTransaction = false,
                     TransactionAmount = Math.Abs(deductWalletAmount),
                     Description = customerOrder.CustomerOrderNo,
                 };

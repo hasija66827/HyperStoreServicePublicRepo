@@ -65,6 +65,14 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [ResponseType(typeof(Int32))]
+        public IHttpActionResult GetTotalRecordsCount(Guid userId)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+            return Ok(db.SupplierOrders.Count());
+        }
+
         // POST: api/SupplierOrders
         /// <summary>
         /// 1. Increments the wallet balance of the supplier with creating a transaction entity associated with the supplier.

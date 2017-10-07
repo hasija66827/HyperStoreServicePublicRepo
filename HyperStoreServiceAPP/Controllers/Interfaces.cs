@@ -10,6 +10,7 @@ namespace HyperStoreServiceAPP.Controllers
     public interface ICustomerOrder
     {
         Task<IHttpActionResult> Get(Guid userId, CustomerOrderFilterCriteria customerOrderFilterCriteria);
+        IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Post(Guid userId, CustomerOrderDTO orderDetail);
     }
 
@@ -21,6 +22,7 @@ namespace HyperStoreServiceAPP.Controllers
     public interface ICustomer
     {
         Task<IHttpActionResult> Get(Guid userId, CustomerFilterCriteria cfc);
+        IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Put(Guid userId, Guid id, CustomerDTO customerDTO);
         Task<IHttpActionResult> Post(Guid userId, CustomerDTO customerDTO);
         Task<IHttpActionResult> GetWalletBalanceRange(Guid userId);
@@ -41,6 +43,7 @@ namespace HyperStoreServiceAPP.Controllers
     public interface IProduct
     {
         Task<IHttpActionResult> Get(Guid userId, ProductFilterCriteria filterProductCriteria);
+        IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Post(Guid userId, ProductDTO product);
         Task<IHttpActionResult> GetProductMetadata(Guid userId);
     }
@@ -53,12 +56,14 @@ namespace HyperStoreServiceAPP.Controllers
     public interface ISupplierOrder
     {
         Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteria SOFC);
+        IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Post(Guid userId, SupplierOrderDTO orderDetail);
     }
 
     public interface ISupplier
     {
         Task<IHttpActionResult> Get(Guid userId, SupplierFilterCriteria sfc);
+        IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Put(Guid userId, Guid id, SupplierDTO supplierDTO);
         Task<IHttpActionResult> Post(Guid userId, SupplierDTO supplierDTO);
         Task<IHttpActionResult> GetWalletBalanceRange(Guid userId);

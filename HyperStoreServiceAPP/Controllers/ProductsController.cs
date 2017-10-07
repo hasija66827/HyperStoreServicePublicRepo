@@ -65,6 +65,14 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [ResponseType(typeof(Int32))]
+        public IHttpActionResult GetTotalRecordsCount(Guid userId)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+            return Ok(db.Products.Count());
+        }
+
         // Post: api/Products
         [ResponseType(typeof(Product))]
         public async Task<IHttpActionResult> Post(Guid userId, ProductDTO productDTO)

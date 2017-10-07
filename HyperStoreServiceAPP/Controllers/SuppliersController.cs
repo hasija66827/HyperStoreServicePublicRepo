@@ -47,6 +47,14 @@ namespace HyperStoreServiceAPP.Controllers
             }
         }
 
+        [HttpGet]
+        [ResponseType(typeof(Int32))]
+        public IHttpActionResult GetTotalRecordsCount(Guid userId)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+            return Ok(db.Suppliers.Count());
+        }
+
         // PUT: api/Suppliers/5
         [HttpPut]
         [ResponseType(typeof(Supplier))]
