@@ -10,7 +10,7 @@ namespace HyperStoreServiceAPP
     {
         public static HyperStoreServiceContext RetrieveDBContext(Guid userId)
         {
-                return new HyperStoreServiceContext("name=HyperStoreServiceContext");
+                return new HyperStoreServiceContext("name=9632166827DBConnection");
         }
     }
 }
