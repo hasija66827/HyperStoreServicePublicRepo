@@ -35,7 +35,8 @@ namespace HyperStoreService.Models
 
         [Required]
         public decimal? SGSTPer { get; set; }
-        public decimal Threshold { get; set; }
+        [Required]
+        public decimal? Threshold { get; set; }
         public decimal TotalQuantity { get; set; }
     }
 }

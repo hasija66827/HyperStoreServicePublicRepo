@@ -26,6 +26,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <WebProject_DirectoryAccessLevelKey>0</WebProject_DirectoryAccessLevelKey>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -250,6 +251,10 @@
     <Compile Include="Migrations\201709261918548_addingcashback.Designer.cs">
       <DependentUpon>201709261918548_addingcashback.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710071958361_updating threshold.cs" />
+    <Compile Include="Migrations\201710071958361_updating threshold.Designer.cs">
+      <DependentUpon>201710071958361_updating threshold.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\CustomerOrderTransaction.cs" />
@@ -360,6 +365,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709261918548_addingcashback.resx">
       <DependentUpon>201709261918548_addingcashback.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710071958361_updating threshold.resx">
+      <DependentUpon>201710071958361_updating threshold.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
