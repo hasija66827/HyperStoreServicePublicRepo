@@ -59,7 +59,7 @@ namespace HyperStoreServiceAPP.Controllers
         public decimal? QuantityConsumed { get; set; }
     }
 
-    public class CustomerBillingSummary
+    public class CustomerBillingSummaryDTO
     {
         [Required]
         public decimal? TotalQuantity { get; set; }
@@ -86,7 +86,7 @@ namespace HyperStoreServiceAPP.Controllers
         public List<ProductConsumed> ProductsConsumed { get; set; }
 
         [Required]
-        public CustomerBillingSummary CustomerBillingSummary { get; set; }
+        public CustomerBillingSummaryDTO CustomerBillingSummaryDTO { get; set; }
 
         [Required]
         public Guid? CustomerId { get; set; }
@@ -194,7 +194,7 @@ namespace HyperStoreServiceAPP.Controllers
         public decimal? PurchasePricePerUnit { get; set; }
     }
 
-    public class SupplierBillingSummary
+    public class SupplierBillingSummaryDTO
     {
         [Required]
         public decimal? BillAmount { get; set; }
@@ -217,7 +217,7 @@ namespace HyperStoreServiceAPP.Controllers
         [Required]
         public DateTime? DueDate { get; set; }
 
-        public SupplierBillingSummary SupplierBillingSummary { get; set; }
+        public SupplierBillingSummaryDTO SupplierBillingSummaryDTO { get; set; }
 
         [Required]
         public decimal? PayingAmount { get; set; }

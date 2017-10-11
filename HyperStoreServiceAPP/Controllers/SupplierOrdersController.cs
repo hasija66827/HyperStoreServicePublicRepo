@@ -98,7 +98,7 @@ namespace HyperStoreServiceAPP.Controllers
             db = UtilityAPI.RetrieveDBContext(userId);
 
             var payingAmount = orderDetail.PayingAmount;
-            var billAmount = orderDetail.SupplierBillingSummary.BillAmount;
+            var billAmount = orderDetail.SupplierBillingSummaryDTO.BillAmount;
             if (payingAmount > billAmount)
                 return BadRequest(String.Format("Paying Amount {0} should be less than Bill Amount {1}", payingAmount, billAmount));
             //TODO: Verify bill amount.
@@ -163,7 +163,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         private async Task<SupplierOrder> CreateNewSupplierOrderAsync(SupplierOrderDTO orderDetail)
         {
-            var billAmount = orderDetail.SupplierBillingSummary.BillAmount;
+            var billAmount = orderDetail.SupplierBillingSummaryDTO.BillAmount;
             var payingAmount = (decimal)orderDetail.PayingAmount;
 
             var supplier = await db.Suppliers.FindAsync(orderDetail.SupplierId);
@@ -185,14 +185,14 @@ namespace HyperStoreServiceAPP.Controllers
                 DueDate = (DateTime)orderDetail.DueDate,
                 InterestRate = (decimal)orderDetail.IntrestRate,
                 OrderDate = DateTime.Now,
-                BillAmount = (decimal)orderDetail.SupplierBillingSummary.BillAmount,
+                BillAmount = (decimal)orderDetail.SupplierBillingSummaryDTO.BillAmount,
                 PayedAmount = payingAmount,
                 PayedAmountByWallet = payedAmountByWallet,
                 SettledPayedAmount = settledPayedAmount,
                 SupplierOrderNo = Utility.GenerateSupplierOrderNo(),
                 SupplierId = (Guid)orderDetail.SupplierId,
-                TotalItems = (int)orderDetail.SupplierBillingSummary.TotalItems,
-                TotalQuantity = (decimal)orderDetail.SupplierBillingSummary.TotalQuantity,
+                TotalItems = (int)orderDetail.SupplierBillingSummaryDTO.TotalItems,
+                TotalQuantity = (decimal)orderDetail.SupplierBillingSummaryDTO.TotalQuantity,
             };
             db.SupplierOrders.Add(supplierOrder);
             return supplierOrder;

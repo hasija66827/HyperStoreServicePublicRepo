@@ -80,11 +80,16 @@ namespace HyperStoreServiceAPP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             if (orderDetail == null)
-                return BadRequest("OrderDetails should not have been null while placing the customer order");
+                throw new Exception("OrderDetails should not have been null while placing the customer order");
+
             db = UtilityAPI.RetrieveDBContext(userId);
 
+            var IsBillingSummaryCorrect = await ValidateBillingSummary(orderDetail);
+            if (!IsBillingSummaryCorrect)
+                throw new Exception("BillingSummary is not correct.");
+
             decimal deductWalletAmount = 0;
-            //TODO: Verify pay amount.
+
             try
             {
                 await UpdateStockOfProductsAsync(orderDetail.ProductsConsumed);
@@ -119,15 +124,47 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(deductWalletAmount);
         }
 
+        private async Task<bool> ValidateBillingSummary(CustomerOrderDTO orderDetail)
+        {
+
+            decimal? cartAmount = 0;
+            decimal? discountAmount = 0;
+
+            if (orderDetail.CustomerBillingSummaryDTO.TotalItems != orderDetail.ProductsConsumed.Count)
+                return false;
+
+            if (orderDetail.CustomerBillingSummaryDTO.TotalQuantity != orderDetail.ProductsConsumed.Sum(p=>p.QuantityConsumed))
+                return false;
+
+            foreach (var productConsumed in orderDetail.ProductsConsumed)
+            {
+                var product = await db.Products.FindAsync(productConsumed.ProductId);
+                if (product == null)
+                    throw new Exception(string.Format("Product with id {0} not found.", productConsumed.ProductId));
+                cartAmount += productConsumed.QuantityConsumed * product.MRP;
+                discountAmount += productConsumed.QuantityConsumed * product.DiscountPer * product.MRP / 100;
+            }
+            if (cartAmount != orderDetail.CustomerBillingSummaryDTO.CartAmount
+                || discountAmount != orderDetail.CustomerBillingSummaryDTO.DiscountAmount)
+                return false;
+            return true;
+        }
+
+        private bool Validate_CartAmount_DiscountedAmount(CustomerOrderDTO orderDetail, List<Product> products)
+        {
+            return true;
+        }
+
         private async Task<decimal?> UpdateCustomerNetWorthAsync(CustomerOrderDTO orderDTO)
         {
             var customer = await db.Customers.FindAsync(orderDTO.CustomerId);
             if (customer == null)
                 throw new Exception(String.Format("Customer with id {0} not found while updating its networth", orderDTO.CustomerId));
-            customer.NetWorth += orderDTO.CustomerBillingSummary.PayAmount;
+            customer.NetWorth += orderDTO.CustomerBillingSummaryDTO.PayAmount;
             db.Entry(customer).State = EntityState.Modified;
             return customer.NetWorth;
         }
+
 
         protected override void Dispose(bool disposing)
         {
@@ -167,7 +204,7 @@ namespace HyperStoreServiceAPP.Controllers
                 if (customer == null)
                     throw new Exception(String.Format("Customer {0} not found", orderDetails.CustomerId));
 
-                var payAmount = (decimal)orderDetails.CustomerBillingSummary.PayAmount;
+                var payAmount = (decimal)orderDetails.CustomerBillingSummaryDTO.PayAmount;
                 if (orderDetails.IsPayingNow == true)
                 {
                     if (orderDetails.IsUsingWallet == true)
@@ -196,7 +233,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         private CustomerOrder CreateNewCustomerOrder(CustomerOrderDTO orderDetail, decimal usingWalletAmount)
         {
-            var CBS = orderDetail.CustomerBillingSummary;
+            var CBS = orderDetail.CustomerBillingSummaryDTO;
             var customerOrder = new CustomerOrder()
             {
                 CustomerOrderId = Guid.NewGuid(),
