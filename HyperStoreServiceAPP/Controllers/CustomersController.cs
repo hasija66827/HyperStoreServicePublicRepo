@@ -47,6 +47,15 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         [HttpGet]
+        [ResponseType(typeof(List<Customer>))]
+        public IHttpActionResult Get(Guid userId, Guid id)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+            var customer=db.Customers.Find(id);
+            return Ok(customer);
+        }
+
+        [HttpGet]
         [ResponseType(typeof(Int32))]
         public IHttpActionResult GetTotalRecordsCount(Guid userId)
         {
