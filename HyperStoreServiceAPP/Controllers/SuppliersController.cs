@@ -18,6 +18,7 @@ namespace HyperStoreServiceAPP.Controllers
     {
         private HyperStoreServiceContext db;
 
+        #region Read
         // GET: api/Suppliers
         [HttpGet]
         [ResponseType(typeof(List<Supplier>))]
@@ -48,12 +49,22 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         [HttpGet]
+        [ResponseType(typeof(Supplier))]
+        public IHttpActionResult Get(Guid userId, Guid id)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+            var supplier = db.Suppliers.Find(id);
+            return Ok(supplier);
+        }
+
+        [HttpGet]
         [ResponseType(typeof(Int32))]
         public IHttpActionResult GetTotalRecordsCount(Guid userId)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
             return Ok(db.Suppliers.Count());
         }
+        #endregion
 
         // PUT: api/Suppliers/5
         [HttpPut]
@@ -100,6 +111,7 @@ namespace HyperStoreServiceAPP.Controllers
             updatedSupplier.Name = supplierDTO.Name;
             return updatedSupplier;
         }
+
         // POST: api/Suppliers
         [ResponseType(typeof(Supplier))]
         public async Task<IHttpActionResult> Post(Guid userId, SupplierDTO supplierDTO)

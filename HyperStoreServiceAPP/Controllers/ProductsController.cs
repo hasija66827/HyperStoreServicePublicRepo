@@ -19,6 +19,7 @@ namespace HyperStoreServiceAPP.Controllers
     {
         private HyperStoreServiceContext db;
 
+        #region Read
         [HttpGet]
         [ResponseType(typeof(List<Product>))]
         public async Task<IHttpActionResult> Get(Guid userId, ProductFilterCriteria pfc)
@@ -66,12 +67,22 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         [HttpGet]
+        [ResponseType(typeof(Product))]
+        public IHttpActionResult Get(Guid userId, Guid id)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+            var product = db.Products.Find(id);
+            return Ok(product);
+        }
+
+        [HttpGet]
         [ResponseType(typeof(Int32))]
         public IHttpActionResult GetTotalRecordsCount(Guid userId)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
             return Ok(db.Products.Count());
         }
+        #endregion
 
         // Post: api/Products
         [ResponseType(typeof(Product))]
@@ -163,12 +174,10 @@ namespace HyperStoreServiceAPP.Controllers
             }
             base.Dispose(disposing);
         }
-
     }
 
     public partial class ProductsController : ApiController, IProduct
     {
-
         private bool ProductExists(Guid? id)
         {
             return db.Products.Count(e => e.ProductId == id) > 0;

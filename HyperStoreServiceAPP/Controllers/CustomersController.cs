@@ -47,7 +47,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         [HttpGet]
-        [ResponseType(typeof(List<Customer>))]
+        [ResponseType(typeof(Customer))]
         public IHttpActionResult Get(Guid userId, Guid id)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
