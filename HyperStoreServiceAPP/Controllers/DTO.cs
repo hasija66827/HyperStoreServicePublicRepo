@@ -188,7 +188,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         [Required]
         [Range(0, float.MaxValue)]
-        public float? QuantityPurchased { get; set; }
+        public decimal? QuantityPurchased { get; set; }
 
         [Required]
         public decimal? PurchasePricePerUnit { get; set; }

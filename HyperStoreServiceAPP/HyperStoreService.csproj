@@ -225,7 +225,7 @@
     <Compile Include="Controllers\SuppliersController.cs" />
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Controllers\SupplierTransactionsController.cs" />
-    <Compile Include="Controllers\UtilityClass.cs" />
+    <Compile Include="Controllers\DTO.cs" />
     <Compile Include="CustomModels\ProductMetadata.cs" />
     <Compile Include="CustomModels\RecommendedProduct.cs" />
     <Compile Include="Global.asax.cs">

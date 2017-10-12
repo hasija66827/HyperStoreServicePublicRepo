@@ -54,5 +54,14 @@ namespace HyperStoreServiceAPP
                 s = String.Concat(s, random.Next(10).ToString());
             return s;
         }
+
+        public static bool IsErrorAcceptable(decimal? error)
+        {
+            if (error == null)
+                throw new Exception("error should not be null");
+            if (error > 1 || error < -1)
+                return false;
+            return true;
+        }
     }
 }

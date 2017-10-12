@@ -126,14 +126,14 @@ namespace HyperStoreServiceAPP.Controllers
 
         private async Task<bool> ValidateBillingSummary(CustomerOrderDTO orderDetail)
         {
-
             decimal? cartAmount = 0;
             decimal? discountAmount = 0;
 
             if (orderDetail.CustomerBillingSummaryDTO.TotalItems != orderDetail.ProductsConsumed.Count)
                 return false;
 
-            if (orderDetail.CustomerBillingSummaryDTO.TotalQuantity != orderDetail.ProductsConsumed.Sum(p=>p.QuantityConsumed))
+            var quantityErrorDiff = orderDetail.CustomerBillingSummaryDTO.TotalQuantity - orderDetail.ProductsConsumed.Sum(p => p.QuantityConsumed);
+            if (!Utility.IsErrorAcceptable(quantityErrorDiff))
                 return false;
 
             foreach (var productConsumed in orderDetail.ProductsConsumed)
@@ -144,8 +144,10 @@ namespace HyperStoreServiceAPP.Controllers
                 cartAmount += productConsumed.QuantityConsumed * product.MRP;
                 discountAmount += productConsumed.QuantityConsumed * product.DiscountPer * product.MRP / 100;
             }
-            if (cartAmount != orderDetail.CustomerBillingSummaryDTO.CartAmount
-                || discountAmount != orderDetail.CustomerBillingSummaryDTO.DiscountAmount)
+
+            var cartAmountErrorDiff = cartAmount - orderDetail.CustomerBillingSummaryDTO.CartAmount;
+            var discountAmountErrorDiff = discountAmount - orderDetail.CustomerBillingSummaryDTO.DiscountAmount;
+            if (!Utility.IsErrorAcceptable(cartAmountErrorDiff) || ! Utility.IsErrorAcceptable(discountAmountErrorDiff))
                 return false;
             return true;
         }

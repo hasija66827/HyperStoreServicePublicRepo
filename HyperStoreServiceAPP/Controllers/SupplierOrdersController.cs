@@ -18,6 +18,7 @@ namespace HyperStoreServiceAPP.Controllers
     {
         private HyperStoreServiceContext db;
 
+        #region Read
         [HttpGet]
         [ResponseType(typeof(List<SupplierOrder>))]
         public async Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteria SOFC)
@@ -72,6 +73,7 @@ namespace HyperStoreServiceAPP.Controllers
             db = UtilityAPI.RetrieveDBContext(userId);
             return Ok(db.SupplierOrders.Count());
         }
+        #endregion
 
         // POST: api/SupplierOrders
         /// <summary>
@@ -88,21 +90,25 @@ namespace HyperStoreServiceAPP.Controllers
         public async Task<IHttpActionResult> Post(Guid userId, SupplierOrderDTO orderDetail)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
             if (orderDetail == null)
                 throw new Exception("OrderDetails should not have been null while placing the supplier order");
+
             if (orderDetail.DueDate < DateTime.Now)
                 return BadRequest(String.Format("DueDate {0} cannot be before current Date {1}", orderDetail.DueDate, DateTime.Now.Date));
-            db = UtilityAPI.RetrieveDBContext(userId);
 
             var payingAmount = orderDetail.PayingAmount;
             var billAmount = orderDetail.SupplierBillingSummaryDTO.BillAmount;
             if (payingAmount > billAmount)
                 return BadRequest(String.Format("Paying Amount {0} should be less than Bill Amount {1}", payingAmount, billAmount));
-            //TODO: Verify bill amount.
+
             db = UtilityAPI.RetrieveDBContext(userId);
+
+            var IsBillingSummaryCorrect = await ValidateBillingSummary(orderDetail);
+            if (!IsBillingSummaryCorrect)
+                throw new Exception("BillingSummary is not correct.");
+
             try
             {
                 var supplierOrder = await CreateNewSupplierOrderAsync(orderDetail);
@@ -128,6 +134,30 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 throw;
             }
+        }
+        private async Task<bool> ValidateBillingSummary(SupplierOrderDTO orderDetail)
+        {
+            if (orderDetail.SupplierBillingSummaryDTO.TotalItems != orderDetail.ProductsPurchased.Count)
+                return false;
+
+            var quantityErrorDiff = orderDetail.SupplierBillingSummaryDTO.TotalQuantity 
+                                    - orderDetail.ProductsPurchased.Sum(p => p.QuantityPurchased);
+            if (!Utility.IsErrorAcceptable(quantityErrorDiff))
+                return false;
+
+            decimal? BillAmount = 0;
+
+            foreach (var productPurchased in orderDetail.ProductsPurchased)
+            {
+                var product = await db.Products.FindAsync(productPurchased.ProductId);
+                if (product == null)
+                    throw new Exception(String.Format("Product with id {0} not found.", productPurchased.ProductId));
+                BillAmount += productPurchased.PurchasePricePerUnit * productPurchased.QuantityPurchased;
+            }
+            var errorDiff = orderDetail.SupplierBillingSummaryDTO.BillAmount - BillAmount;
+            if (!Utility.IsErrorAcceptable(errorDiff))
+                return false;
+            return true;
         }
 
         protected override void Dispose(bool disposing)
