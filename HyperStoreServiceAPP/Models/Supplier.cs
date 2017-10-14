@@ -9,7 +9,7 @@ namespace HyperStoreService.Models
 {
     public class Supplier
     {
-        public Guid? SupplierId { get; set; }
+        public Guid SupplierId { get; set; }
         public string Address { get; set; }
         public string GSTIN { get; set; }
 

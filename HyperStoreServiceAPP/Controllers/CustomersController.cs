@@ -51,7 +51,7 @@ namespace HyperStoreServiceAPP.Controllers
         public IHttpActionResult Get(Guid userId, Guid id)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
-            var customer=db.Customers.Find(id);
+            var customer = db.Customers.Find(id);
             return Ok(customer);
         }
 
@@ -143,9 +143,13 @@ namespace HyperStoreServiceAPP.Controllers
             }
             catch (DbUpdateException)
             {
-                if (CustomerExists(customer.CustomerId))
+                if (IsNameExist(customer.Name))
                 {
-                    return Conflict();
+                    return BadRequest(String.Format("Customer with name {0} already exists.", customer.Name));
+                }
+                else if (IsMobNoExist(customer.MobileNo))
+                {
+                    return BadRequest(String.Format("Customer with mobile number {0} already exists.", customer.MobileNo));
                 }
                 else
                 {
@@ -180,9 +184,15 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool CustomerExists(Guid? id)
+        private bool IsNameExist(string customerName)
         {
-            return db.Customers.Count(e => e.CustomerId == id) > 0;
+            return db.Customers.Count(c => c.Name == customerName) > 0;
         }
+
+        private bool IsMobNoExist(string customerMobileNo)
+        {
+            return db.Customers.Count(c => c.MobileNo == customerMobileNo) > 0;
+        }
+
     }
 }

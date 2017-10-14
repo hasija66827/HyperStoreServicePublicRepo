@@ -140,9 +140,13 @@ namespace HyperStoreServiceAPP.Controllers
             }
             catch (DbUpdateException)
             {
-                if (SupplierExists(supplier.SupplierId))
+                if (IsNameExist(supplier.Name))
                 {
-                    return Conflict();
+                    return BadRequest(String.Format("Supplier with name {0} already exists.", supplier.Name));
+                }
+                else if (IsMobNoExist(supplier.MobileNo))
+                {
+                    return BadRequest(String.Format("Supplier with mobile number {0} already exists.", supplier.MobileNo));
                 }
                 else
                 {
@@ -158,7 +162,7 @@ namespace HyperStoreServiceAPP.Controllers
         {
             db = UtilityAPI.RetrieveDBContext(userId);
             IRange<decimal?> walletBalanceRange = null;
-           if (db.Suppliers.Count() != 0)
+            if (db.Suppliers.Count() != 0)
             {
                 var minWalletBalance = await db.Suppliers.MinAsync(w => w.WalletBalance);
                 var maxWalletBalance = await db.Suppliers.MaxAsync(w => w.WalletBalance);
@@ -176,9 +180,14 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool SupplierExists(Guid? id)
+        private bool IsNameExist(string supplierName)
         {
-            return db.Suppliers.Count(e => e.SupplierId == id) > 0;
+            return db.Suppliers.Count(s => s.Name == supplierName) > 0;
+        }
+
+        private bool IsMobNoExist(string supplierMobileNo)
+        {
+            return db.Suppliers.Count(s => s.MobileNo == supplierMobileNo) > 0;
         }
     }
 }

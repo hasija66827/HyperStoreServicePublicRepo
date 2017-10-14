@@ -15,7 +15,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public class TagsController : ApiController, ITag
     {
-        private HyperStoreServiceContext db ;
+        private HyperStoreServiceContext db;
 
         // GET: api/Tags
         public IQueryable<Tag> Get(Guid userId)
@@ -26,7 +26,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         // Post: api/Tags
         [ResponseType(typeof(Tag))]
-        public async Task<IHttpActionResult> Post(Guid userId,TagDTO tagDTO)
+        public async Task<IHttpActionResult> Post(Guid userId, TagDTO tagDTO)
         {
             if (tagDTO == null)
                 return BadRequest("TagDTO should not be null while creating a new tag");
@@ -48,9 +48,9 @@ namespace HyperStoreServiceAPP.Controllers
             }
             catch (DbUpdateException)
             {
-                if (TagExists(tag.TagId))
+                if (IsTagNameExists(tag.TagName))
                 {
-                    return Conflict();
+                    return BadRequest(String.Format("Tag with name {0} already exist.", tag.TagName));
                 }
                 else
                 {
@@ -69,9 +69,9 @@ namespace HyperStoreServiceAPP.Controllers
             base.Dispose(disposing);
         }
 
-        private bool TagExists(Guid? id)
+        private bool IsTagNameExists(string tagName)
         {
-            return db.Tags.Count(e => e.TagId == id) > 0;
+            return db.Tags.Count(t => t.TagName == tagName) > 0;
         }
     }
 }
