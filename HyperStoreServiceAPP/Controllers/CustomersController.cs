@@ -81,34 +81,25 @@ namespace HyperStoreServiceAPP.Controllers
             var customer = await db.Customers.FindAsync(id);
             if (customer == null)
                 throw new Exception(String.Format("Customer of id {0} not found while updating the customer", id));
-            var updatedCustomer = _UpdateCustomer(customer, customerDTO);
-            db.Entry(updatedCustomer).State = EntityState.Modified;
+           _UpdateCustomer(customer, customerDTO);
+            db.Entry(customer).State = EntityState.Modified;
             try
             {
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CustomerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
-            return Ok(updatedCustomer);
+            return Ok(customer);
         }
 
-        private Customer _UpdateCustomer(Customer customer, CustomerDTO customerDTO)
+        private void _UpdateCustomer(Customer customer, CustomerDTO customerDTO)
         {
-            var updatedCustomer = customer;
-            updatedCustomer.Address = customerDTO.Address;
-            updatedCustomer.MobileNo = customerDTO.MobileNo;
-            updatedCustomer.Name = customerDTO.Name;
-            updatedCustomer.GSTIN = customerDTO.GSTIN;
-            return updatedCustomer;
+            customer.Address = customerDTO.Address;
+            customer.MobileNo = customerDTO.MobileNo;
+            customer.Name = customerDTO.Name;
+            customer.GSTIN = customerDTO.GSTIN;           
         }
 
         // POST: api/Customers

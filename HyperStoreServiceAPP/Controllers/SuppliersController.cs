@@ -82,34 +82,25 @@ namespace HyperStoreServiceAPP.Controllers
             var supplier = await db.Suppliers.FindAsync(id);
             if (supplier == null)
                 throw new Exception(String.Format("Supplier of id {0} not found", id));
-            var updatedSupplier = _UpdateSupplier(supplier, supplierDTO);
-            db.Entry(updatedSupplier).State = EntityState.Modified;
+           _UpdateSupplier(supplier, supplierDTO);
+            db.Entry(supplier).State = EntityState.Modified;
             try
             {
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SupplierExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
-            return Ok(updatedSupplier);
+            return Ok(supplier);
         }
 
-        private Supplier _UpdateSupplier(Supplier supplier, SupplierDTO supplierDTO)
+        private void _UpdateSupplier(Supplier supplier, SupplierDTO supplierDTO)
         {
-            var updatedSupplier = supplier;
-            updatedSupplier.Address = supplierDTO.Address;
-            updatedSupplier.GSTIN = supplierDTO.GSTIN;
-            updatedSupplier.MobileNo = supplierDTO.MobileNo;
-            updatedSupplier.Name = supplierDTO.Name;
-            return updatedSupplier;
+            supplier.Address = supplierDTO.Address;
+            supplier.GSTIN = supplierDTO.GSTIN;
+            supplier.MobileNo = supplierDTO.MobileNo;
+            supplier.Name = supplierDTO.Name;
         }
 
         // POST: api/Suppliers
