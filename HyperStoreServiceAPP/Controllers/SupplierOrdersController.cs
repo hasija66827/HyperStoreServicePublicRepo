@@ -111,7 +111,7 @@ namespace HyperStoreServiceAPP.Controllers
 
             try
             {
-                var supplierOrder = await CreateNewSupplierOrderAsync(orderDetail);
+                var supplierOrder = CreateNewSupplierOrderAsync(orderDetail);
                 SupplierTransactionDTO transactionDTO = new SupplierTransactionDTO
                 {
                     IsCredit = true,
@@ -191,23 +191,10 @@ namespace HyperStoreServiceAPP.Controllers
             return supplierOrderTransaction;
         }
 
-        private async Task<SupplierOrder> CreateNewSupplierOrderAsync(SupplierOrderDTO orderDetail)
+        private SupplierOrder CreateNewSupplierOrderAsync(SupplierOrderDTO orderDetail)
         {
             var billAmount = orderDetail.SupplierBillingSummaryDTO.BillAmount;
             var payingAmount = (decimal)orderDetail.PayingAmount;
-
-            var supplier = await db.Suppliers.FindAsync(orderDetail.SupplierId);
-            if (supplier == null)
-                throw new Exception(String.Format("Supplier with Id {0} does not exist", orderDetail.SupplierId));
-            decimal payedAmountByWallet = 0;
-            // If Supplier owes the Retailer.
-            if (supplier.WalletBalance < 0)
-                payedAmountByWallet = Math.Min(Math.Abs(supplier.WalletBalance), (decimal)(billAmount - payingAmount));
-
-            var settledPayedAmount = payingAmount + payedAmountByWallet;
-
-            if (settledPayedAmount > billAmount)
-                throw new Exception(String.Format("Settled Payed Amount {0} can never be less than bill amount {1}", settledPayedAmount, billAmount));
 
             var supplierOrder = new SupplierOrder
             {
@@ -217,8 +204,7 @@ namespace HyperStoreServiceAPP.Controllers
                 OrderDate = DateTime.Now,
                 BillAmount = (decimal)orderDetail.SupplierBillingSummaryDTO.BillAmount,
                 PayedAmount = payingAmount,
-                PayedAmountByWallet = payedAmountByWallet,
-                SettledPayedAmount = settledPayedAmount,
+                SettledPayedAmount = payingAmount,
                 SupplierOrderNo = Utility.GenerateSupplierOrderNo(),
                 SupplierId = (Guid)orderDetail.SupplierId,
                 TotalItems = (int)orderDetail.SupplierBillingSummaryDTO.TotalItems,

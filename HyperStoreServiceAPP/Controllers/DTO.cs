@@ -49,7 +49,7 @@ namespace HyperStoreServiceAPP.Controllers
         public IRange<DateTime> OrderDateRange { get; set; }
     }
 
-    public class ProductConsumed
+    public class ProductConsumedDTO
     {
         [Required]
         public Guid? ProductId { get; set; }
@@ -77,13 +77,13 @@ namespace HyperStoreServiceAPP.Controllers
         public decimal? Tax { get; set; }
 
         [Required]
-        public decimal? PayAmount { get; set; }
+        public decimal? BillAmount { get; set; }
     }
 
     public class CustomerOrderDTO
     {
         [Required]
-        public List<ProductConsumed> ProductsConsumed { get; set; }
+        public List<ProductConsumedDTO> ProductsConsumed { get; set; }
 
         [Required]
         public CustomerBillingSummaryDTO CustomerBillingSummaryDTO { get; set; }
@@ -91,15 +91,17 @@ namespace HyperStoreServiceAPP.Controllers
         [Required]
         public Guid? CustomerId { get; set; }
 
-        
         [Required]
-        public bool? IsPayingNow { get; set; }
-
-        [Required]
-        public bool? IsUsingWallet { get; set; }
+        public DateTime? DueDate { get; set; }
 
         [Required]
         public decimal? PayingAmount { get; set; }
+
+        [Required]
+        [Range(0d, 100)]
+        public decimal? IntrestRate { get; set; }
+
+
     }
     #endregion
     #region Product Controller

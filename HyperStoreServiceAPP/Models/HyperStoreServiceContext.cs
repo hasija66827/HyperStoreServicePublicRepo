@@ -15,7 +15,7 @@ namespace HyperStoreService.Models
         // For more information refer to the documentation:
         // http://msdn.microsoft.com/en-us/data/jj591621.aspx
 
-        public HyperStoreServiceContext() : base("name=HyperStoreServiceContext")
+        public HyperStoreServiceContext() : base("name=9970377274DBConnection")
         {
         }
 

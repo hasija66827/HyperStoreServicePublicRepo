@@ -255,6 +255,10 @@
     <Compile Include="Migrations\201710071958361_updating threshold.Designer.cs">
       <DependentUpon>201710071958361_updating threshold.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710282143207_hhh.cs" />
+    <Compile Include="Migrations\201710282143207_hhh.Designer.cs">
+      <DependentUpon>201710282143207_hhh.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\CustomerOrderTransaction.cs" />
@@ -368,6 +372,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710071958361_updating threshold.resx">
       <DependentUpon>201710071958361_updating threshold.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710282143207_hhh.resx">
+      <DependentUpon>201710282143207_hhh.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

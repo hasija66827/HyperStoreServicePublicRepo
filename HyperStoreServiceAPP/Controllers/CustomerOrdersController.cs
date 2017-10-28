@@ -82,26 +82,32 @@ namespace HyperStoreServiceAPP.Controllers
             if (orderDetail == null)
                 throw new Exception("OrderDetails should not have been null while placing the customer order");
 
+            if (orderDetail.DueDate < DateTime.Now)
+                return BadRequest(String.Format("DueDate {0} cannot be before current Date {1}", orderDetail.DueDate, DateTime.Now.Date));
+
+            var payingAmount = orderDetail.PayingAmount;
+            var billAmount = orderDetail.CustomerBillingSummaryDTO.BillAmount;
+            if (payingAmount > billAmount)
+                return BadRequest(String.Format("Paying Amount {0} should be less than Bill Amount {1}", payingAmount, billAmount));
+
             db = UtilityAPI.RetrieveDBContext(userId);
 
             var IsBillingSummaryCorrect = await ValidateBillingSummary(orderDetail);
             if (!IsBillingSummaryCorrect)
                 throw new Exception("BillingSummary is not correct.");
 
-            decimal deductWalletAmount = 0;
 
             try
             {
                 await UpdateStockOfProductsAsync(orderDetail.ProductsConsumed);
-                deductWalletAmount = await ComputeTransactionAmountAsync(orderDetail);
 
-                var customerOrder = CreateNewCustomerOrder(orderDetail, deductWalletAmount);
+                var customerOrder = CreateNewCustomerOrder(orderDetail);
                 var transactionDTO = new CustomerTransactionDTO()
                 {
                     CustomerId = orderDetail.CustomerId,
-                    IsCredit = deductWalletAmount > 0 ? true : false,
+                    IsCredit = true,
                     IsCashbackTransaction = false,
-                    TransactionAmount = Math.Abs(deductWalletAmount),
+                    TransactionAmount = billAmount - payingAmount,
                     Description = customerOrder.CustomerOrderNo,
                 };
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
@@ -114,6 +120,7 @@ namespace HyperStoreServiceAPP.Controllers
                 await UpdateCustomerNetWorthAsync(orderDetail);
 
                 await db.SaveChangesAsync();
+                return Ok(transactionDTO.TransactionAmount);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -121,7 +128,7 @@ namespace HyperStoreServiceAPP.Controllers
             }
             catch (Exception e)
             { return BadRequest(e.ToString()); }
-            return Ok(deductWalletAmount);
+
         }
 
         private async Task<bool> ValidateBillingSummary(CustomerOrderDTO orderDetail)
@@ -147,7 +154,7 @@ namespace HyperStoreServiceAPP.Controllers
 
             var cartAmountErrorDiff = cartAmount - orderDetail.CustomerBillingSummaryDTO.CartAmount;
             var discountAmountErrorDiff = discountAmount - orderDetail.CustomerBillingSummaryDTO.DiscountAmount;
-            if (!Utility.IsErrorAcceptable(cartAmountErrorDiff) || ! Utility.IsErrorAcceptable(discountAmountErrorDiff))
+            if (!Utility.IsErrorAcceptable(cartAmountErrorDiff) || !Utility.IsErrorAcceptable(discountAmountErrorDiff))
                 return false;
             return true;
         }
@@ -162,7 +169,7 @@ namespace HyperStoreServiceAPP.Controllers
             var customer = await db.Customers.FindAsync(orderDTO.CustomerId);
             if (customer == null)
                 throw new Exception(String.Format("Customer with id {0} not found while updating its networth", orderDTO.CustomerId));
-            customer.NetWorth += orderDTO.CustomerBillingSummaryDTO.PayAmount;
+            customer.NetWorth += orderDTO.CustomerBillingSummaryDTO.BillAmount;
             db.Entry(customer).State = EntityState.Modified;
             return customer.NetWorth;
         }
@@ -180,7 +187,7 @@ namespace HyperStoreServiceAPP.Controllers
 
     public partial class CustomerOrdersController : ApiController, ICustomerOrder
     {
-        private async Task<Boolean> UpdateStockOfProductsAsync(List<ProductConsumed> productsConsumed)
+        private async Task<Boolean> UpdateStockOfProductsAsync(List<ProductConsumedDTO> productsConsumed)
         {
             try
             {
@@ -196,62 +203,25 @@ namespace HyperStoreServiceAPP.Controllers
             return true;
         }
 
-        private async Task<decimal> ComputeTransactionAmountAsync(CustomerOrderDTO orderDetails)
-        {
-            decimal walletAmountToBeDeducted = 0;
-            decimal walletAmountToBeAdded = 0;
-            try
-            {
-                var customer = await db.Customers.FindAsync(orderDetails.CustomerId);
-                if (customer == null)
-                    throw new Exception(String.Format("Customer {0} not found", orderDetails.CustomerId));
-
-                var payAmount = (decimal)orderDetails.CustomerBillingSummaryDTO.PayAmount;
-                if (orderDetails.IsPayingNow == true)
-                {
-                    if (orderDetails.IsUsingWallet == true)
-                        walletAmountToBeDeducted = Math.Min((decimal)payAmount, (decimal)customer.WalletBalance);
-                    else
-                        walletAmountToBeDeducted = 0;
-                    var remainingAmount = payAmount - walletAmountToBeDeducted;
-                    if (orderDetails.PayingAmount < remainingAmount)
-                        throw new Exception(String.Format("Customer {0} payment {1} cannot be less than payment {2}", customer.Name, orderDetails.PayingAmount, remainingAmount));
-                    walletAmountToBeAdded = (decimal)(orderDetails.PayingAmount - remainingAmount);
-                }
-                else
-                {
-                    if (orderDetails.PayingAmount > payAmount)
-                        throw new Exception(String.Format("Customer {0} paying {1} cannot be greater than discountedBillAmount {2} in Pay Later Mode ",
-                            orderDetails.CustomerId, orderDetails.PayingAmount, payAmount));
-                    walletAmountToBeDeducted = payAmount - (decimal)orderDetails.PayingAmount;
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            return walletAmountToBeDeducted - walletAmountToBeAdded;
-        }
-
-        private CustomerOrder CreateNewCustomerOrder(CustomerOrderDTO orderDetail, decimal usingWalletAmount)
+        private CustomerOrder CreateNewCustomerOrder(CustomerOrderDTO orderDetail)
         {
             var CBS = orderDetail.CustomerBillingSummaryDTO;
             var customerOrder = new CustomerOrder()
             {
+                CustomerId = (Guid)orderDetail.CustomerId,
                 CustomerOrderId = Guid.NewGuid(),
                 CustomerOrderNo = Utility.GenerateCustomerOrderNo(),
+                DueDate = (DateTime)orderDetail.DueDate,
+                InterestRate = (decimal)orderDetail.IntrestRate,
                 OrderDate = DateTime.Now,
-                TotalItems = (int)CBS.TotalItems,
-                TotalQuantity = (decimal)CBS.TotalQuantity,
                 CartAmount = (decimal)CBS.CartAmount,
                 DiscountAmount = (decimal)CBS.DiscountAmount,
                 Tax = (decimal)CBS.Tax,
-                PayAmount = (decimal)CBS.PayAmount,
-                IsPayingNow = (bool)orderDetail.IsPayingNow,
-                IsUsingWallet = (bool)orderDetail.IsUsingWallet,
-                PayingAmount = (decimal)orderDetail.PayingAmount,
-                UsingWalletAmount = usingWalletAmount,
-                CustomerId = (Guid)orderDetail.CustomerId
+                BillAmount = (decimal)CBS.BillAmount,
+                SettledPayedAmount = (decimal)orderDetail.PayingAmount,
+                PayedAmount = (decimal)orderDetail.PayingAmount,
+                TotalItems = (int)CBS.TotalItems,
+                TotalQuantity = (decimal)CBS.TotalQuantity,
             };
             db.CustomerOrders.Add(customerOrder);
             return customerOrder;
@@ -269,7 +239,7 @@ namespace HyperStoreServiceAPP.Controllers
             return customerOrderTransaction;
         }
 
-        private async Task<Boolean> AddIntoCustomerOrderProductAsync(List<ProductConsumed> productsConsumed, Guid customerOrderId)
+        private async Task<Boolean> AddIntoCustomerOrderProductAsync(List<ProductConsumedDTO> productsConsumed, Guid customerOrderId)
         {
             try
             {
@@ -301,7 +271,7 @@ namespace HyperStoreServiceAPP.Controllers
             return true;
         }
 
-        private async Task<Boolean> UpdateProductStockAsync(ProductConsumed productConsumed)
+        private async Task<Boolean> UpdateProductStockAsync(ProductConsumedDTO productConsumed)
         {
             try
             {
