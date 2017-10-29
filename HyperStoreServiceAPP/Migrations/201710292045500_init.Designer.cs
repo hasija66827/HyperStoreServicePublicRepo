@@ -7,13 +7,13 @@ namespace HyperStoreServiceAPP.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class UpdatingAttributeCustomerOrder : IMigrationMetadata
+    public sealed partial class init : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdatingAttributeCustomerOrder));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(init));
         
         string IMigrationMetadata.Id
         {
-            get { return "201709240909078_UpdatingAttributeCustomerOrder"; }
+            get { return "201710292045500_init"; }
         }
         
         string IMigrationMetadata.Source

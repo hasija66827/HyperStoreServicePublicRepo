@@ -232,40 +232,12 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201709170812070_Initial.cs" />
-    <Compile Include="Migrations\201709170812070_Initial.Designer.cs">
-      <DependentUpon>201709170812070_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709221933319_updating productentity.cs" />
-    <Compile Include="Migrations\201709221933319_updating productentity.Designer.cs">
-      <DependentUpon>201709221933319_updating productentity.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709221958164_updating dataytpeofhsn.cs" />
-    <Compile Include="Migrations\201709221958164_updating dataytpeofhsn.Designer.cs">
-      <DependentUpon>201709221958164_updating dataytpeofhsn.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709240909078_UpdatingAttributeCustomerOrder.cs" />
-    <Compile Include="Migrations\201709240909078_UpdatingAttributeCustomerOrder.Designer.cs">
-      <DependentUpon>201709240909078_UpdatingAttributeCustomerOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201709261918548_addingcashback.cs" />
-    <Compile Include="Migrations\201709261918548_addingcashback.Designer.cs">
-      <DependentUpon>201709261918548_addingcashback.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201710071958361_updating threshold.cs" />
-    <Compile Include="Migrations\201710071958361_updating threshold.Designer.cs">
-      <DependentUpon>201710071958361_updating threshold.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201710282143207_hhh.cs" />
-    <Compile Include="Migrations\201710282143207_hhh.Designer.cs">
-      <DependentUpon>201710282143207_hhh.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201710290933405_adding entity type.cs" />
-    <Compile Include="Migrations\201710290933405_adding entity type.Designer.cs">
-      <DependentUpon>201710290933405_adding entity type.cs</DependentUpon>
+    <Compile Include="CustomModels\CustomerPurchaseTrend.cs" />
+    <Compile Include="Migrations\201710292045500_init.cs" />
+    <Compile Include="Migrations\201710292045500_init.Designer.cs">
+      <DependentUpon>201710292045500_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="CustomModels\CustomerPurchaseTrend.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="CustomModels\PriceQuotedBySupplier.cs" />
@@ -355,29 +327,8 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201709170812070_Initial.resx">
-      <DependentUpon>201709170812070_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709221933319_updating productentity.resx">
-      <DependentUpon>201709221933319_updating productentity.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709221958164_updating dataytpeofhsn.resx">
-      <DependentUpon>201709221958164_updating dataytpeofhsn.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709240909078_UpdatingAttributeCustomerOrder.resx">
-      <DependentUpon>201709240909078_UpdatingAttributeCustomerOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709261918548_addingcashback.resx">
-      <DependentUpon>201709261918548_addingcashback.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710071958361_updating threshold.resx">
-      <DependentUpon>201710071958361_updating threshold.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710282143207_hhh.resx">
-      <DependentUpon>201710282143207_hhh.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710290933405_adding entity type.resx">
-      <DependentUpon>201710290933405_adding entity type.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201710292045500_init.resx">
+      <DependentUpon>201710292045500_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

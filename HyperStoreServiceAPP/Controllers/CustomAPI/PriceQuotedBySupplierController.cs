@@ -32,15 +32,16 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                            .Where(sop => sop.ProductId == productId)
                                            .Include(sop => sop.Order)
                                            .Include(sop => sop.Order.Person)
+                                           .Where(sop=>sop.Order.EntityType==DTO.EntityType.Supplier)
                                            .Select(s => new PriceQuotedBySupplier()
                                            {
                                                OrderDate = s.Order.OrderDate,
-                                               SupplierId = s.Order.PersonId,
-                                               Supplier = s.Order.Person,
+                                               PersonId = s.Order.PersonId,
+                                               Person = s.Order.Person,
                                                QuantityPurchased = s.QuantityPurchased,
                                                PurchasePrice = s.PurchasePrice,
                                            });
-            var groupPrices_By_SupplierId = await query.GroupBy(s => s.SupplierId).ToListAsync();
+            var groupPrices_By_SupplierId = await query.GroupBy(s => s.PersonId).ToListAsync();
             var latestPurchasePriceQuotedBySuppliers = groupPrices_By_SupplierId.Select(w_ps => SelectLatestPriceQuoted(w_ps));
             var result = latestPurchasePriceQuotedBySuppliers.OrderBy(pqs => pqs.PurchasePrice);
             return Ok(result);

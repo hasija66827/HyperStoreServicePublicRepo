@@ -56,7 +56,7 @@ namespace HyperStoreServiceAPP.DTO
         public override bool IsValid(object value)
         {
             var quantityRange = value as IRange<decimal?>;
-            return (quantityRange.LB >= 0 && quantityRange.LB <= quantityRange.UB);
+            return (quantityRange.LB <= quantityRange.UB);
         }
     }
 
