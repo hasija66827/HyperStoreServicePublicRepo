@@ -1,5 +1,6 @@
 ﻿using HyperStoreService.HyperStoreService.CustomModels;
 using HyperStoreService.Models;
+using HyperStoreServiceAPP.DTO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

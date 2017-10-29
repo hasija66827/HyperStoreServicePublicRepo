@@ -22,7 +22,7 @@ namespace HyperStoreServiceAPP.Controllers
         public async Task<IHttpActionResult> Get(Guid userId, Guid? id)
         {
             if (id == null)
-                return BadRequest("SupplierOrderId should not be null");
+                return BadRequest("OrderId should not be null");
             db = UtilityAPI.RetrieveDBContext(userId);
 
             List<SupplierOrderProduct> queryResult;

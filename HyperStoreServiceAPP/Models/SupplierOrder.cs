@@ -4,10 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using HyperStoreServiceAPP;
+using HyperStoreServiceAPP.DTO;
+
 namespace HyperStoreService.Models
 {
     public class SupplierOrder
     {
+        [Required]
+        public EntityType? EntityType { get; set; }
         public Guid SupplierOrderId { get; set; }
         public decimal BillAmount { get; set; }
         public DateTime DueDate { get; set; }

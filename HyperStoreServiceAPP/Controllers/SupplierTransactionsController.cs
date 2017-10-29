@@ -11,6 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using HyperStoreService.Models;
 using System.ComponentModel.DataAnnotations;
+using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreServiceAPP.Controllers
 {

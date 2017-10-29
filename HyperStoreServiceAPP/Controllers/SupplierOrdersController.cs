@@ -11,6 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using HyperStoreService.Models;
 using System.ComponentModel.DataAnnotations;
+using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreServiceAPP.Controllers
 {
@@ -30,7 +31,6 @@ namespace HyperStoreServiceAPP.Controllers
             if (SOFC.DueDateRange.LB < SOFC.OrderDateRange.LB)
                 return BadRequest(String.Format("Order DueDate {0} Cannot be less than OrdeDate {1}",
                     SOFC.DueDateRange.LB, SOFC.OrderDateRange.LB));
-            db = UtilityAPI.RetrieveDBContext(userId);
 
             List<SupplierOrder> result;
             db = UtilityAPI.RetrieveDBContext(userId);
@@ -39,7 +39,8 @@ namespace HyperStoreServiceAPP.Controllers
                 var query = db.SupplierOrders.Where(order => order.OrderDate >= SOFC.OrderDateRange.LB.Date &&
                                                              order.OrderDate <= SOFC.OrderDateRange.UB.Date &&
                                                              order.DueDate >= SOFC.DueDateRange.LB.Date &&
-                                                             order.DueDate <= SOFC.DueDateRange.UB.Date
+                                                             order.DueDate <= SOFC.DueDateRange.UB.Date &&
+                                                             order.EntityType == SOFC.EntityType
                                                              )
                                                              .Include(so => so.Supplier);
                 if (SOFC.SupplierId != null)
@@ -65,7 +66,7 @@ namespace HyperStoreServiceAPP.Controllers
             }
             return Ok(result);
         }
-
+        //TODO: NEED TO Modify
         [HttpGet]
         [ResponseType(typeof(Int32))]
         public IHttpActionResult GetTotalRecordsCount(Guid userId)
@@ -93,10 +94,10 @@ namespace HyperStoreServiceAPP.Controllers
                 return BadRequest(ModelState);
 
             if (orderDetail == null)
-                throw new Exception("OrderDetails should not have been null while placing the supplier order");
+                throw new Exception("OrderDetails should not have been null while placing the order");
 
             if (orderDetail.DueDate < DateTime.Now)
-                return BadRequest(String.Format("DueDate {0} cannot be before current Date {1}", orderDetail.DueDate, DateTime.Now.Date));
+                return BadRequest(String.Format("Due date {0} cannot be before current date {1}", orderDetail.DueDate, DateTime.Now.Date));
 
             var payingAmount = orderDetail.PayingAmount;
             var billAmount = orderDetail.SupplierBillingSummaryDTO.BillAmount;
@@ -123,7 +124,7 @@ namespace HyperStoreServiceAPP.Controllers
 
                 var supplierOrderTransaction = CreateNewSupplierOrderTransaction(supplierOrder, transaction);
 
-                var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased);
+                var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased, orderDetail.EntityType);
 
                 AddIntoSupplierOrderProduct(orderDetail.ProductsPurchased, supplierOrder.SupplierOrderId);
 
@@ -140,7 +141,7 @@ namespace HyperStoreServiceAPP.Controllers
             if (orderDetail.SupplierBillingSummaryDTO.TotalItems != orderDetail.ProductsPurchased.Count)
                 return false;
 
-            var quantityErrorDiff = orderDetail.SupplierBillingSummaryDTO.TotalQuantity 
+            var quantityErrorDiff = orderDetail.SupplierBillingSummaryDTO.TotalQuantity
                                     - orderDetail.ProductsPurchased.Sum(p => p.QuantityPurchased);
             if (!Utility.IsErrorAcceptable(quantityErrorDiff))
                 return false;
@@ -198,6 +199,7 @@ namespace HyperStoreServiceAPP.Controllers
 
             var supplierOrder = new SupplierOrder
             {
+                EntityType = orderDetail.EntityType,
                 SupplierOrderId = Guid.NewGuid(),
                 DueDate = (DateTime)orderDetail.DueDate,
                 InterestRate = (decimal)orderDetail.IntrestRate,
@@ -214,14 +216,14 @@ namespace HyperStoreServiceAPP.Controllers
             return supplierOrder;
         }
 
-        private async Task<List<Product>> UpdateStockOfProductsAsync(List<ProductPurchased> productsPurchased)
+        private async Task<List<Product>> UpdateStockOfProductsAsync(List<ProductPurchased> productsPurchased, EntityType? entityType)
         {
             List<Product> products = new List<Product>();
             try
             {
                 foreach (var productPurchased in productsPurchased)
                 {
-                    var product = await UpdateProductStockAsync(productPurchased);
+                    var product = await UpdateProductStockAsync(productPurchased, entityType);
                     products.Add(product);
                 }
             }
@@ -232,12 +234,15 @@ namespace HyperStoreServiceAPP.Controllers
             return products;
         }
 
-        private async Task<Product> UpdateProductStockAsync(ProductPurchased productPurchased)
+        private async Task<Product> UpdateProductStockAsync(ProductPurchased productPurchased, EntityType? entityType)
         {
             var product = await db.Products.FindAsync(productPurchased.ProductId);
             if (product == null)
-                throw new Exception(String.Format("Product with id {0} not found while updating the stock", productPurchased.ProductId));
-            product.TotalQuantity += (decimal)productPurchased.QuantityPurchased;
+                throw new Exception(String.Format("Product with id {0} not found while updating the stock.", productPurchased.ProductId));
+            if (entityType == EntityType.Supplier)
+                product.TotalQuantity += (decimal)productPurchased.QuantityPurchased;
+            else
+                product.TotalQuantity -= (decimal)productPurchased.QuantityPurchased;
             db.Entry(product).State = EntityState.Modified;
             return product;
         }

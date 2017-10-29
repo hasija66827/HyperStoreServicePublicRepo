@@ -225,9 +225,14 @@
     <Compile Include="Controllers\SuppliersController.cs" />
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Controllers\SupplierTransactionsController.cs" />
-    <Compile Include="Controllers\DTO.cs" />
+    <Compile Include="DTO\DTO.cs" />
     <Compile Include="CustomModels\ProductMetadata.cs" />
     <Compile Include="CustomModels\RecommendedProduct.cs" />
+    <Compile Include="DTO\ProductDTO.cs" />
+    <Compile Include="DTO\SupplierDTO.cs" />
+    <Compile Include="DTO\SupplierOrderDTO.cs" />
+    <Compile Include="DTO\SupplierTransactionDTO.cs" />
+    <Compile Include="DTO\TagDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -258,6 +263,10 @@
     <Compile Include="Migrations\201710282143207_hhh.cs" />
     <Compile Include="Migrations\201710282143207_hhh.Designer.cs">
       <DependentUpon>201710282143207_hhh.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201710290933405_adding entity type.cs" />
+    <Compile Include="Migrations\201710290933405_adding entity type.Designer.cs">
+      <DependentUpon>201710290933405_adding entity type.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
@@ -375,6 +384,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710282143207_hhh.resx">
       <DependentUpon>201710282143207_hhh.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710290933405_adding entity type.resx">
+      <DependentUpon>201710290933405_adding entity type.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
