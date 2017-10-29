@@ -54,8 +54,7 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (transactionDTO.IsCredit == true)
-                throw new Exception("Currently transaction of type credit is not supported through this API");
+            
             db = UtilityAPI.RetrieveDBContext(userId);
 
             try

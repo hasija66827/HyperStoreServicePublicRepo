@@ -36,12 +36,12 @@ namespace HyperStoreServiceAPP.DTO
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
         public async Task<SupplierTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
         {
-            var walletSnapshot = await this.UpdateSupplierWalletBalanceAsync(db);
-            if (walletSnapshot == null)
-                throw new Exception(String.Format("Supplier with id {0} ad null wallet balance", this.SupplierId));
+            var supplier = await db.Suppliers.FindAsync(this.SupplierId);
+            var walletSnapshot = this.UpdateWalletBalanceAsync(db, supplier);
             var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot);
             List<SupplierOrder> settleUpOrders;
-            if (transaction.IsCredit == false)
+            if (transaction.IsCredit == false && supplier.EntityType == EntityType.Supplier ||
+                transaction.IsCredit == true && supplier.EntityType == EntityType.Customer)
                 settleUpOrders = SettleUpOrders(transaction, db);
             return transaction;
         }
@@ -52,12 +52,11 @@ namespace HyperStoreServiceAPP.DTO
         /// </summary>
         /// <param name="db"></param>
         /// <returns>The wallet snapshot which was before this function updates it.</returns>
-        private async Task<decimal?> UpdateSupplierWalletBalanceAsync(HyperStoreServiceContext db)
+        private decimal UpdateWalletBalanceAsync(HyperStoreServiceContext db, Supplier supplier)
         {
             Guid supplierId = (Guid)this.SupplierId;
             decimal transactionAmount = (decimal)this.TransactionAmount;
             bool IsCredit = (bool)this.IsCredit;
-            var supplier = await db.Suppliers.FindAsync(supplierId);
             if (supplier == null)
                 throw new Exception(String.Format("Supplier with id {0} not found while updating its wallet balance", this.SupplierId));
             var walletSnapshot = supplier.WalletBalance;
@@ -95,8 +94,6 @@ namespace HyperStoreServiceAPP.DTO
         private List<SupplierOrder> SettleUpOrders(SupplierTransaction transaction, HyperStoreServiceContext db)
         {
             List<SupplierOrder> settleUpSupplierOrder = new List<SupplierOrder>();
-            if (transaction.IsCredit)
-                throw new Exception(String.Format("While settling up the orders transaction {0} cannot be of type credit", transaction.SupplierTransactionId));
             var partiallyPaidOrders = db.SupplierOrders.Where(so => so.SupplierId == transaction.SupplierId &&
                                                                    so.BillAmount - so.SettledPayedAmount > 0)
                                                        .OrderBy(wo => wo.OrderDate);

@@ -109,8 +109,8 @@ namespace HyperStoreServiceAPP.DTO
 
     }
     #endregion
-    
-   
+
+
     #region CustomerTransactionDTO
     public class CustomerTransactionFilterCriteria
     {
@@ -149,7 +149,7 @@ namespace HyperStoreServiceAPP.DTO
             var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot);
             List<CustomerOrder> settleUpOrders;
             //if (transaction.IsCredit == false)
-                //TODO: settleUpOrders = SettleUpOrders(transaction, db);
+            //TODO: settleUpOrders = SettleUpOrders(transaction, db);
             return transaction;
         }
 
@@ -201,8 +201,8 @@ namespace HyperStoreServiceAPP.DTO
     }
 
     #endregion
-    
-    
+
+
     #region Customer Controller
     public class CustomerFilterCriteria
     {
@@ -222,5 +222,5 @@ namespace HyperStoreServiceAPP.DTO
     }
 
     #endregion
-    
+
 }
