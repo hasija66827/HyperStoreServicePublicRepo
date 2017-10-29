@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HyperStoreServiceAPP.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,10 +8,11 @@ using System.Web;
 
 namespace HyperStoreService.Models
 {
-    public class Customer
+    public class Person
     {
-        public Guid CustomerId { get; set; }
-
+        [Required]
+        public EntityType? EntityType { get; set; }
+        public Guid PersonId { get; set; }
         public string Address { get; set; }
         public string GSTIN { get; set; }
 
@@ -20,14 +22,13 @@ namespace HyperStoreService.Models
         public string MobileNo { get; set; }
 
         [Required]
-        [Index(IsUnique = true)]
         [StringLength(24)]
         public string Name { get; set; }
+        public decimal WalletBalance { get; set; }
 
-        [Required]
-        public decimal? WalletBalance { get; set; }
-
-        [Required]
         public decimal? NetWorth { get; set; }
+        public DateTime LastVisited { get; set; } 
+        public Person() {
+        }
     }
 }

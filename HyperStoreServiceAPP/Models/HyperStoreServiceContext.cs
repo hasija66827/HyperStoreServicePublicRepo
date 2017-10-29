@@ -27,25 +27,18 @@ namespace HyperStoreService.Models
 
         public System.Data.Entity.DbSet<ProductTag> ProductTags { get; set; }
 
-        public System.Data.Entity.DbSet<Supplier> Suppliers { get; set; }
+        public System.Data.Entity.DbSet<Person> Persons { get; set; }
 
-        public System.Data.Entity.DbSet<Customer> Customers { get; set; }
+      
+        public System.Data.Entity.DbSet<Order> Orders { get; set; }
 
-        public System.Data.Entity.DbSet<CustomerOrder> CustomerOrders { get; set; }
+      
+        public System.Data.Entity.DbSet<OrderProduct> OrderProducts { get; set; }
 
-        public System.Data.Entity.DbSet<SupplierOrder> SupplierOrders { get; set; }
+      
+        public System.Data.Entity.DbSet<Transaction> Transactions { get; set; }
 
-        public System.Data.Entity.DbSet<CustomerOrderProduct> CustomerOrderProducts { get; set; }
-
-        public System.Data.Entity.DbSet<SupplierOrderProduct> SupplierOrderProducts { get; set; }
-
-        public System.Data.Entity.DbSet<CustomerTransaction> CustomerTransactions { get; set; }
-
-        public System.Data.Entity.DbSet<SupplierTransaction> SupplierTransactions { get; set; }
-
-        public System.Data.Entity.DbSet<CustomerOrderTransaction> CustomerOrderTransactions { get; set; }
-
-        public System.Data.Entity.DbSet<SupplierOrderTransaction> SupplierOrderTransactions { get; set; }
+        public System.Data.Entity.DbSet<OrderTransaction> OrderTransactions { get; set; }
 
         public System.Data.Entity.DbSet<DeficientStockHit> DeficientStockHits { get; set; }
 

@@ -15,12 +15,12 @@ using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public partial class SupplierTransactionsController : ApiController, ISupplierTransaction
+    public partial class TransactionsController : ApiController, ISupplierTransaction
     {
         private HyperStoreServiceContext db ;
 
         // GET: api/Transactions/5
-        [ResponseType(typeof(List<SupplierTransaction>))]
+        [ResponseType(typeof(List<Transaction>))]
         [HttpGet]
         public async Task<IHttpActionResult> Get(Guid userId, SupplierTransactionFilterCriteria transactionFilterCriteria)
         {
@@ -31,12 +31,12 @@ namespace HyperStoreServiceAPP.Controllers
             db = UtilityAPI.RetrieveDBContext(userId);
 
             var supplierId = transactionFilterCriteria.SupplierId;
-            var transactions = await db.SupplierTransactions.Where(t => t.SupplierId == supplierId)
+            var transactions = await db.Transactions.Where(t => t.PersonId == supplierId)
                                                              .OrderByDescending(t => t.TransactionDate).ToListAsync();
-            Supplier supplier;
+            Person supplier;
             if (transactions == null || transactions.Count() == 0)
             {
-                supplier = await db.Suppliers.FindAsync(supplierId);
+                supplier = await db.Persons.FindAsync(supplierId);
                 if (supplier == null)
                     return BadRequest(String.Format("Supplier of id {0} does not exists", supplierId));
             }
@@ -44,7 +44,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
 
         // POST: api/Transactions
-        [ResponseType(typeof(SupplierTransaction))]
+        [ResponseType(typeof(Transaction))]
         [HttpPost]
         public async Task<IHttpActionResult> Post(Guid userId, SupplierTransactionDTO transactionDTO)
         {

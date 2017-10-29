@@ -9,19 +9,19 @@ using System.Data.Entity;
 
 namespace HyperStoreService.Models
 {
-    public class SupplierTransaction
+    public class Transaction
     {
-        public Guid SupplierTransactionId { get; set; }
+        public Guid TransactionId { get; set; }
         public bool IsCredit { get; set; }
         [Required]
         public string TransactionNo { get; set; }
-        public string SupplierOrderNo { get; set; }
+        public string OrderNo { get; set; }
         public DateTime TransactionDate { get; set; }
         public decimal TransactionAmount { get; set; }
         public decimal WalletSnapshot { get; set; }
-        public Guid SupplierId { get; set; }
-        public Supplier Supplier { get; set; }
-        public SupplierTransaction() {
+        public Guid PersonId { get; set; }
+        public Person Person { get; set; }
+        public Transaction() {
         }
     }
 }

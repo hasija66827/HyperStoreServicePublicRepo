@@ -8,11 +8,11 @@ using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreService.Models
 {
-    public class SupplierOrder
+    public class Order
     {
         [Required]
         public EntityType? EntityType { get; set; }
-        public Guid SupplierOrderId { get; set; }
+        public Guid OrderId { get; set; }
         public decimal BillAmount { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime OrderDate { get; set; }
@@ -24,8 +24,8 @@ namespace HyperStoreService.Models
         public int TotalItems { get; set; }
         public decimal TotalQuantity { get; set; }
         [Required]
-        public string SupplierOrderNo { get; set; }
-        public Guid SupplierId { get; set; }
-        public Supplier Supplier { get; set; }
+        public string OrderNo { get; set; }
+        public Guid PersonId { get; set; }
+        public Person Person { get; set; }
     }
 }

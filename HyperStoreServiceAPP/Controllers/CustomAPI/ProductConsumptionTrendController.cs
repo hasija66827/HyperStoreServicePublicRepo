@@ -72,20 +72,20 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         private async Task<IEnumerable<ProductConsumptionTrend>> ComputeProductConsumptionTrend(ProductConsumptionTrendDTO parameter)
         {
             var startingOrderDate = DateTime.Now.AddMonths(-(int)parameter.MonthsCount);
-            var query = db.CustomerOrderProducts
-                        .Include(cop => cop.CustomerOrder)
+            var query = db.OrderProducts
+                        .Include(cop => cop.Order)
                         .Where(cop => cop.ProductId == parameter.ProductId
-                                        && cop.CustomerOrder.OrderDate >= startingOrderDate);
+                                        && cop.Order.OrderDate >= startingOrderDate);
             var queryResult = await query.ToListAsync();
             var groupByQueryResult = queryResult
-                                        .GroupBy(cop => cop.CustomerOrder.OrderDate.DayOfWeek);
+                                        .GroupBy(cop => cop.Order.OrderDate.DayOfWeek);
             var productConsumptionTrends = groupByQueryResult.Select(c => AggregateSumQuantity(c));
             return productConsumptionTrends;
         }
 
-        private ProductConsumptionTrend AggregateSumQuantity(IGrouping<DayOfWeek, CustomerOrderProduct> items)
+        private ProductConsumptionTrend AggregateSumQuantity(IGrouping<DayOfWeek, OrderProduct> items)
         {
-            return new ProductConsumptionTrend(items.Key, items.Sum(cop => (float)cop.QuantityConsumed));
+            return new ProductConsumptionTrend(items.Key, items.Sum(cop => (float)cop.QuantityPurchased));
         }
 
         private async Task<IEnumerable<ProductDeficiencyHitTrend>> ComputeDeficiencyHits(ProductConsumptionTrendDTO parameter)

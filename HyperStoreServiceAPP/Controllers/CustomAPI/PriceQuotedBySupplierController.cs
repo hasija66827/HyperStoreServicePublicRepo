@@ -28,15 +28,15 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         {
             db = UtilityAPI.RetrieveDBContext(userId);
             var productId = id;
-            var query = db.SupplierOrderProducts
+            var query = db.OrderProducts
                                            .Where(sop => sop.ProductId == productId)
-                                           .Include(sop => sop.SupplierOrder)
-                                           .Include(sop => sop.SupplierOrder.Supplier)
+                                           .Include(sop => sop.Order)
+                                           .Include(sop => sop.Order.Person)
                                            .Select(s => new PriceQuotedBySupplier()
                                            {
-                                               OrderDate = s.SupplierOrder.OrderDate,
-                                               SupplierId = s.SupplierOrder.SupplierId,
-                                               Supplier = s.SupplierOrder.Supplier,
+                                               OrderDate = s.Order.OrderDate,
+                                               SupplierId = s.Order.PersonId,
+                                               Supplier = s.Order.Person,
                                                QuantityPurchased = s.QuantityPurchased,
                                                PurchasePrice = s.PurchasePrice,
                                            });

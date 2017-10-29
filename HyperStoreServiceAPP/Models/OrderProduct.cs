@@ -6,18 +6,18 @@ using System.Web;
 
 namespace HyperStoreService.Models
 {
-    public class SupplierOrderProduct
+    public class OrderProduct
     {
-        public Guid SupplierOrderProductId { get; set; }
+        public Guid OrderProductId { get; set; }
         public decimal PurchasePrice { get; set; }
         public decimal QuantityPurchased { get; set; }
 
-        public SupplierOrderProduct() {
+        public OrderProduct() {
         }
 
         [Required]
-        public Guid? SupplierOrderId { get; set; }
-        public SupplierOrder SupplierOrder { get; set; }
+        public Guid? OrderId { get; set; }
+        public Order Order { get; set; }
 
         [Required]
         public Guid? ProductId { get; set; }

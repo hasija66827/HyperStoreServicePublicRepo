@@ -32,16 +32,16 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             try
             {
                 var startingOrderDate = DateTime.Now.AddMonths(-(int)parameter.MonthsCount);
-                var query = db.CustomerOrderProducts
-                       .Include(cop => cop.CustomerOrder)
-                        .Where(cop => cop.CustomerOrder.CustomerId == parameter.CustomerId &&
-                                      cop.CustomerOrder.OrderDate >= startingOrderDate)
+                var query = db.OrderProducts
+                       .Include(cop => cop.Order)
+                        .Where(cop => cop.Order.PersonId == parameter.CustomerId &&
+                                      cop.Order.OrderDate >= startingOrderDate)
                         .Include(cop => cop.Product)
                         .Select(cop => new CustomerPurchaseTrend()
                         {
                             Product = cop.Product,
-                            NetValue = cop.NetValue,
-                            TotalQuantityPurchased = (int)cop.QuantityConsumed
+                            NetValue = cop.PurchasePrice*cop.QuantityPurchased,
+                            TotalQuantityPurchased = (int)cop.QuantityPurchased
                         }
                         );
                 var groupByQueryResult = await query.GroupBy(c => c.Product.ProductId).ToListAsync();

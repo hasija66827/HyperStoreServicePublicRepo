@@ -8,33 +8,6 @@ using System.Web.Http;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public interface ICustomerOrder
-    {
-        Task<IHttpActionResult> Get(Guid userId, CustomerOrderFilterCriteria customerOrderFilterCriteria);
-        IHttpActionResult GetTotalRecordsCount(Guid userId);
-        Task<IHttpActionResult> Post(Guid userId, CustomerOrderDTO orderDetail);
-    }
-
-    public interface ICustomerOrderDetail
-    {
-        Task<IHttpActionResult> Get(Guid userId, Guid? id);
-    }
-
-    public interface ICustomer
-    {
-        Task<IHttpActionResult> Get(Guid userId, CustomerFilterCriteria cfc);
-        IHttpActionResult GetTotalRecordsCount(Guid userId);
-        Task<IHttpActionResult> Put(Guid userId, Guid id, CustomerDTO customerDTO);
-        Task<IHttpActionResult> Post(Guid userId, CustomerDTO customerDTO);
-        Task<IHttpActionResult> GetWalletBalanceRange(Guid userId);
-    }
-
-    public interface ICustomerTransaction
-    {
-        Task<IHttpActionResult> Get(Guid userId, CustomerTransactionFilterCriteria transactionFilterCriteria);
-        Task<IHttpActionResult> Post(Guid userId, CustomerTransactionDTO transactionDTO);
-    };
-
     public interface ITag
     {
         IQueryable<Tag> Get(Guid userId);

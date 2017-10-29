@@ -6,23 +6,23 @@ using System.Web;
 
 namespace HyperStoreService.Models
 {
-    public class SupplierOrderTransaction
+    public class OrderTransaction
     {
-        public Guid SupplierOrderTransactionId { get; set; }
+        public Guid OrderTransactionId { get; set; }
         //It is amount paid from the transaction amount.
         //It is null, if the transaction was credit transaction o.w. it is less than equal to transaction amount.
         public decimal? PaidAmount { get; set; }
 
         public bool IsPaymentComplete { get; set; }
 
-        public SupplierOrderTransaction()
+        public OrderTransaction()
         {
         }
 
         public Guid TransactionId { get; set; }
-        public SupplierTransaction SupplierTransaction { get; set; }
+        public Transaction Transaction { get; set; }
 
-        public Guid SupplierOrderId { get; set; }
-        public SupplierOrder SupplierOrder { get; set; }
+        public Guid OrderId { get; set; }
+        public Order Order { get; set; }
     }
 }

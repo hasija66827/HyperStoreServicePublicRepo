@@ -34,12 +34,12 @@ namespace HyperStoreServiceAPP.DTO
         /// </summary>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        public async Task<SupplierTransaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
+        public async Task<Transaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
         {
-            var supplier = await db.Suppliers.FindAsync(this.SupplierId);
+            var supplier = await db.Persons.FindAsync(this.SupplierId);
             var walletSnapshot = this.UpdateWalletBalanceAsync(db, supplier);
             var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot);
-            List<SupplierOrder> settleUpOrders;
+            List<Order> settleUpOrders;
             if (transaction.IsCredit == false && supplier.EntityType == EntityType.Supplier ||
                 transaction.IsCredit == true && supplier.EntityType == EntityType.Customer)
                 settleUpOrders = SettleUpOrders(transaction, db);
@@ -52,7 +52,7 @@ namespace HyperStoreServiceAPP.DTO
         /// </summary>
         /// <param name="db"></param>
         /// <returns>The wallet snapshot which was before this function updates it.</returns>
-        private decimal UpdateWalletBalanceAsync(HyperStoreServiceContext db, Supplier supplier)
+        private decimal UpdateWalletBalanceAsync(HyperStoreServiceContext db, Person supplier)
         {
             Guid supplierId = (Guid)this.SupplierId;
             decimal transactionAmount = (decimal)this.TransactionAmount;
@@ -74,27 +74,27 @@ namespace HyperStoreServiceAPP.DTO
         /// <param name="walletSnapshot"></param>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        private SupplierTransaction AddNewTransaction(HyperStoreServiceContext db, decimal walletSnapshot)
+        private Transaction AddNewTransaction(HyperStoreServiceContext db, decimal walletSnapshot)
         {
-            var transaction = new SupplierTransaction
+            var transaction = new Transaction
             {
-                SupplierTransactionId = Guid.NewGuid(),
+                TransactionId = Guid.NewGuid(),
                 TransactionNo = Utility.GenerateSupplierTransactionNo(),
                 TransactionDate = DateTime.Now,
                 TransactionAmount = (decimal)this.TransactionAmount,
-                SupplierOrderNo = this.Description,
+                OrderNo = this.Description,
                 IsCredit = (bool)this.IsCredit,
-                SupplierId = (Guid)this.SupplierId,
+                PersonId = (Guid)this.SupplierId,
                 WalletSnapshot = walletSnapshot
             };
-            db.SupplierTransactions.Add(transaction);
+            db.Transactions.Add(transaction);
             return transaction;
         }
 
-        private List<SupplierOrder> SettleUpOrders(SupplierTransaction transaction, HyperStoreServiceContext db)
+        private List<Order> SettleUpOrders(Transaction transaction, HyperStoreServiceContext db)
         {
-            List<SupplierOrder> settleUpSupplierOrder = new List<SupplierOrder>();
-            var partiallyPaidOrders = db.SupplierOrders.Where(so => so.SupplierId == transaction.SupplierId &&
+            List<Order> settleUpSupplierOrder = new List<Order>();
+            var partiallyPaidOrders = db.Orders.Where(so => so.PersonId == transaction.PersonId &&
                                                                    so.BillAmount - so.SettledPayedAmount > 0)
                                                        .OrderBy(wo => wo.OrderDate);
             var debitTransactionAmount = transaction.TransactionAmount;
@@ -104,16 +104,16 @@ namespace HyperStoreServiceAPP.DTO
                     break;
                 var remainingAmount = partiallyPaidOrder.BillAmount - partiallyPaidOrder.SettledPayedAmount;
                 if (remainingAmount < 0)
-                    throw new Exception(string.Format("Supplier OrderNo {0}, Amount remaining to be paid: {1} cannot be less than zero", partiallyPaidOrder.SupplierOrderNo, remainingAmount));
+                    throw new Exception(string.Format("Supplier OrderNo {0}, Amount remaining to be paid: {1} cannot be less than zero", partiallyPaidOrder.OrderNo, remainingAmount));
                 decimal payingAmountForOrder = Math.Min(remainingAmount, debitTransactionAmount);
                 debitTransactionAmount -= payingAmountForOrder;
                 var IsOrderSettleUp = SettleUpOrder(partiallyPaidOrder, payingAmountForOrder, db);
                 settleUpSupplierOrder.Add(partiallyPaidOrder);
-                db.SupplierOrderTransactions.Add(new SupplierOrderTransaction
+                db.OrderTransactions.Add(new OrderTransaction
                 {
-                    SupplierOrderTransactionId = Guid.NewGuid(),
-                    SupplierOrderId = partiallyPaidOrder.SupplierOrderId,
-                    TransactionId = transaction.SupplierTransactionId,
+                    OrderTransactionId = Guid.NewGuid(),
+                    OrderId = partiallyPaidOrder.OrderId,
+                    TransactionId = transaction.TransactionId,
                     PaidAmount = payingAmountForOrder,
                     IsPaymentComplete = IsOrderSettleUp
                 });
@@ -121,7 +121,7 @@ namespace HyperStoreServiceAPP.DTO
             return settleUpSupplierOrder;
         }
 
-        private bool SettleUpOrder(SupplierOrder supplierOrder, decimal settleUpAmount, HyperStoreServiceContext db)
+        private bool SettleUpOrder(Order supplierOrder, decimal settleUpAmount, HyperStoreServiceContext db)
         {
             supplierOrder.SettledPayedAmount += settleUpAmount;
             db.Entry(supplierOrder).State = EntityState.Modified;

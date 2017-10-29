@@ -13,23 +13,23 @@ using HyperStoreService.Models;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class SupplierOrderProductsController : ApiController, ISupplierOrderProduct
+    public class OrderProductsController : ApiController, ISupplierOrderProduct
     {
         private HyperStoreServiceContext db ;
 
         // GET: api/SupplierOrderProducts/5
-        [ResponseType(typeof(List<SupplierOrderProduct>))]
+        [ResponseType(typeof(List<OrderProduct>))]
         public async Task<IHttpActionResult> Get(Guid userId, Guid? id)
         {
             if (id == null)
                 return BadRequest("OrderId should not be null");
             db = UtilityAPI.RetrieveDBContext(userId);
 
-            List<SupplierOrderProduct> queryResult;
+            List<OrderProduct> queryResult;
             try
             {
-                var query = db.SupplierOrderProducts
-                                .Where(sop => sop.SupplierOrderId == id)
+                var query = db.OrderProducts
+                                .Where(sop => sop.OrderId == id)
                                 .Include(sop => sop.Product);
                 queryResult = await query.ToListAsync();
             }

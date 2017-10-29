@@ -28,15 +28,14 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             db = UtilityAPI.RetrieveDBContext(userId);
 
             var customerId = id;
-            var query = db.CustomerOrderProducts.Include(cop => cop.CustomerOrder)
-                                                                .Where(cop => cop.CustomerOrder.CustomerId == id)
+            var query = db.OrderProducts.Include(cop => cop.Order)
+                                                                .Where(cop => cop.Order.PersonId == id)
                                                                 .Include(cop => cop.Product)
                                                                 .Select(cop => new RecommendedProduct()
                                                                 {
                                                                     ProductId = cop.ProductId,
                                                                     ProductName = cop.Product.Name,
-                                                                    LastOrderDate = cop.CustomerOrder.OrderDate
-
+                                                                    LastOrderDate = cop.Order.OrderDate
                                                                 });
 
             var groupOrdersByProductId = await query.GroupBy(cop => cop.ProductId).ToListAsync();

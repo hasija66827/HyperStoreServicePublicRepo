@@ -17,7 +17,7 @@ namespace HyperStoreServiceAPP.DTO
         [Required]
         public DateTime? DueDate { get; set; }
 
-        public SupplierBillingSummaryDTO SupplierBillingSummaryDTO { get; set; }
+        public BillingSummaryDTO BillingSummaryDTO { get; set; }
 
         [Required]
         public decimal? PayingAmount { get; set; }
@@ -43,7 +43,7 @@ namespace HyperStoreServiceAPP.DTO
         public decimal? PurchasePricePerUnit { get; set; }
     }
 
-    public class SupplierBillingSummaryDTO
+    public class BillingSummaryDTO
     {
         [Required]
         public decimal? BillAmount { get; set; }

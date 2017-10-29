@@ -15,13 +15,13 @@ using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public partial class SupplierOrdersController : ApiController, ISupplierOrder
+    public partial class OrdersController : ApiController, ISupplierOrder
     {
         private HyperStoreServiceContext db;
 
         #region Read
         [HttpGet]
-        [ResponseType(typeof(List<SupplierOrder>))]
+        [ResponseType(typeof(List<Order>))]
         public async Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteria SOFC)
         {
             if (!ModelState.IsValid)
@@ -32,25 +32,25 @@ namespace HyperStoreServiceAPP.Controllers
                 return BadRequest(String.Format("Order DueDate {0} Cannot be less than OrdeDate {1}",
                     SOFC.DueDateRange.LB, SOFC.OrderDateRange.LB));
 
-            List<SupplierOrder> result;
+            List<Order> result;
             db = UtilityAPI.RetrieveDBContext(userId);
             try
             {
-                var query = db.SupplierOrders.Where(order => order.OrderDate >= SOFC.OrderDateRange.LB.Date &&
+                var query = db.Orders.Where(order => order.OrderDate >= SOFC.OrderDateRange.LB.Date &&
                                                              order.OrderDate <= SOFC.OrderDateRange.UB.Date &&
                                                              order.DueDate >= SOFC.DueDateRange.LB.Date &&
                                                              order.DueDate <= SOFC.DueDateRange.UB.Date &&
                                                              order.EntityType == SOFC.EntityType
                                                              )
-                                                             .Include(so => so.Supplier);
+                                                             .Include(so => so.Person);
                 if (SOFC.SupplierId != null)
                 {
-                    query = query.Where(order => order.SupplierId == SOFC.SupplierId);
+                    query = query.Where(order => order.PersonId == SOFC.SupplierId);
                 }
 
                 if (SOFC.SupplierOrderNo != null)
                 {
-                    query = query.Where(order => order.SupplierOrderNo == SOFC.SupplierOrderNo);
+                    query = query.Where(order => order.OrderNo == SOFC.SupplierOrderNo);
                 }
 
                 if (SOFC.PartiallyPaidOrderOnly == true)
@@ -72,7 +72,7 @@ namespace HyperStoreServiceAPP.Controllers
         public IHttpActionResult GetTotalRecordsCount(Guid userId)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
-            return Ok(db.SupplierOrders.Count());
+            return Ok(db.Orders.Count());
         }
         #endregion
 
@@ -100,7 +100,7 @@ namespace HyperStoreServiceAPP.Controllers
                 return BadRequest(String.Format("Due date {0} cannot be before current date {1}", orderDetail.DueDate, DateTime.Now.Date));
 
             var payingAmount = orderDetail.PayingAmount;
-            var billAmount = orderDetail.SupplierBillingSummaryDTO.BillAmount;
+            var billAmount = orderDetail.BillingSummaryDTO.BillAmount;
             if (payingAmount > billAmount)
                 return BadRequest(String.Format("Paying Amount {0} should be less than Bill Amount {1}", payingAmount, billAmount));
 
@@ -115,10 +115,10 @@ namespace HyperStoreServiceAPP.Controllers
                 var supplierOrder = CreateNewSupplierOrderAsync(orderDetail);
                 SupplierTransactionDTO transactionDTO = new SupplierTransactionDTO
                 {
-                    IsCredit = true,
+                    IsCredit = orderDetail.EntityType == EntityType.Supplier ? true : false,
                     SupplierId = orderDetail.SupplierId,
                     TransactionAmount = billAmount - payingAmount,
-                    Description = supplierOrder.SupplierOrderNo,
+                    Description = supplierOrder.OrderNo,
                 };
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
 
@@ -126,8 +126,8 @@ namespace HyperStoreServiceAPP.Controllers
 
                 var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased, orderDetail.EntityType);
 
-                AddIntoSupplierOrderProduct(orderDetail.ProductsPurchased, supplierOrder.SupplierOrderId);
-
+                AddIntoSupplierOrderProduct(orderDetail.ProductsPurchased, supplierOrder.OrderId);
+                await UpdatePersonNetWorthAsync(orderDetail);
                 await db.SaveChangesAsync();
                 return Ok(transactionDTO.TransactionAmount);
             }
@@ -138,10 +138,10 @@ namespace HyperStoreServiceAPP.Controllers
         }
         private async Task<bool> ValidateBillingSummary(SupplierOrderDTO orderDetail)
         {
-            if (orderDetail.SupplierBillingSummaryDTO.TotalItems != orderDetail.ProductsPurchased.Count)
+            if (orderDetail.BillingSummaryDTO.TotalItems != orderDetail.ProductsPurchased.Count)
                 return false;
 
-            var quantityErrorDiff = orderDetail.SupplierBillingSummaryDTO.TotalQuantity
+            var quantityErrorDiff = orderDetail.BillingSummaryDTO.TotalQuantity
                                     - orderDetail.ProductsPurchased.Sum(p => p.QuantityPurchased);
             if (!Utility.IsErrorAcceptable(quantityErrorDiff))
                 return false;
@@ -155,7 +155,7 @@ namespace HyperStoreServiceAPP.Controllers
                     throw new Exception(String.Format("Product with id {0} not found.", productPurchased.ProductId));
                 BillAmount += productPurchased.PurchasePricePerUnit * productPurchased.QuantityPurchased;
             }
-            var errorDiff = orderDetail.SupplierBillingSummaryDTO.BillAmount - BillAmount;
+            var errorDiff = orderDetail.BillingSummaryDTO.BillAmount - BillAmount;
             if (!Utility.IsErrorAcceptable(errorDiff))
                 return false;
             return true;
@@ -172,47 +172,47 @@ namespace HyperStoreServiceAPP.Controllers
 
         private bool SupplierOrderExists(Guid? id)
         {
-            return db.SupplierOrders.Count(e => e.SupplierOrderId == id) > 0;
+            return db.Orders.Count(e => e.OrderId == id) > 0;
         }
     }
 
-    public partial class SupplierOrdersController : ApiController, ISupplierOrder
+    public partial class OrdersController : ApiController, ISupplierOrder
     {
-        private SupplierOrderTransaction CreateNewSupplierOrderTransaction(SupplierOrder supplierOrder, SupplierTransaction transaction)
+        private OrderTransaction CreateNewSupplierOrderTransaction(Order supplierOrder, Transaction transaction)
         {
-            var supplierOrderTransaction = new SupplierOrderTransaction
+            var supplierOrderTransaction = new OrderTransaction
             {
-                SupplierOrderTransactionId = Guid.NewGuid(),
-                TransactionId = transaction.SupplierTransactionId,
-                SupplierOrderId = supplierOrder.SupplierOrderId,
+                OrderTransactionId = Guid.NewGuid(),
+                TransactionId = transaction.TransactionId,
+                OrderId = supplierOrder.OrderId,
                 IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.SettledPayedAmount ? true : false,
                 PaidAmount = null
             };
-            db.SupplierOrderTransactions.Add(supplierOrderTransaction);
+            db.OrderTransactions.Add(supplierOrderTransaction);
             return supplierOrderTransaction;
         }
 
-        private SupplierOrder CreateNewSupplierOrderAsync(SupplierOrderDTO orderDetail)
+        private Order CreateNewSupplierOrderAsync(SupplierOrderDTO orderDetail)
         {
-            var billAmount = orderDetail.SupplierBillingSummaryDTO.BillAmount;
+            var billAmount = orderDetail.BillingSummaryDTO.BillAmount;
             var payingAmount = (decimal)orderDetail.PayingAmount;
 
-            var supplierOrder = new SupplierOrder
+            var supplierOrder = new Order
             {
                 EntityType = orderDetail.EntityType,
-                SupplierOrderId = Guid.NewGuid(),
+                OrderId = Guid.NewGuid(),
                 DueDate = (DateTime)orderDetail.DueDate,
                 InterestRate = (decimal)orderDetail.IntrestRate,
                 OrderDate = DateTime.Now,
-                BillAmount = (decimal)orderDetail.SupplierBillingSummaryDTO.BillAmount,
+                BillAmount = (decimal)orderDetail.BillingSummaryDTO.BillAmount,
                 PayedAmount = payingAmount,
                 SettledPayedAmount = payingAmount,
-                SupplierOrderNo = Utility.GenerateSupplierOrderNo(),
-                SupplierId = (Guid)orderDetail.SupplierId,
-                TotalItems = (int)orderDetail.SupplierBillingSummaryDTO.TotalItems,
-                TotalQuantity = (decimal)orderDetail.SupplierBillingSummaryDTO.TotalQuantity,
+                OrderNo = Utility.GenerateSupplierOrderNo(),
+                PersonId = (Guid)orderDetail.SupplierId,
+                TotalItems = (int)orderDetail.BillingSummaryDTO.TotalItems,
+                TotalQuantity = (decimal)orderDetail.BillingSummaryDTO.TotalQuantity,
             };
-            db.SupplierOrders.Add(supplierOrder);
+            db.Orders.Add(supplierOrder);
             return supplierOrder;
         }
 
@@ -242,8 +242,14 @@ namespace HyperStoreServiceAPP.Controllers
             if (entityType == EntityType.Supplier)
                 product.TotalQuantity += (decimal)productPurchased.QuantityPurchased;
             else
+            {
                 product.TotalQuantity -= (decimal)productPurchased.QuantityPurchased;
-            db.Entry(product).State = EntityState.Modified;
+                if (product.TotalQuantity < DeficientStockHit.DeficientStockCriteria)
+                {
+                    AddProductToDeficientStockHit(product);
+                }
+            }
+                db.Entry(product).State = EntityState.Modified;
             return product;
         }
 
@@ -253,15 +259,48 @@ namespace HyperStoreServiceAPP.Controllers
             foreach (var productPurchased in productsPurchased)
             {
                 // Adding each product purchased in the order into the Entity SupplierOrderProduct.
-                var supplierOrderProduct = new SupplierOrderProduct
+                var supplierOrderProduct = new OrderProduct
                 {
-                    SupplierOrderProductId = Guid.NewGuid(),
+                    OrderProductId = Guid.NewGuid(),
                     PurchasePrice = (decimal)productPurchased.PurchasePricePerUnit,
                     QuantityPurchased = (decimal)productPurchased.QuantityPurchased,
-                    SupplierOrderId = supplierOrderId,
+                    OrderId = supplierOrderId,
                     ProductId = productPurchased.ProductId
                 };
-                db.SupplierOrderProducts.Add(supplierOrderProduct);
+                db.OrderProducts.Add(supplierOrderProduct);
+            }
+        }
+
+        private async Task<decimal?> UpdatePersonNetWorthAsync(SupplierOrderDTO orderDTO)
+        {
+            var person = await db.Persons.FindAsync(orderDTO.SupplierId);
+            if (person == null)
+                throw new Exception(String.Format("Person with id {0} not found while updating its networth", orderDTO.SupplierId));
+            person.NetWorth += orderDTO.BillingSummaryDTO.BillAmount;
+            person.LastVisited = DateTime.Now;
+            db.Entry(person).State = EntityState.Modified;
+            return person.NetWorth;
+        }
+
+        private void AddProductToDeficientStockHit(Product product)
+        {
+            if (product == null)
+                throw new Exception("Product should not have been null, while adding the product to DeficientStock\n");
+            var currentDate = DateTime.Now.Date;
+            var IsExist = db.DeficientStockHits.Count(p => p.ProductId == product.ProductId &&
+                                                        p.TimeStamp == currentDate) > 0;
+
+            // Preserving Unique key constraints on DeficientStockHit
+            if (!IsExist)
+            {
+                var deficientStock = new DeficientStockHit()
+                {
+                    DeficientStockHitId = Guid.NewGuid(),
+                    ProductId = product.ProductId,
+                    QuantitySnapshot = product.TotalQuantity,
+                    TimeStamp = DateTime.Now.Date,
+                };
+                db.DeficientStockHits.Add(deficientStock);
             }
         }
     }
