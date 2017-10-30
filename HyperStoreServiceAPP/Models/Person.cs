@@ -27,6 +27,7 @@ namespace HyperStoreService.Models
         public decimal WalletBalance { get; set; }
 
         public decimal? NetWorth { get; set; }
+        public DateTime FirstVisited { get; set; }
         public DateTime LastVisited { get; set; } 
         public Person() {
         }

@@ -134,7 +134,7 @@ namespace HyperStoreServiceAPP.Controllers
                 throw new Exception("PersonDTO should not have been null");
             db = UtilityAPI.RetrieveDBContext(userId);
 
-            var supplier = new Person()
+            var person = new Person()
             {
                 PersonId = Guid.NewGuid(),
                 Address = supplierDTO.Address,
@@ -144,30 +144,31 @@ namespace HyperStoreServiceAPP.Controllers
                 Name = supplierDTO.Name,
                 WalletBalance = 0,
                 NetWorth = 0,
+                FirstVisited=DateTime.Now,
                 LastVisited = DateTime.Now,
             };
 
-            db.Persons.Add(supplier);
+            db.Persons.Add(person);
             try
             {
                 await db.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (IsNameExist(supplier.Name))
+                if (IsNameExist(person.Name))
                 {
-                    return BadRequest(String.Format("Person with name {0} already exists.", supplier.Name));
+                    return BadRequest(String.Format("Person with name {0} already exists.", person.Name));
                 }
-                else if (IsMobNoExist(supplier.MobileNo))
+                else if (IsMobNoExist(person.MobileNo))
                 {
-                    return BadRequest(String.Format("Person with mobile number {0} already exists.", supplier.MobileNo));
+                    return BadRequest(String.Format("Person with mobile number {0} already exists.", person.MobileNo));
                 }
                 else
                 {
                     throw;
                 }
             }
-            return CreatedAtRoute("DefaultApi", new { id = supplier.PersonId }, supplier);
+            return CreatedAtRoute("DefaultApi", new { id = person.PersonId }, person);
         }
 
         protected override void Dispose(bool disposing)

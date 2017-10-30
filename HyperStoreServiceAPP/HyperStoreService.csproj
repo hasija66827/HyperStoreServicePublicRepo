@@ -237,6 +237,10 @@
     <Compile Include="Migrations\201710292045500_init.Designer.cs">
       <DependentUpon>201710292045500_init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710301856503_addingfirstvisitedInPerson.cs" />
+    <Compile Include="Migrations\201710301856503_addingfirstvisitedInPerson.Designer.cs">
+      <DependentUpon>201710301856503_addingfirstvisitedInPerson.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
@@ -329,6 +333,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201710292045500_init.resx">
       <DependentUpon>201710292045500_init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710301856503_addingfirstvisitedInPerson.resx">
+      <DependentUpon>201710301856503_addingfirstvisitedInPerson.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
