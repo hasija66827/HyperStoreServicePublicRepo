@@ -112,7 +112,7 @@ namespace HyperStoreServiceAPP.Controllers
 
             try
             {
-                var supplierOrder = CreateNewSupplierOrderAsync(orderDetail);
+                var supplierOrder = CreateNewPersonOrderAsync(orderDetail);
                 SupplierTransactionDTO transactionDTO = new SupplierTransactionDTO
                 {
                     IsCredit = orderDetail.EntityType == EntityType.Supplier ? true : false,
@@ -122,11 +122,11 @@ namespace HyperStoreServiceAPP.Controllers
                 };
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
 
-                var supplierOrderTransaction = CreateNewSupplierOrderTransaction(supplierOrder, transaction);
+                var supplierOrderTransaction = CreateNewOrderTransaction(supplierOrder, transaction);
 
                 var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased, orderDetail.EntityType);
 
-                AddIntoSupplierOrderProduct(orderDetail.ProductsPurchased, supplierOrder.OrderId);
+                AddIntoOrderProduct(orderDetail.ProductsPurchased, supplierOrder.OrderId);
                 await UpdatePersonNetWorthAsync(orderDetail);
                 await db.SaveChangesAsync();
                 return Ok(transactionDTO.TransactionAmount);
@@ -163,7 +163,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+             if (disposing && db!=null)
             {
                 db.Dispose();
             }
@@ -178,9 +178,9 @@ namespace HyperStoreServiceAPP.Controllers
 
     public partial class OrdersController : ApiController, ISupplierOrder
     {
-        private OrderTransaction CreateNewSupplierOrderTransaction(Order supplierOrder, Transaction transaction)
+        private OrderTransaction CreateNewOrderTransaction(Order supplierOrder, Transaction transaction)
         {
-            var supplierOrderTransaction = new OrderTransaction
+            var orderTransaction = new OrderTransaction
             {
                 OrderTransactionId = Guid.NewGuid(),
                 TransactionId = transaction.TransactionId,
@@ -188,11 +188,11 @@ namespace HyperStoreServiceAPP.Controllers
                 IsPaymentComplete = supplierOrder.BillAmount == supplierOrder.SettledPayedAmount ? true : false,
                 PaidAmount = null
             };
-            db.OrderTransactions.Add(supplierOrderTransaction);
-            return supplierOrderTransaction;
+            db.OrderTransactions.Add(orderTransaction);
+            return orderTransaction;
         }
 
-        private Order CreateNewSupplierOrderAsync(SupplierOrderDTO orderDetail)
+        private Order CreateNewPersonOrderAsync(SupplierOrderDTO orderDetail)
         {
             var billAmount = orderDetail.BillingSummaryDTO.BillAmount;
             var payingAmount = (decimal)orderDetail.PayingAmount;
@@ -249,11 +249,11 @@ namespace HyperStoreServiceAPP.Controllers
                     AddProductToDeficientStockHit(product);
                 }
             }
-                db.Entry(product).State = EntityState.Modified;
+            db.Entry(product).State = EntityState.Modified;
             return product;
         }
 
-        private void AddIntoSupplierOrderProduct(List<ProductPurchased> productsPurchased, Guid supplierOrderId)
+        private void AddIntoOrderProduct(List<ProductPurchased> productsPurchased, Guid supplierOrderId)
         {
             // Not checking if product exists or not because it has been already checked by updateProductStock.
             foreach (var productPurchased in productsPurchased)

@@ -71,7 +71,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+             if (disposing && db!=null)
             {
                 db.Dispose();
             }

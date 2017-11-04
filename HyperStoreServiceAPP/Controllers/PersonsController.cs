@@ -144,7 +144,7 @@ namespace HyperStoreServiceAPP.Controllers
                 Name = supplierDTO.Name,
                 WalletBalance = 0,
                 NetWorth = 0,
-                FirstVisited=DateTime.Now,
+                FirstVisited = DateTime.Now,
                 LastVisited = DateTime.Now,
             };
 
@@ -173,7 +173,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (disposing && db != null)
             {
                 db.Dispose();
             }

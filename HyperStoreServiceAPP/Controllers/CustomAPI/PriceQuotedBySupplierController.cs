@@ -70,7 +70,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+             if (disposing && db!=null)
             {
                 db.Dispose();
             }
