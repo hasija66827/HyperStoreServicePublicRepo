@@ -16,6 +16,12 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
     {
         private HyperStoreServiceContext db;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="parameter"></param>
+        /// <returns>The collection of product with the number of days it had hit the zero stock.</returns>
         [HttpGet]
         [ResponseType(typeof(IEnumerable<SusceptibleProductsInsight>))]
         public IHttpActionResult GetSusceptibleProducts(Guid userId, SusceptibleProductsInsightDTO parameter)

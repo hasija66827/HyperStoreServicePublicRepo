@@ -18,7 +18,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
         [HttpGet]
         [ResponseType(typeof(NewCustomerInsights))]
-        public IHttpActionResult GetNewCustomer(Guid userId, CustomerInsightsDTO parameter)
+        public IHttpActionResult GetNewCustomers(Guid userId, CustomerInsightsDTO parameter)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -42,7 +42,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
         [HttpGet]
         [ResponseType(typeof(DetachedCustomerInsights))]
-        public IHttpActionResult GetNotVisitedCustomer(Guid userId, CustomerInsightsDTO parameter)
+        public IHttpActionResult GetDetachedCustomers(Guid userId, CustomerInsightsDTO parameter)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -38,7 +38,7 @@ namespace HyperStoreServiceAPP.DTO
         {
             var supplier = await db.Persons.FindAsync(this.SupplierId);
             var walletSnapshot = this.UpdateWalletBalanceAsync(db, supplier);
-            var transaction = this.AddNewTransaction(db, (decimal)walletSnapshot);
+            var transaction = this.AddNewTransaction(db, supplier.EntityType, (decimal)walletSnapshot);
             List<Order> settleUpOrders;
             if (transaction.IsCredit == false && supplier.EntityType == EntityType.Supplier ||
                 transaction.IsCredit == true && supplier.EntityType == EntityType.Customer)
@@ -74,7 +74,7 @@ namespace HyperStoreServiceAPP.DTO
         /// <param name="walletSnapshot"></param>
         /// <param name="db"></param>
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
-        private Transaction AddNewTransaction(HyperStoreServiceContext db, decimal walletSnapshot)
+        private Transaction AddNewTransaction(HyperStoreServiceContext db, EntityType? entityType, decimal walletSnapshot)
         {
             var transaction = new Transaction
             {
@@ -85,8 +85,10 @@ namespace HyperStoreServiceAPP.DTO
                 OrderNo = this.Description,
                 IsCredit = (bool)this.IsCredit,
                 PersonId = (Guid)this.SupplierId,
-                WalletSnapshot = walletSnapshot
+                WalletSnapshot = walletSnapshot,
+                EntityType = entityType
             };
+
             db.Transactions.Add(transaction);
             return transaction;
         }

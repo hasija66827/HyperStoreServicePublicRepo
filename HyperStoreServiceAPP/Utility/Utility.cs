@@ -7,36 +7,12 @@ namespace HyperStoreServiceAPP
 {
     public class Utility
     {
-        public static string GenerateCustomerOrderNo(int? length = null)
-        {
-            if (length == null)
-                length = 7;
-            var random = new Random();
-            string s = "CORD";
-            s = String.Concat(s, random.Next(1, 10).ToString());
-            for (int i = 1; i < length; i++)
-                s = String.Concat(s, random.Next(10).ToString());
-            return s;
-        }
-
-        public static string GenerateCustomerTransactionNo(int? length = null)
-        {
-            if (length == null)
-                length = 7;
-            var random = new Random();
-            string s = "CTXN";
-            s = String.Concat(s, random.Next(1, 10).ToString());
-            for (int i = 1; i < length; i++)
-                s = String.Concat(s, random.Next(10).ToString());
-            return s;
-        }
-
         public static string GenerateSupplierTransactionNo(int? length = null)
         {
             if (length == null)
                 length = 7;
             var random = new Random();
-            string s = "STXN";
+            string s = "TXN";
             s = String.Concat(s, random.Next(1, 10).ToString());
             for (int i = 1; i < length; i++)
                 s = String.Concat(s, random.Next(10).ToString());
@@ -48,7 +24,7 @@ namespace HyperStoreServiceAPP
             if (length == null)
                 length = 7;
             var random = new Random();
-            string s = "SORD";
+            string s = "ORD";
             s = String.Concat(s, random.Next(1, 10).ToString());
             for (int i = 1; i < length; i++)
                 s = String.Concat(s, random.Next(10).ToString());

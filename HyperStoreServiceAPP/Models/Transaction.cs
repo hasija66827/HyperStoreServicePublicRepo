@@ -6,11 +6,15 @@ using System.Web;
 using HyperStoreServiceAPP;
 using System.Threading.Tasks;
 using System.Data.Entity;
+using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreService.Models
 {
     public class Transaction
     {
+        [Required]
+        public EntityType? EntityType { get; set; }
+
         public Guid TransactionId { get; set; }
         public bool IsCredit { get; set; }
         [Required]
