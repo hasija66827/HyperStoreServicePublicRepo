@@ -228,7 +228,7 @@
     <Compile Include="CustomModels\RecommendedProduct.cs" />
     <Compile Include="DTO\InsightsDTO\CustomerInsightsDTO.cs" />
     <Compile Include="DTO\InsightsDTO\InsightsDTO.cs" />
-    <Compile Include="DTO\InsightsDTO\ProductInsightsDTO.cs" />
+    <Compile Include="DTO\InsightsDTO\SusceptibleProductsDTO.cs" />
     <Compile Include="DTO\ProductDTO.cs" />
     <Compile Include="DTO\SupplierDTO.cs" />
     <Compile Include="DTO\SupplierOrderDTO.cs" />

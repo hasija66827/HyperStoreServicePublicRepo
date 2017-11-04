@@ -173,6 +173,18 @@ namespace PriorityQueueDemo
                 throw new InvalidOperationException("Priority queue is empty");
         }
 
+        public List<KeyValuePair<TPriority,TValue>> DequeRange(int count)
+        {
+            var dequedItems = new List<KeyValuePair<TPriority, TValue>>();
+            var retCount = Math.Min(this.Count, count);
+            while (retCount-- > 0)
+            {
+                var item = this.Dequeue();
+                dequedItems.Add(item);
+            }
+            return dequedItems;
+        }
+
         /// <summary>
         /// Dequeues element with minimum priority and return its value
         /// </summary>
