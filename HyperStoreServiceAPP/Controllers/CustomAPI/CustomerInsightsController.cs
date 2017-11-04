@@ -17,7 +17,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         private HyperStoreServiceContext db;
 
         [HttpGet]
-        [ResponseType(typeof(IEnumerable<Person>))]
+        [ResponseType(typeof(NewCustomerInsights))]
         public IHttpActionResult GetNewCustomer(Guid userId, CustomerInsightsDTO parameter)
         {
             if (!ModelState.IsValid)
@@ -27,6 +27,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                 return BadRequest("Parameter should not have been null");
 
             db = UtilityAPI.RetrieveDBContext(userId);
+
             var filterDate = DateTime.Now.AddDays(Convert.ToDouble(-parameter.NumberOfDays)).Date;
 
             var newCustomers = db.Persons.Where(c => c.EntityType == DTO.EntityType.Customer &&
@@ -34,13 +35,13 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                             .OrderByDescending(c => c.NetWorth)
                                             .ToList();
 
-            var topNewCustomers = newCustomers.Take((int)parameter.NumberOfRecords);
-
-            return Ok(topNewCustomers);
+            var topNewCustomers = newCustomers.Take((int)parameter.NumberOfRecords).ToList();
+            return Ok(new NewCustomerInsights(newCustomers.Count, topNewCustomers));
         }
 
+
         [HttpGet]
-        [ResponseType(typeof(IEnumerable<Person>))]
+        [ResponseType(typeof(DetachedCustomerInsights))]
         public IHttpActionResult GetNotVisitedCustomer(Guid userId, CustomerInsightsDTO parameter)
         {
             if (!ModelState.IsValid)
@@ -50,21 +51,22 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                 return BadRequest("Parameter should not have been null");
 
             db = UtilityAPI.RetrieveDBContext(userId);
+
             var filterDate = DateTime.Now.AddDays(Convert.ToDouble(-parameter.NumberOfDays));
 
-            var oldCustomers = db.Persons.Where(c => c.EntityType == DTO.EntityType.Customer &&
-                                                    c.LastVisited <= filterDate)
+            var detachedCustomers = db.Persons.Where(c => c.EntityType == DTO.EntityType.Customer &&
+                                                        c.LastVisited <= filterDate)
                                                     .OrderByDescending(c => c.NetWorth)
                                             .ToList();
 
-            var limitedNewCustomers = oldCustomers.Take((int)parameter.NumberOfRecords);
-
-            return Ok(limitedNewCustomers);
+            var topDetachedCustomer = detachedCustomers.Take((int)parameter.NumberOfRecords).ToList();
+            var detachedCustomerInsights = new DetachedCustomerInsights(detachedCustomers.Count, topDetachedCustomer);
+            return Ok(detachedCustomerInsights);
         }
 
         protected override void Dispose(bool disposing)
         {
-             if (disposing & db!=null)
+            if (disposing & db != null)
             {
                 db.Dispose();
             }
