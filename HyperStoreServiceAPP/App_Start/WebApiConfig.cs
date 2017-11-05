@@ -66,7 +66,6 @@ namespace HyperStoreServiceAPP
              defaults: new { id = RouteParameter.Optional },
              constraints: new
              {
-                 id = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}",
                  userId = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}"
              }
              );

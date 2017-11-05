@@ -16,9 +16,21 @@ namespace HyperStoreServiceAPP.DTO.CartManagementDTO
         [Required]
         public Guid? SupplierId { get { return this._supplierId; } }
 
-        public CartDTO(Guid? productId, Guid? supplierId) {
+        public CartDTO(Guid? productId, Guid? supplierId)
+        {
             _productId = productId;
             _supplierId = supplierId;
+        }
+    }
+
+    public class AddProductToCartDTO : CartDTO
+    {
+        private decimal? _quantityPurchased;
+        [Required]
+        public decimal? QuantityPurchased { get { return this._quantityPurchased; } }
+        public AddProductToCartDTO(Guid? productId, Guid? supplierId, decimal? quantityPurchased) : base(productId, supplierId)
+        {
+            this._quantityPurchased = quantityPurchased;
         }
     }
 }

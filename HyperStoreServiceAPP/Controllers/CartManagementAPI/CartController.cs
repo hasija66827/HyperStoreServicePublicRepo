@@ -3,6 +3,7 @@ using HyperStoreServiceAPP.DTO.CartManagementDTO;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -30,23 +31,33 @@ namespace HyperStoreServiceAPP.Controllers.CartManagementAPI
 
         [HttpPost]
         [ResponseType(typeof(Product))]
-        public async Task<IHttpActionResult> AddProductToCart(Guid userId, CartDTO cartDTO)
+        public async Task<IHttpActionResult> AddProductToCart(Guid userId, AddProductToCartDTO cartDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             db = UtilityAPI.RetrieveDBContext(userId);
-            if (cartDTO == null)
-                return BadRequest("CartDTO should not have been null");
 
-            var product = await db.Products.FindAsync(cartDTO.ProductId);
+            try
+            {
+                if (cartDTO == null)
+                    return BadRequest("CartDTO should not have been null");
 
-            _AddProductToSupplierBucket(product, cartDTO.SupplierId);
+                var product = await db.Products.FindAsync(cartDTO.ProductId);
+                if (product == null)
+                    throw new Exception(String.Format("Product with id {0} not found", cartDTO.ProductId));
 
-            db.Entry(product).State = EntityState.Modified;
+                _AddProductToSupplierBucket(product, cartDTO.SupplierId, cartDTO.QuantityPurchased);
 
-            await db.SaveChangesAsync();
-            return Ok(product);
+                db.Entry(product).State = EntityState.Modified;
+
+                await db.SaveChangesAsync();
+                return Ok(product);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception("Supplier Id might not exist\n" + ex.Message);
+            }
         }
 
         /// <summary>
@@ -64,7 +75,7 @@ namespace HyperStoreServiceAPP.Controllers.CartManagementAPI
             {
                 if (product.PotentielSupplierId == null && product.LatestSupplierId != null)
                 {
-                    _AddProductToSupplierBucket(product, product.LatestSupplierId);
+                    _AddProductToSupplierBucket(product, product.LatestSupplierId, 0);
                     db.Entry(product).State = EntityState.Modified;
                     count++;
                 }
@@ -74,22 +85,124 @@ namespace HyperStoreServiceAPP.Controllers.CartManagementAPI
             return Ok(count);
         }
 
-        private void _AddProductToSupplierBucket(Product product, Guid? supplierId)
+
+        [HttpPost]
+        [ResponseType(typeof(Product))]
+        public async Task<IHttpActionResult> RemoveProductFromCart(Guid userId, Guid id)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+
+            var product = await db.Products.FindAsync(id);
+            if (product == null)
+                throw new Exception(String.Format("Product with id {0} not found", id));
+
+            if (product.PotentielSupplierId == null)
+                throw new Exception("Potentiel supplier of the product is already null");
+
+            product.PotentielSupplierId = null;
+
+            db.Entry(product).State = EntityState.Modified;
+
+            await db.SaveChangesAsync();
+            return Ok(product);
+        }
+
+        [HttpPost]
+        [ResponseType(typeof(Product))]
+        public async Task<IHttpActionResult> PurchaseProductInCart(Guid userId, Guid id)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+
+            var product = await db.Products.FindAsync(id);
+            if (product == null)
+                throw new Exception(String.Format("Product with id {0} not found", id));
+
+            if (product.PotentielSupplierId == null)
+                throw new Exception("Product should have been added to cart before purchasing it");
+
+            if (product.IsPurchased == true)
+                throw new Exception("Product is already in purchase state");
+
+            product.IsPurchased = true;
+            db.Entry(product).State = EntityState.Modified;
+            await db.SaveChangesAsync();
+            return Ok(product);
+        }
+
+        [HttpPost]
+        [ResponseType(typeof(Product))]
+        public async Task<IHttpActionResult> UnPurchaseProductInCart(Guid userId, Guid id)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+
+            var product = await db.Products.FindAsync(id);
+            if (product == null)
+                throw new Exception(String.Format("Product with id {0} not found", id));
+
+            if (product.PotentielSupplierId == null)
+                throw new Exception("Product should have been added to cart before unpurchasing it");
+
+            if (product.IsPurchased == false)
+                throw new Exception("Product is already in unpurchase state");
+
+            product.IsPurchased = false;
+            db.Entry(product).State = EntityState.Modified;
+            await db.SaveChangesAsync();
+            return Ok(product);
+        }
+
+        [HttpPost]
+        [ResponseType(typeof(int))]
+        public async Task<IHttpActionResult> EmptyShoppingCart(Guid userId, Guid id)
+        {
+            if (id == null)
+                throw new Exception("supplierId should not have been null");
+            int count = 0;
+            db = UtilityAPI.RetrieveDBContext(userId);
+
+            var products = db.Products.Where(p => p.PotentielSupplierId == id);
+            foreach (var product in products)
+            {
+                product.PotentielSupplierId = null;
+                db.Entry(product).State = EntityState.Modified;
+                count++;
+            }
+
+            await db.SaveChangesAsync();
+            return (Ok(count));
+        }
+
+        [HttpPost]
+        [ResponseType(typeof(int))]
+        public async Task<IHttpActionResult> EmptyAllShoppingCart(Guid userId)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+            int count = 0;
+
+            var products = db.Products.Where(p => p.PotentielSupplierId != null);
+            foreach (var product in products)
+            {
+                product.PotentielSupplierId = null;
+                db.Entry(product).State = EntityState.Modified;
+                count++;
+            }
+
+            await db.SaveChangesAsync();
+            return (Ok(count));
+        }
+
+        private void _AddProductToSupplierBucket(Product product, Guid? supplierId, decimal? quantityPurchased)
         {
             if (supplierId == null)
                 throw new Exception("SupplierId should not be null while adding product to supplier bucket.");
 
-            if (product.PotentielSupplierId == supplierId)
-            {
-                product.PotentielQuantityPurhcased += 1;
-            }
-            else
+            if (product.PotentielSupplierId != supplierId)
             {
                 product.PotentielSupplierId = supplierId;
-                product.PotentielQuantityPurhcased = 0;
                 product.IsPurchased = false;
                 product.PotentielPurchasePrice = 0;
             }
+            product.PotentielQuantityPurhcased = quantityPurchased;
         }
     }
 }

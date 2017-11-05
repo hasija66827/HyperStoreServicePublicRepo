@@ -11,13 +11,13 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public interface ICart {
         IHttpActionResult GetProductsInCart(Guid userId, Guid? supplierId);
-        Task<IHttpActionResult> AddProductToCart(Guid userId, CartDTO cartDTO);
+        Task<IHttpActionResult> AddProductToCart(Guid userId, AddProductToCartDTO cartDTO);
         Task<IHttpActionResult> AddLeftOverDeficientProductsToCart(Guid userId);
-        /*Task<IHttpActionResult> RemoveProductFromCart(Guid userId, Guid productId);
+        Task<IHttpActionResult> RemoveProductFromCart(Guid userId, Guid productId);
         Task<IHttpActionResult> PurchaseProductInCart(Guid userId, Guid productId);
         Task<IHttpActionResult> UnPurchaseProductInCart(Guid userId, Guid productId);
         Task<IHttpActionResult> EmptyShoppingCart(Guid userId, Guid supplierId);
-        Task<IHttpActionResult> EmptyAllShoppingCart(Guid userId);*/
+        Task<IHttpActionResult> EmptyAllShoppingCart(Guid userId);
     }
 
     public interface ITag
