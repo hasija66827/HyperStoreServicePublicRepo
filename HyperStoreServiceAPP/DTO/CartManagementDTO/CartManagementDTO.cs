@@ -8,10 +8,17 @@ namespace HyperStoreServiceAPP.DTO.CartManagementDTO
 {
     public class CartDTO
     {
+        private Guid? _productId;
         [Required]
-        Guid? ProductId;
+        public Guid? ProductId { get { return this._productId; } }
 
+        private Guid? _supplierId;
         [Required]
-        Guid? SupplierId;
+        public Guid? SupplierId { get { return this._supplierId; } }
+
+        public CartDTO(Guid? productId, Guid? supplierId) {
+            _productId = productId;
+            _supplierId = supplierId;
+        }
     }
 }

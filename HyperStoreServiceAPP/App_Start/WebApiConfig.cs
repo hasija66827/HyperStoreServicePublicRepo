@@ -62,10 +62,11 @@ namespace HyperStoreServiceAPP
 
             config.Routes.MapHttpRoute(
              name: "DefaultAPIWithAction",
-             routeTemplate: "api/{userId}/{controller}/{action}",
-             defaults: new { },
+             routeTemplate: "api/{userId}/{controller}/{action}/{id}",
+             defaults: new { id = RouteParameter.Optional },
              constraints: new
              {
+                 id = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}",
                  userId = @"[0-9A-Fa-f]{8}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{4}[-][0-9A-Fa-f]{12}"
              }
              );

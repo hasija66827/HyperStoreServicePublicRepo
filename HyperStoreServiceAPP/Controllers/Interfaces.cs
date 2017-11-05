@@ -10,14 +10,14 @@ using System.Web.Http;
 namespace HyperStoreServiceAPP.Controllers
 {
     public interface ICart {
-        Task<IHttpActionResult> GetProductsInCart(Guid userId, Guid supplierId);
-        IHttpActionResult AddProductToCart(Guid userId, CartDTO cartDTO);
+        IHttpActionResult GetProductsInCart(Guid userId, Guid? supplierId);
+        Task<IHttpActionResult> AddProductToCart(Guid userId, CartDTO cartDTO);
         Task<IHttpActionResult> AddLeftOverDeficientProductsToCart(Guid userId);
-        Task<IHttpActionResult> RemoveProductFromCart(Guid userId, Guid productId);
+        /*Task<IHttpActionResult> RemoveProductFromCart(Guid userId, Guid productId);
         Task<IHttpActionResult> PurchaseProductInCart(Guid userId, Guid productId);
         Task<IHttpActionResult> UnPurchaseProductInCart(Guid userId, Guid productId);
         Task<IHttpActionResult> EmptyShoppingCart(Guid userId, Guid supplierId);
-        Task<IHttpActionResult> EmptyAllShoppingCart(Guid userId);
+        Task<IHttpActionResult> EmptyAllShoppingCart(Guid userId);*/
     }
 
     public interface ITag
