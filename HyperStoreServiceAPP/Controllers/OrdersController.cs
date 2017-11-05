@@ -124,7 +124,7 @@ namespace HyperStoreServiceAPP.Controllers
 
                 var supplierOrderTransaction = CreateNewOrderTransaction(supplierOrder, transaction);
 
-                var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased, orderDetail.EntityType);
+                var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased, orderDetail.EntityType, orderDetail.SupplierId);
 
                 AddIntoOrderProduct(orderDetail.ProductsPurchased, supplierOrder.OrderId);
                 await UpdatePersonNetWorthAsync(orderDetail);
@@ -216,14 +216,14 @@ namespace HyperStoreServiceAPP.Controllers
             return supplierOrder;
         }
 
-        private async Task<List<Product>> UpdateStockOfProductsAsync(List<ProductPurchased> productsPurchased, EntityType? entityType)
+        private async Task<List<Product>> UpdateStockOfProductsAsync(List<ProductPurchased> productsPurchased, EntityType? entityType, Guid? personId)
         {
             List<Product> products = new List<Product>();
             try
             {
                 foreach (var productPurchased in productsPurchased)
                 {
-                    var product = await UpdateProductStockAsync(productPurchased, entityType);
+                    var product = await UpdateProductStockAsync(productPurchased, entityType, personId);
                     products.Add(product);
                 }
             }
@@ -234,13 +234,16 @@ namespace HyperStoreServiceAPP.Controllers
             return products;
         }
 
-        private async Task<Product> UpdateProductStockAsync(ProductPurchased productPurchased, EntityType? entityType)
+        private async Task<Product> UpdateProductStockAsync(ProductPurchased productPurchased, EntityType? entityType, Guid? personId)
         {
             var product = await db.Products.FindAsync(productPurchased.ProductId);
             if (product == null)
                 throw new Exception(String.Format("Product with id {0} not found while updating the stock.", productPurchased.ProductId));
             if (entityType == EntityType.Supplier)
+            {
                 product.TotalQuantity += (decimal)productPurchased.QuantityPurchased;
+                product.LatestSupplierId = personId;
+            }
             else
             {
                 product.TotalQuantity -= (decimal)productPurchased.QuantityPurchased;

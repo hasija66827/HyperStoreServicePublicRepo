@@ -252,6 +252,10 @@
     <Compile Include="Migrations\201711041858380_addingEntityTypeInTransaction.Designer.cs">
       <DependentUpon>201711041858380_addingEntityTypeInTransaction.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711051117104_cartManage.cs" />
+    <Compile Include="Migrations\201711051117104_cartManage.Designer.cs">
+      <DependentUpon>201711051117104_cartManage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
@@ -351,6 +355,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711041858380_addingEntityTypeInTransaction.resx">
       <DependentUpon>201711041858380_addingEntityTypeInTransaction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711051117104_cartManage.resx">
+      <DependentUpon>201711051117104_cartManage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
