@@ -33,9 +33,9 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                 return BadRequest("Parameter should not have been null");
 
             db = UtilityAPI.RetrieveDBContext(userId);
-            var filterDate = DateTime.Now.AddDays(Convert.ToDouble(-parameter.NumberOfDays)).Date;
 
-            var susceptibleProductGrps = db.DeficientStockHits.Where(dsh => dsh.TimeStamp > filterDate)
+            var susceptibleProductGrps = db.DeficientStockHits.Where(dsh => dsh.TimeStamp >= parameter.DateRange.LB.Date &&
+                                                                             dsh.TimeStamp <= parameter.DateRange.UB.Date)
                                                     .GroupBy(dsh => dsh.ProductId).ToList();
 
             var susceptibleProducts = susceptibleProductGrps.Select(pg => CountDaysHitOfTheProduct(pg));
@@ -44,14 +44,14 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             var priorityQueue = new PriorityQueue<int, Product>(susceptibleProducts, compareDays);
             var topSusceptibleProducts = priorityQueue.DequeRange((int)parameter.NumberOfRecords);
 
-            var susceptibleProductsInsight= new SusceptibleProductsInsight(susceptibleProductGrps.Count, topSusceptibleProducts);
+            var susceptibleProductsInsight = new SusceptibleProductsInsight(susceptibleProductGrps.Count, topSusceptibleProducts);
 
             return Ok(susceptibleProductsInsight);
         }
 
         private KeyValuePair<int, Product> CountDaysHitOfTheProduct(IGrouping<Guid?, DeficientStockHit> item)
         {
-            var product = new Product() { ProductId = (Guid)item.Key };            
+            var product = new Product() { ProductId = (Guid)item.Key };
             return new KeyValuePair<int, Product>(item.Count(), product);
         }
 

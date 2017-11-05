@@ -210,6 +210,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\CustomAPI\CustomerInsightsController.cs" />
+    <Compile Include="Controllers\CustomAPI\SalesInsightsController.cs" />
     <Compile Include="Controllers\DumpCustomAPI\CustomerPurchaseTrendController.cs" />
     <Compile Include="Controllers\CustomAPI\PriceQuotedBySupplierController.cs" />
     <Compile Include="Controllers\DumpCustomAPI\ProductConsumptionTrendController.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="CustomModels\RecommendedProduct.cs" />
     <Compile Include="DTO\InsightsDTO\CustomerInsightsDTO.cs" />
     <Compile Include="DTO\InsightsDTO\InsightsDTO.cs" />
+    <Compile Include="DTO\InsightsDTO\SalesInsightDTO.cs" />
     <Compile Include="DTO\InsightsDTO\SusceptibleProductsDTO.cs" />
     <Compile Include="DTO\ProductDTO.cs" />
     <Compile Include="DTO\SupplierDTO.cs" />

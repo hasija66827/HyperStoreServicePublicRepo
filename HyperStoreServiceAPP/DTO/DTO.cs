@@ -9,7 +9,6 @@ using System.Web;
 
 namespace HyperStoreServiceAPP.DTO
 {
-
     #region CustomerPurchaseTrend
     public class CustomerPurchaseTrendDTO
     {

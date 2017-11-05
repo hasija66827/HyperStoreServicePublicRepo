@@ -8,17 +8,25 @@ namespace HyperStoreServiceAPP.DTO.InsightsDTO
 {
     public class InsightsDTO
     {
-        private uint? _numberOfDays;
+        private IRange<DateTime> _dateRange;
         [Required]
-        public uint? NumberOfDays { get { return this._numberOfDays; } }
+        [DateRange(ErrorMessage = "{0} is invalid, lb>ub")]
+        public IRange<DateTime> DateRange { get { return this._dateRange; } }
 
+        public InsightsDTO(IRange<DateTime> dateRange)
+        {
+            _dateRange = dateRange;
+        }
+    }
+
+    public class FiniteInsightsDTO : InsightsDTO
+    {
         private uint? _numberOfRecords;
         [Required]
         public uint? NumberOfRecords { get { return this._numberOfRecords; } }
 
-        public InsightsDTO(uint numberOfDays, uint numberOfRecords)
+        public FiniteInsightsDTO(IRange<DateTime> dateRange, uint numberOfRecords) : base(dateRange)
         {
-            _numberOfDays = numberOfDays;
             _numberOfRecords = numberOfRecords;
         }
     }

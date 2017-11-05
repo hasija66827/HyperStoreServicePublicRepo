@@ -28,10 +28,9 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
             db = UtilityAPI.RetrieveDBContext(userId);
 
-            var filterDate = DateTime.Now.AddDays(Convert.ToDouble(-parameter.NumberOfDays)).Date;
-
             var newCustomers = db.Persons.Where(c => c.EntityType == DTO.EntityType.Customer &&
-                                                    c.FirstVisited > filterDate)
+                                                    c.FirstVisited >= parameter.DateRange.LB.Date &&
+                                                    c.FirstVisited <= parameter.DateRange.UB.Date)
                                             .OrderByDescending(c => c.NetWorth)
                                             .ToList();
 
@@ -52,10 +51,9 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
             db = UtilityAPI.RetrieveDBContext(userId);
 
-            var filterDate = DateTime.Now.AddDays(Convert.ToDouble(-parameter.NumberOfDays));
-
             var detachedCustomers = db.Persons.Where(c => c.EntityType == DTO.EntityType.Customer &&
-                                                        c.LastVisited <= filterDate)
+                                                        (c.LastVisited > parameter.DateRange.UB.Date ||
+                                                        c.LastVisited < parameter.DateRange.LB.Date))
                                                     .OrderByDescending(c => c.NetWorth)
                                             .ToList();
 

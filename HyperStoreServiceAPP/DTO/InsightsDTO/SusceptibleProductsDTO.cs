@@ -6,9 +6,9 @@ using System.Web;
 
 namespace HyperStoreServiceAPP.DTO.InsightsDTO
 {
-    public class SusceptibleProductsInsightDTO : InsightsDTO
+    public class SusceptibleProductsInsightDTO : FiniteInsightsDTO
     {
-        public SusceptibleProductsInsightDTO(uint numberOfDays, uint numberOfRecords) : base(numberOfDays, numberOfRecords) { }
+        public SusceptibleProductsInsightDTO(IRange<DateTime> dateRange, uint numberOfRecords) : base(dateRange, numberOfRecords) { }
     }
 
     public class SusceptibleProductsInsight {
