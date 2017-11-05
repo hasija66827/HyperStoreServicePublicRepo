@@ -21,6 +21,9 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         {
             db = UtilityAPI.RetrieveDBContext(userId);
 
+            if (parameter == null)
+                return BadRequest("Parameter should not have been null");
+
             var orderGroups = db.Orders.Where(o => o.OrderDate >= parameter.DateRange.LB.Date &&
                                                     o.OrderDate <= parameter.DateRange.UB.Date)
                                         .GroupBy(o => DbFunctions.TruncateTime(o.OrderDate)).ToList();

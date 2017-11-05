@@ -3,6 +3,7 @@ using HyperStoreServiceAPP.DTO.InsightsDTO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -52,8 +53,8 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             db = UtilityAPI.RetrieveDBContext(userId);
 
             var detachedCustomers = db.Persons.Where(c => c.EntityType == DTO.EntityType.Customer &&
-                                                        (c.LastVisited > parameter.DateRange.UB.Date ||
-                                                        c.LastVisited < parameter.DateRange.LB.Date))
+                                                        (DbFunctions.TruncateTime(c.LastVisited) > parameter.DateRange.UB.Date ||
+                                                         DbFunctions.TruncateTime(c.LastVisited) < parameter.DateRange.LB.Date))
                                                     .OrderByDescending(c => c.NetWorth)
                                             .ToList();
 
