@@ -15,7 +15,7 @@ using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public partial class OrdersController : ApiController, ISupplierOrder
+    public partial class OrdersController : ApiController, IOrder
     {
         private HyperStoreServiceContext db;
 
@@ -176,7 +176,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
     }
 
-    public partial class OrdersController : ApiController, ISupplierOrder
+    public partial class OrdersController : ApiController, IOrder
     {
         private OrderTransaction CreateNewOrderTransaction(Order supplierOrder, Transaction transaction)
         {

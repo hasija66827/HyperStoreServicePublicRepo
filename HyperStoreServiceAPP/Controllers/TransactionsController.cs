@@ -15,7 +15,7 @@ using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public partial class TransactionsController : ApiController, ISupplierTransaction
+    public partial class TransactionsController : ApiController, ITransaction
     {
         private HyperStoreServiceContext db ;
 

@@ -15,7 +15,7 @@ using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public class PersonsController : ApiController, ISupplier
+    public class PersonsController : ApiController, IPerson
     {
         private HyperStoreServiceContext db;
 

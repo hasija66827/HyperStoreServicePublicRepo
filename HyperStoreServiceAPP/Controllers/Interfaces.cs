@@ -1,5 +1,6 @@
 ﻿using HyperStoreService.Models;
 using HyperStoreServiceAPP.DTO;
+using HyperStoreServiceAPP.DTO.CartManagementDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,17 @@ using System.Web.Http;
 
 namespace HyperStoreServiceAPP.Controllers
 {
+    public interface ICartManagement {
+        Task<IHttpActionResult> GetProductsInCart(Guid userId, Guid supplierId);
+        IHttpActionResult AddProductToCart(Guid userId, CartDTO cartDTO);
+        Task<IHttpActionResult> AddLeftOverDeficientProductsToCart(Guid userId);
+        Task<IHttpActionResult> RemoveProductFromCart(Guid userId, Guid productId);
+        Task<IHttpActionResult> PurchaseProductInCart(Guid userId, Guid productId);
+        Task<IHttpActionResult> UnPurchaseProductInCart(Guid userId, Guid productId);
+        Task<IHttpActionResult> EmptyShoppingCart(Guid userId, Guid supplierId);
+        Task<IHttpActionResult> EmptyAllShoppingCart(Guid userId);
+    }
+
     public interface ITag
     {
         IQueryable<Tag> Get(Guid userId);
@@ -22,19 +34,19 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> GetProductMetadata(Guid userId);
     }
 
-    public interface ISupplierOrderProduct
+    public interface IOrderProduct
     {
         Task<IHttpActionResult> Get(Guid userId, Guid? supplierOrderId);
     }
 
-    public interface ISupplierOrder
+    public interface IOrder
     {
         Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteria SOFC);
         IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Post(Guid userId, SupplierOrderDTO orderDetail);
     }
 
-    public interface ISupplier
+    public interface IPerson
     {
         Task<IHttpActionResult> Get(Guid userId, SupplierFilterCriteria sfc);
         IHttpActionResult GetTotalRecordsCount(Guid userId);
@@ -43,7 +55,7 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> GetWalletBalanceRange(Guid userId);
     }
 
-    public interface ISupplierTransaction
+    public interface ITransaction
     {
         Task<IHttpActionResult> Get(Guid userId, SupplierTransactionFilterCriteria transactionFilterCriteria);
         Task<IHttpActionResult> Post(Guid userId, SupplierTransactionDTO transactionDTO);
