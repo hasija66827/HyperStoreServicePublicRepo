@@ -9,7 +9,7 @@ using System.Web.Http;
 
 namespace HyperStoreServiceAPP.Controllers
 {
-    public interface ICartManagement {
+    public interface ICart {
         Task<IHttpActionResult> GetProductsInCart(Guid userId, Guid supplierId);
         IHttpActionResult AddProductToCart(Guid userId, CartDTO cartDTO);
         Task<IHttpActionResult> AddLeftOverDeficientProductsToCart(Guid userId);
