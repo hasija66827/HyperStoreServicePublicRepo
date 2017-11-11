@@ -5,7 +5,7 @@ using System.Web;
 
 namespace HyperStoreService.CustomModels
 {
-    public class RecommendedProduct
+    public class DumpRecommendedProduct
     {
         public Guid? ProductId { get; set; }
         public string ProductName { get; set; }

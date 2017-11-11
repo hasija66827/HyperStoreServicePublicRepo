@@ -7,13 +7,13 @@ namespace HyperStoreServiceAPP.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class cartManage : IMigrationMetadata
+    public sealed partial class CartManagement : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(cartManage));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(CartManagement));
         
         string IMigrationMetadata.Id
         {
-            get { return "201711051117104_cartManage"; }
+            get { return "201711111305266_CartManagement"; }
         }
         
         string IMigrationMetadata.Source

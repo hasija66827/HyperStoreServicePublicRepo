@@ -29,6 +29,7 @@ namespace HyperStoreService.Models
         public decimal? NetWorth { get; set; }
         public DateTime FirstVisited { get; set; }
         public DateTime LastVisited { get; set; } 
+        public DateTime PreferedTimeToContact { get; set; }
         public Person() {
         }
     }

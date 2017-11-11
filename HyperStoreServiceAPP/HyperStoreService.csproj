@@ -209,7 +209,6 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\CartManagementAPI\CartController.cs" />
     <Compile Include="Controllers\InsightsAPI\CustomerInsightsController.cs" />
     <Compile Include="Controllers\InsightsAPI\SalesInsightsController.cs" />
     <Compile Include="Controllers\DumpCustomAPI\CustomerPurchaseTrendController.cs" />
@@ -254,11 +253,13 @@
     <Compile Include="Migrations\201711041858380_addingEntityTypeInTransaction.Designer.cs">
       <DependentUpon>201711041858380_addingEntityTypeInTransaction.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201711051117104_cartManage.cs" />
-    <Compile Include="Migrations\201711051117104_cartManage.Designer.cs">
-      <DependentUpon>201711051117104_cartManage.cs</DependentUpon>
+    <Compile Include="Migrations\201711111305266_CartManagement.cs" />
+    <Compile Include="Migrations\201711111305266_CartManagement.Designer.cs">
+      <DependentUpon>201711111305266_CartManagement.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Cart.cs" />
+    <Compile Include="Models\CartProduct.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="CustomModels\PriceQuotedBySupplier.cs" />
@@ -269,6 +270,7 @@
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderProduct.cs" />
     <Compile Include="Models\OrderTransaction.cs" />
+    <Compile Include="Models\RecommendedProduct.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -332,6 +334,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Controllers\CartManagementAPI\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -358,8 +361,8 @@
     <EmbeddedResource Include="Migrations\201711041858380_addingEntityTypeInTransaction.resx">
       <DependentUpon>201711041858380_addingEntityTypeInTransaction.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711051117104_cartManage.resx">
-      <DependentUpon>201711051117104_cartManage.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201711111305266_CartManagement.resx">
+      <DependentUpon>201711111305266_CartManagement.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

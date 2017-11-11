@@ -22,7 +22,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// <param name="id", id of the customer></param>
         /// <returns></returns>
         [HttpGet]
-        [ResponseType(typeof(IEnumerable<RecommendedProduct>))]
+        [ResponseType(typeof(IEnumerable<DumpRecommendedProduct>))]
         public async Task<IHttpActionResult> Get(Guid userId, Guid id)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
@@ -31,7 +31,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             var query = db.OrderProducts.Include(cop => cop.Order)
                                                                 .Where(cop => cop.Order.PersonId == id)
                                                                 .Include(cop => cop.Product)
-                                                                .Select(cop => new RecommendedProduct()
+                                                                .Select(cop => new DumpRecommendedProduct()
                                                                 {
                                                                     ProductId = cop.ProductId,
                                                                     ProductName = cop.Product.Name,
@@ -44,9 +44,9 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return Ok(recommendedProducts);
         }
 
-        private RecommendedProduct GetProductByLatestOrderDate(IGrouping<Guid?, RecommendedProduct> items)
+        private DumpRecommendedProduct GetProductByLatestOrderDate(IGrouping<Guid?, DumpRecommendedProduct> items)
         {
-            return new RecommendedProduct()
+            return new DumpRecommendedProduct()
             {
                 ProductId = items.Key,
                 ProductName = items.FirstOrDefault().ProductName,

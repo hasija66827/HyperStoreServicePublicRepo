@@ -28,14 +28,11 @@ namespace HyperStoreService.Models
         public System.Data.Entity.DbSet<ProductTag> ProductTags { get; set; }
 
         public System.Data.Entity.DbSet<Person> Persons { get; set; }
-
       
         public System.Data.Entity.DbSet<Order> Orders { get; set; }
-
       
         public System.Data.Entity.DbSet<OrderProduct> OrderProducts { get; set; }
-
-      
+ 
         public System.Data.Entity.DbSet<Transaction> Transactions { get; set; }
 
         public System.Data.Entity.DbSet<OrderTransaction> OrderTransactions { get; set; }
@@ -43,5 +40,12 @@ namespace HyperStoreService.Models
         public System.Data.Entity.DbSet<DeficientStockHit> DeficientStockHits { get; set; }
 
         public System.Data.Entity.DbSet<Tag> Tags { get; set; }
+
+        public System.Data.Entity.DbSet<RecommendedProduct> RecommendedProducts { get; set; }
+
+        public System.Data.Entity.DbSet<Cart>Carts { get; set; }
+
+        public System.Data.Entity.DbSet<CartProduct> CartProducts { get; set; }
+
     }
 }

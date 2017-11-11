@@ -42,14 +42,5 @@ namespace HyperStoreService.Models
         public Guid? LatestSupplierId { get; set; }
         [ForeignKey("LatestSupplierId")]
         public Person LatestSupplier { get; set; }
-
-        public Guid? PotentielSupplierId { get; set; }
-        [ForeignKey("PotentielSupplierId")]
-        public Person PotentielSupplier { get; set; }
-
-        public decimal? PotentielQuantityPurhcased { get; set; }
-        public decimal? PotentielPurchasePrice { get; set; }
-
-        public bool? IsPurchased { get; set; }
     }
 }
