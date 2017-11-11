@@ -257,6 +257,14 @@
     <Compile Include="Migrations\201711111305266_CartManagement.Designer.cs">
       <DependentUpon>201711111305266_CartManagement.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711111840430_updatingcart.cs" />
+    <Compile Include="Migrations\201711111840430_updatingcart.Designer.cs">
+      <DependentUpon>201711111840430_updatingcart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711112013064_cartmanagementtwo.cs" />
+    <Compile Include="Migrations\201711112013064_cartmanagementtwo.Designer.cs">
+      <DependentUpon>201711112013064_cartmanagementtwo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartProduct.cs" />
@@ -363,6 +371,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711111305266_CartManagement.resx">
       <DependentUpon>201711111305266_CartManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711111840430_updatingcart.resx">
+      <DependentUpon>201711111840430_updatingcart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711112013064_cartmanagementtwo.resx">
+      <DependentUpon>201711112013064_cartmanagementtwo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

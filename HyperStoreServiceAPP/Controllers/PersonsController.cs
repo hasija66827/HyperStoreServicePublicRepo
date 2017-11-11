@@ -101,7 +101,7 @@ namespace HyperStoreServiceAPP.Controllers
             var supplier = await db.Persons.FindAsync(id);
             if (supplier == null)
                 throw new Exception(String.Format("Person of id {0} not found", id));
-            _UpdateSupplier(supplier, supplierDTO);
+            _UpdatePerson(supplier, supplierDTO);
             db.Entry(supplier).State = EntityState.Modified;
             try
             {
@@ -114,12 +114,14 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(supplier);
         }
 
-        private void _UpdateSupplier(Person supplier, SupplierDTO supplierDTO)
+        private void _UpdatePerson(Person person, SupplierDTO supplierDTO)
         {
-            supplier.Address = supplierDTO.Address;
-            supplier.GSTIN = supplierDTO.GSTIN;
-            supplier.MobileNo = supplierDTO.MobileNo;
-            supplier.Name = supplierDTO.Name;
+            person.Address = supplierDTO.Address;
+            person.GSTIN = supplierDTO.GSTIN;
+            person.LastCalled = supplierDTO.LastCalled;
+            person.MobileNo = supplierDTO.MobileNo;
+            person.Name = supplierDTO.Name;
+            person.Rating = supplierDTO.Rating;
         }
 
         // POST: api/Suppliers

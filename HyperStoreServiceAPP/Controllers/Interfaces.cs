@@ -10,14 +10,13 @@ using System.Web.Http;
 namespace HyperStoreServiceAPP.Controllers
 {
     public interface ICart {
-        IHttpActionResult GetProductsInCart(Guid userId, Guid? supplierId);
-        Task<IHttpActionResult> AddProductToCart(Guid userId, CartDTO cartDTO);
-        Task<IHttpActionResult> AddLeftOverDeficientProductsToCart(Guid userId);
-        Task<IHttpActionResult> RemoveProductFromCart(Guid userId, Guid productId);
-        Task<IHttpActionResult> PurchaseProductInCart(Guid userId, Guid productId);
-        Task<IHttpActionResult> UnPurchaseProductInCart(Guid userId, Guid productId);
-        Task<IHttpActionResult> EmptyShoppingCart(Guid userId, Guid supplierId);
-        Task<IHttpActionResult> EmptyAllShoppingCart(Guid userId);
+        IHttpActionResult GetProudctsInCart(Guid userId, ProductCartDTO productCartDTO);
+        IHttpActionResult GetRecommendedProductForCustomer(Guid userId, Guid PersonId);
+        IHttpActionResult AddProductToLiveCart(Guid userId, AddRemoveProduct_CartDTO AddRemoveProduct_CartDTO);
+        IHttpActionResult RemoveProductFromLiveCart(Guid userId, AddRemoveProduct_CartDTO AddRemoveProduct_CartDTO);
+        IHttpActionResult CompleteTheOrderInLiveCart(Guid userId);
+        IHttpActionResult UpdateLiveCart(UpdateLiveCartDTO updateLiveCartDTO);
+        IHttpActionResult RetrieveDeficientProductsOfSupplier(Guid userId, Guid PersonId);
     }
 
     public interface ITag

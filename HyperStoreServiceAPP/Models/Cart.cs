@@ -8,18 +8,16 @@ namespace HyperStoreService.Models
 {
     public enum CartStatus
     {
-        OrderNotInitiated,
-        OrderConfirmed,
-        OrderDelivered
+        OrderInitiated,
+        OrderCompleted
     }
 
     public class Cart
     {
         public Guid CartId { get; set; }
-        
         public CartStatus CartStatus { get; set; }
         public DateTime? OrderCompletionDate { get; set; }
-
+        public Boolean IsBookmarked { get; set; }
         public DateTime? PreferedDeliveryTime { get; set; }
 
         [Required]
