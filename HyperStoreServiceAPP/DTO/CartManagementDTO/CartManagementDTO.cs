@@ -18,36 +18,6 @@ namespace HyperStoreServiceAPP.DTO.CartManagementDTO
     }
 
     /// <summary>
-    /// DTO to retrieve the product in the cart.
-    /// </summary>
-    public class ProductCartDTO : PersonDTO
-    {
-        private Guid? _cartId;
-        [Required]
-        public Guid? CartId { get { return this._cartId; } }
-
-        public ProductCartDTO(Guid? personId, Guid? cartId) : base(personId)
-        {
-            _cartId = cartId;
-        }
-    }
-
-    /// <summary>
-    /// DTO to add or remove product from the live cart of the person.
-    /// </summary>
-    public class AddRemoveProduct_CartDTO : PersonDTO
-    {
-        private Guid? _productId;
-        [Required]
-        public Guid? ProductId { get { return this._productId; } }
-
-        public AddRemoveProduct_CartDTO(Guid? personId, Guid? productId) : base(personId)
-        {
-            _productId = productId;
-        }
-    }
-
-    /// <summary>
     /// DTO to bookmark the live cart.
     /// </summary>
     public class UpdateLiveCartDTO : PersonDTO
@@ -63,5 +33,38 @@ namespace HyperStoreServiceAPP.DTO.CartManagementDTO
             _IsBookMark = isBookMark;
             _deliveryTime = deliveryTime;
         }
-    } 
+    }
+
+    /*
+  /// <summary>
+  /// DTO to retrieve the product in the cart.
+  /// </summary>
+  public class PersonCartDTO : PersonDTO
+  {
+      private Guid? _cartId;
+      [Required]
+      public Guid? CartId { get { return this._cartId; } }
+
+      public PersonCartDTO(Guid? personId, Guid? cartId) : base(personId)
+      {
+          _cartId = cartId;
+      }
+  }
+
+  /// <summary>
+  /// DTO to add or remove product from the live cart of the person.
+  /// </summary>
+  public class ProductPersonDTO : PersonDTO
+  {
+      private Guid? _productId;
+      [Required]
+      public Guid? ProductId { get { return this._productId; } }
+
+      public ProductPersonDTO(Guid? personId, Guid? productId) : base(personId)
+      {
+          _productId = productId;
+      }
+  }
+  */
+
 }

@@ -1,6 +1,7 @@
 ﻿using HyperStoreService.Models;
 using HyperStoreServiceAPP.DTO;
 using HyperStoreServiceAPP.DTO.CartManagementDTO;
+using HyperStoreServiceAPP.DTO.RecommendedProductDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,17 @@ using System.Web.Http;
 namespace HyperStoreServiceAPP.Controllers
 {
     public interface ICart {
-        IHttpActionResult GetProudctsInCart(Guid userId, ProductCartDTO productCartDTO);
-        IHttpActionResult GetRecommendedProductForCustomer(Guid userId, Guid PersonId);
-        IHttpActionResult AddProductToLiveCart(Guid userId, AddRemoveProduct_CartDTO AddRemoveProduct_CartDTO);
-        IHttpActionResult RemoveProductFromLiveCart(Guid userId, AddRemoveProduct_CartDTO AddRemoveProduct_CartDTO);
         IHttpActionResult CompleteTheOrderInLiveCart(Guid userId);
-        IHttpActionResult UpdateLiveCart(UpdateLiveCartDTO updateLiveCartDTO);
-        IHttpActionResult RetrieveDeficientProductsOfSupplier(Guid userId, Guid PersonId);
+        IHttpActionResult UpdateLiveCartMetadata(UpdateLiveCartDTO updateLiveCartDTO);
+    }
+
+    public interface ICartProduct {
+        IHttpActionResult UpdateTheProductsInLiveCart(PersonProductsDTO PersonProductsDTO);
+    }
+
+    public interface IRecommendedProduct {
+        IHttpActionResult GetRecommendedProduct(Guid userId, Guid PersonId);
+        IHttpActionResult PutReminderForProduct(Guid userId, SetReminderDTO setReminderDTO);
     }
 
     public interface ITag
@@ -70,10 +75,6 @@ namespace HyperStoreServiceAPP.Controllers
         Task<IHttpActionResult> Get(Guid userId, ProductConsumptionTrendDTO parameter);
     }
 
-    public interface IRecommendedProduct
-    {
-        Task<IHttpActionResult> Get(Guid userId, Guid id);
-    }
     public interface IPriceQuotedBySupplier
     {
         Task<IHttpActionResult> Get(Guid userId, Guid id);
