@@ -25,13 +25,45 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         }
 
         [HttpGet]
-        public IHttpActionResult GetRecommendedProduct(Guid userId, Guid PersonId)
+        public async Task<IHttpActionResult> GetRecommendedProduct(Guid userId, Guid id)
         {
-            throw new NotImplementedException();
+            db = UtilityAPI.RetrieveDBContext(userId);
+
+            var person = await db.Persons.FindAsync(id);
+
+            if (person.EntityType == DTO.EntityType.Supplier)
+                return Ok(_GetRecommendedProductForSupplier(person.PersonId));
+            else
+                return Ok(_GetRecommendedProductForCustomer(person.PersonId));
+        }
+
+        private IQueryable<RecommendedProductForCustomer> _GetRecommendedProductForCustomer(Guid customerId)
+        {
+            var recommendedProduct = db.PurchaseHistory.Where(ph => ph.PersonId == customerId)
+                                                       .Include(ph => ph.Product)
+                                                       .Select(ph => new RecommendedProductForCustomer()
+                                                       {
+                                                           Product = ph.Product,
+                                                           ExpiredByDays = DbFunctions.DiffDays(DateTime.Now, ph.LatestPurchaseDate) - ph.ExpiryDays
+                                                       }).OrderByDescending(rpc => rpc.ExpiredByDays);
+            return recommendedProduct;
+        }
+
+        private IQueryable<RecommendedProductForSupplier> _GetRecommendedProductForSupplier(Guid supplierId)
+        {
+            var recommendedProduct = db.PurchaseHistory.Where(ph => ph.PersonId == supplierId)
+                                                        .Include(ph => ph.Product)
+                                                        .Where(ph => ph.Product.TotalQuantity <= ph.Product.Threshold)
+                                                        .Select(ph => new RecommendedProductForSupplier()
+                                                        {
+                                                            Product = ph.Product,
+                                                            DeficientByNumber = (double)(ph.Product.Threshold - ph.Product.TotalQuantity)
+                                                        }).OrderByDescending(rpc => rpc.DeficientByNumber);
+            return recommendedProduct;
         }
 
         [HttpPut]
-        public IHttpActionResult PutReminderForProduct(Guid userId, SetReminderDTO setReminderDTO)
+        public IHttpActionResult SetReminderForProduct(Guid userId, SetReminderDTO setReminderDTO)
         {
             throw new NotImplementedException();
         }

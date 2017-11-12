@@ -20,8 +20,9 @@ namespace HyperStoreServiceAPP.Controllers
     }
 
     public interface IPurchaseHistory {
-        IHttpActionResult GetRecommendedProduct(Guid userId, Guid PersonId);
-        IHttpActionResult PutReminderForProduct(Guid userId, SetReminderDTO setReminderDTO);
+        IHttpActionResult Get(Guid userId);
+        Task<IHttpActionResult> GetRecommendedProduct(Guid userId, Guid PersonId);
+        IHttpActionResult SetReminderForProduct(Guid userId, SetReminderDTO setReminderDTO);
     }
 
     public interface ITag

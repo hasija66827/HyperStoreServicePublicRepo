@@ -1,14 +1,21 @@
-﻿using System;
+﻿using HyperStoreService.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
 namespace HyperStoreService.CustomModels
 {
-    public class DumpRecommendedProduct
+    public class RecommendedProductForSupplier
     {
-        public Guid? ProductId { get; set; }
-        public string ProductName { get; set; }
-        public DateTime LastOrderDate { get; set; }
+        public Product Product { get; set; }
+        public double DeficientByNumber { get; set; }
     }
+
+    public class RecommendedProductForCustomer
+    {
+        public Product Product { get; set; }
+        public double? ExpiredByDays { get; set; }
+    }
+
 }

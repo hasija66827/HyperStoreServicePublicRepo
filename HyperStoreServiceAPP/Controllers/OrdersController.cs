@@ -286,7 +286,7 @@ namespace HyperStoreServiceAPP.Controllers
     }
 
     /// <summary>
-    /// Analytics Method to be executed 
+    /// Analytics Method to be executed post order placement
     /// a)To Update the networth of the customer.
     /// b)Add the product in deficient hit.
     /// c)Add or update the product in recommended product.
