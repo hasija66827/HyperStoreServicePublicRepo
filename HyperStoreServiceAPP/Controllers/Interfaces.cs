@@ -16,7 +16,7 @@ namespace HyperStoreServiceAPP.Controllers
     }
 
     public interface ICartProduct {
-        IHttpActionResult GetTheProductInLiveCart(Guid userId, Guid id);
+        Task<IHttpActionResult> GetProductsInLiveCart(Guid userId, Guid personId);
         IHttpActionResult UpdateTheProductsInLiveCart(Guid userId, PersonProductsDTO PersonProductsDTO);
     }
 

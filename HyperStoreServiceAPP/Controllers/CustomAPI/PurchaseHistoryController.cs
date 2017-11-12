@@ -35,7 +35,30 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                 return Ok(_GetRecommendedProductForSupplier(person.PersonId));
             else
                 return Ok(_GetRecommendedProductForCustomer(person.PersonId));
+        } 
+
+        [HttpPut]
+        public async Task<IHttpActionResult> SetReminderForProduct(Guid userId, SetReminderDTO setReminderDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (setReminderDTO == null)
+                throw new Exception("SetReminderDTO should not have been null");
+
+            db = UtilityAPI.RetrieveDBContext(userId);
+
+            var purchaseHistory = db.PurchaseHistory.Where(ph => ph.PersonId == setReminderDTO.PersonId
+                                                                && ph.ProductId == setReminderDTO.ProductId).FirstOrDefault();
+            if (purchaseHistory == null)
+                throw new Exception(String.Format("Product {0} corresponding to person {1} not found", setReminderDTO.ProductId, setReminderDTO.PersonId));
+
+            purchaseHistory.ExpiryDays = setReminderDTO.ExpireInDays;
+            db.Entry(purchaseHistory).State = EntityState.Modified;
+            await db.SaveChangesAsync();
+            return Ok(true);
         }
+
 
         private IQueryable<RecommendedProductForCustomer> _GetRecommendedProductForCustomer(Guid customerId)
         {
@@ -62,26 +85,5 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return recommendedProduct;
         }
 
-        [HttpPut]
-        public async Task<IHttpActionResult> SetReminderForProduct(Guid userId, SetReminderDTO setReminderDTO)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (setReminderDTO == null)
-                throw new Exception("SetReminderDTO should not have been null");
-
-            db = UtilityAPI.RetrieveDBContext(userId);
-
-            var purchaseHistory = db.PurchaseHistory.Where(ph => ph.PersonId == setReminderDTO.PersonId
-                                                                && ph.ProductId == setReminderDTO.ProductId).FirstOrDefault();
-            if (purchaseHistory == null)
-                throw new Exception(String.Format("Product {0} corresponding to person {1} not found", setReminderDTO.ProductId, setReminderDTO.PersonId));
-
-            purchaseHistory.ExpiryDays = setReminderDTO.ExpireInDays;
-            db.Entry(purchaseHistory).State = EntityState.Modified;
-            await db.SaveChangesAsync();
-            return Ok(true);
-        }
     }
 }
