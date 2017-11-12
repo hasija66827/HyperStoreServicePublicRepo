@@ -10,9 +10,22 @@ namespace HyperStoreServiceAPP.DTO.RecommendedProductDTO
     {
         private Guid? _productId;
         [Required]
-        public Guid? ProductID { get { return this._productId; } }
+        public Guid? ProductId { get { return this._productId; } }
+
         private Guid? _personId;
+        [Required]
         public Guid? PersonId { get { return this._personId; } }
-        private int? reminderInDays;
+
+        private int? _expireInDays;
+        [Range(0, 30)]
+        public int? ExpireInDays { get { return this._expireInDays; } }
+
+        public SetReminderDTO(Guid? productId, Guid? personId, int? expireInDays)
+        {
+            _productId = productId;
+            _personId = personId;
+            _expireInDays = expireInDays;
+        }
+
     }
 }

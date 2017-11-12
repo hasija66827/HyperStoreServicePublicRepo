@@ -10,7 +10,12 @@ namespace HyperStoreServiceAPP.Controllers.CartManagementAPI
 {
     public class CartProductsController : ApiController, ICartProduct
     {
-        public IHttpActionResult UpdateTheProductsInLiveCart(PersonProductsDTO PersonProductsDTO)
+        public IHttpActionResult GetTheProductInLiveCart(Guid userId, Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IHttpActionResult UpdateTheProductsInLiveCart(Guid userId, PersonProductsDTO PersonProductsDTO)
         {
             throw new NotImplementedException();
         }

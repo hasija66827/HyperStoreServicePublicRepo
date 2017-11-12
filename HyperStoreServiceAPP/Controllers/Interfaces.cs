@@ -16,13 +16,14 @@ namespace HyperStoreServiceAPP.Controllers
     }
 
     public interface ICartProduct {
-        IHttpActionResult UpdateTheProductsInLiveCart(PersonProductsDTO PersonProductsDTO);
+        IHttpActionResult GetTheProductInLiveCart(Guid userId, Guid id);
+        IHttpActionResult UpdateTheProductsInLiveCart(Guid userId, PersonProductsDTO PersonProductsDTO);
     }
 
     public interface IPurchaseHistory {
         IHttpActionResult Get(Guid userId);
         Task<IHttpActionResult> GetRecommendedProduct(Guid userId, Guid PersonId);
-        IHttpActionResult SetReminderForProduct(Guid userId, SetReminderDTO setReminderDTO);
+        Task<IHttpActionResult> SetReminderForProduct(Guid userId, SetReminderDTO setReminderDTO);
     }
 
     public interface ITag
