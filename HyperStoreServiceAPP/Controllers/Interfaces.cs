@@ -19,7 +19,7 @@ namespace HyperStoreServiceAPP.Controllers
         IHttpActionResult UpdateTheProductsInLiveCart(PersonProductsDTO PersonProductsDTO);
     }
 
-    public interface IRecommendedProduct {
+    public interface IPurchaseHistory {
         IHttpActionResult GetRecommendedProduct(Guid userId, Guid PersonId);
         IHttpActionResult PutReminderForProduct(Guid userId, SetReminderDTO setReminderDTO);
     }

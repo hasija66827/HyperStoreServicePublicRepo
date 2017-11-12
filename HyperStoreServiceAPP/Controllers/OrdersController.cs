@@ -75,7 +75,7 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(db.Orders.Count());
         }
         #endregion
-
+        #region Create
         // POST: api/SupplierOrders
         /// <summary>
         /// 1. Increments the wallet balance of the supplier with creating a transaction entity associated with the supplier.
@@ -106,13 +106,14 @@ namespace HyperStoreServiceAPP.Controllers
 
             db = UtilityAPI.RetrieveDBContext(userId);
 
-            var IsBillingSummaryCorrect = await ValidateBillingSummary(orderDetail);
+            var IsBillingSummaryCorrect = await _ValidateBillingSummary(orderDetail);
             if (!IsBillingSummaryCorrect)
                 throw new Exception("BillingSummary is not correct.");
 
             try
             {
-                var supplierOrder = CreateNewPersonOrderAsync(orderDetail);
+                var supplierOrder = _CreateNewPersonOrderAsync(orderDetail);
+
                 SupplierTransactionDTO transactionDTO = new SupplierTransactionDTO
                 {
                     IsCredit = orderDetail.EntityType == EntityType.Supplier ? true : false,
@@ -122,12 +123,16 @@ namespace HyperStoreServiceAPP.Controllers
                 };
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
 
-                var supplierOrderTransaction = CreateNewOrderTransaction(supplierOrder, transaction);
+                var supplierOrderTransaction = _CreateNewOrderTransaction(supplierOrder, transaction);
 
-                var products = await UpdateStockOfProductsAsync(orderDetail.ProductsPurchased, orderDetail.EntityType, orderDetail.SupplierId);
+                var products = await _UpdateStockOfProductsAsync(orderDetail.ProductsPurchased, orderDetail.EntityType, orderDetail.SupplierId);
 
-                AddIntoOrderProduct(orderDetail.ProductsPurchased, supplierOrder.OrderId);
-                await UpdatePersonNetWorthAsync(orderDetail);
+                _AddIntoOrderProduct(orderDetail.ProductsPurchased, supplierOrder.OrderId);
+
+                await _UpdatePersonNetWorthAsync((Guid)orderDetail.SupplierId, (decimal)orderDetail.BillingSummaryDTO.BillAmount);
+                var productIds = orderDetail.ProductsPurchased.Select(pp => pp.ProductId).ToList();
+                await _UpdatePurchaseHistoryAsync((Guid)orderDetail.SupplierId, productIds);
+
                 await db.SaveChangesAsync();
                 return Ok(transactionDTO.TransactionAmount);
             }
@@ -136,7 +141,9 @@ namespace HyperStoreServiceAPP.Controllers
                 throw;
             }
         }
-        private async Task<bool> ValidateBillingSummary(SupplierOrderDTO orderDetail)
+        #endregion
+
+        private async Task<bool> _ValidateBillingSummary(SupplierOrderDTO orderDetail)
         {
             if (orderDetail.BillingSummaryDTO.TotalItems != orderDetail.ProductsPurchased.Count)
                 return false;
@@ -163,7 +170,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         protected override void Dispose(bool disposing)
         {
-             if (disposing && db!=null)
+            if (disposing && db != null)
             {
                 db.Dispose();
             }
@@ -176,9 +183,12 @@ namespace HyperStoreServiceAPP.Controllers
         }
     }
 
+    /// <summary>
+    /// Methods to be executed for placing the order.
+    /// </summary>
     public partial class OrdersController : ApiController, IOrder
     {
-        private OrderTransaction CreateNewOrderTransaction(Order supplierOrder, Transaction transaction)
+        private OrderTransaction _CreateNewOrderTransaction(Order supplierOrder, Transaction transaction)
         {
             var orderTransaction = new OrderTransaction
             {
@@ -192,7 +202,7 @@ namespace HyperStoreServiceAPP.Controllers
             return orderTransaction;
         }
 
-        private Order CreateNewPersonOrderAsync(SupplierOrderDTO orderDetail)
+        private Order _CreateNewPersonOrderAsync(SupplierOrderDTO orderDetail)
         {
             var billAmount = orderDetail.BillingSummaryDTO.BillAmount;
             var payingAmount = (decimal)orderDetail.PayingAmount;
@@ -216,14 +226,14 @@ namespace HyperStoreServiceAPP.Controllers
             return supplierOrder;
         }
 
-        private async Task<List<Product>> UpdateStockOfProductsAsync(List<ProductPurchased> productsPurchased, EntityType? entityType, Guid? personId)
+        private async Task<List<Product>> _UpdateStockOfProductsAsync(List<ProductPurchased> productsPurchased, EntityType? entityType, Guid? personId)
         {
             List<Product> products = new List<Product>();
             try
             {
                 foreach (var productPurchased in productsPurchased)
                 {
-                    var product = await UpdateProductStockAsync(productPurchased, entityType, personId);
+                    var product = await _UpdateProductStockAsync(productPurchased, entityType, personId);
                     products.Add(product);
                 }
             }
@@ -234,7 +244,7 @@ namespace HyperStoreServiceAPP.Controllers
             return products;
         }
 
-        private async Task<Product> UpdateProductStockAsync(ProductPurchased productPurchased, EntityType? entityType, Guid? personId)
+        private async Task<Product> _UpdateProductStockAsync(ProductPurchased productPurchased, EntityType? entityType, Guid? personId)
         {
             var product = await db.Products.FindAsync(productPurchased.ProductId);
             if (product == null)
@@ -249,14 +259,14 @@ namespace HyperStoreServiceAPP.Controllers
                 product.TotalQuantity -= (decimal)productPurchased.QuantityPurchased;
                 if (product.TotalQuantity < DeficientStockHit.DeficientStockCriteria)
                 {
-                    AddProductToDeficientStockHit(product);
+                    _AddProductToDeficientStockHit(product);
                 }
             }
             db.Entry(product).State = EntityState.Modified;
             return product;
         }
 
-        private void AddIntoOrderProduct(List<ProductPurchased> productsPurchased, Guid supplierOrderId)
+        private void _AddIntoOrderProduct(List<ProductPurchased> productsPurchased, Guid supplierOrderId)
         {
             // Not checking if product exists or not because it has been already checked by updateProductStock.
             foreach (var productPurchased in productsPurchased)
@@ -273,19 +283,28 @@ namespace HyperStoreServiceAPP.Controllers
                 db.OrderProducts.Add(supplierOrderProduct);
             }
         }
+    }
 
-        private async Task<decimal?> UpdatePersonNetWorthAsync(SupplierOrderDTO orderDTO)
+    /// <summary>
+    /// Analytics Method to be executed 
+    /// a)To Update the networth of the customer.
+    /// b)Add the product in deficient hit.
+    /// c)Add or update the product in recommended product.
+    /// </summary>
+    public partial class OrdersController : ApiController, IOrder
+    {
+        private async Task<decimal?> _UpdatePersonNetWorthAsync(Guid personId, decimal billAmount)
         {
-            var person = await db.Persons.FindAsync(orderDTO.SupplierId);
+            var person = await db.Persons.FindAsync(personId);
             if (person == null)
-                throw new Exception(String.Format("Person with id {0} not found while updating its networth", orderDTO.SupplierId));
-            person.NetWorth += orderDTO.BillingSummaryDTO.BillAmount;
+                throw new Exception(String.Format("Person with id {0} not found while updating its networth", personId));
+            person.NetWorth += billAmount;
             person.LastVisited = DateTime.Now;
             db.Entry(person).State = EntityState.Modified;
             return person.NetWorth;
         }
 
-        private void AddProductToDeficientStockHit(Product product)
+        private void _AddProductToDeficientStockHit(Product product)
         {
             if (product == null)
                 throw new Exception("Product should not have been null, while adding the product to DeficientStock\n");
@@ -304,6 +323,31 @@ namespace HyperStoreServiceAPP.Controllers
                     TimeStamp = DateTime.Now.Date,
                 };
                 db.DeficientStockHits.Add(deficientStock);
+            }
+        }
+
+        private async Task _UpdatePurchaseHistoryAsync(Guid personId, List<Guid?> productIds)
+        {
+            foreach (var productId in productIds)
+            {
+                var productPurchased = await db.PurchaseHistory.Where(ph => ph.ProductId == productId && ph.PersonId == personId).FirstOrDefaultAsync();
+                if (productPurchased == null)
+                {
+                    var newProductPurchased = new PurchaseHistory()
+                    {
+                        PurchaseHistoryId = Guid.NewGuid(),
+                        PersonId = personId,
+                        ProductId = productId,
+                        ExpiryDays = null,
+                        LatestPurchaseDate = DateTime.Now,
+                    };
+                    db.PurchaseHistory.Add(newProductPurchased);
+                }
+                else
+                {
+                    productPurchased.LatestPurchaseDate = DateTime.Now;
+                    db.Entry(productPurchased).State = EntityState.Modified;
+                }
             }
         }
     }

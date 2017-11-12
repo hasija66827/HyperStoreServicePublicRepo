@@ -41,7 +41,7 @@ namespace HyperStoreService.Models
 
         public System.Data.Entity.DbSet<Tag> Tags { get; set; }
 
-        public System.Data.Entity.DbSet<RecommendedProduct> RecommendedProducts { get; set; }
+        public System.Data.Entity.DbSet<PurchaseHistory> PurchaseHistory { get; set; }
 
         public System.Data.Entity.DbSet<Cart>Carts { get; set; }
 

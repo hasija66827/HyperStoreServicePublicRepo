@@ -17,6 +17,7 @@ namespace HyperStoreServiceAPP.DTO
         [Required]
         public DateTime? DueDate { get; set; }
 
+        [Required]
         public BillingSummaryDTO BillingSummaryDTO { get; set; }
 
         [Required]

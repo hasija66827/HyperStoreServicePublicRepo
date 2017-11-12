@@ -13,15 +13,24 @@ using HyperStoreServiceAPP.DTO.RecommendedProductDTO;
 
 namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
-    public class RecommendedProductsController : ApiController, IRecommendedProduct
+    public class PurchaseHistoryController : ApiController, IPurchaseHistory
     {
         private HyperStoreServiceContext db;
 
+        [HttpGet]
+        public IHttpActionResult Get(Guid userId)
+        {
+            db = UtilityAPI.RetrieveDBContext(userId);
+            return Ok(db.PurchaseHistory);
+        }
+
+        [HttpGet]
         public IHttpActionResult GetRecommendedProduct(Guid userId, Guid PersonId)
         {
             throw new NotImplementedException();
         }
 
+        [HttpPut]
         public IHttpActionResult PutReminderForProduct(Guid userId, SetReminderDTO setReminderDTO)
         {
             throw new NotImplementedException();

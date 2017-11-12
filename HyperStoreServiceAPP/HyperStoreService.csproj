@@ -217,7 +217,7 @@
     <Compile Include="Controllers\CustomAPI\PriceQuotedBySupplierController.cs" />
     <Compile Include="Controllers\DumpCustomAPI\ProductConsumptionTrendController.cs" />
     <Compile Include="Controllers\InsightsAPI\ProductInsightsController.cs" />
-    <Compile Include="Controllers\CustomAPI\RecommendedProductController.cs" />
+    <Compile Include="Controllers\CustomAPI\PurchaseHistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Interfaces.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
@@ -269,6 +269,10 @@
     <Compile Include="Migrations\201711112013064_cartmanagementtwo.Designer.cs">
       <DependentUpon>201711112013064_cartmanagementtwo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711120950196_updatingrpTopp.cs" />
+    <Compile Include="Migrations\201711120950196_updatingrpTopp.Designer.cs">
+      <DependentUpon>201711120950196_updatingrpTopp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartProduct.cs" />
@@ -282,7 +286,7 @@
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderProduct.cs" />
     <Compile Include="Models\OrderTransaction.cs" />
-    <Compile Include="Models\RecommendedProduct.cs" />
+    <Compile Include="Models\PurchaseHistory.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -380,6 +384,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711112013064_cartmanagementtwo.resx">
       <DependentUpon>201711112013064_cartmanagementtwo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711120950196_updatingrpTopp.resx">
+      <DependentUpon>201711120950196_updatingrpTopp.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

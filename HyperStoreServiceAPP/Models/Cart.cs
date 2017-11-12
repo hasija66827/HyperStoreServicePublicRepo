@@ -16,7 +16,6 @@ namespace HyperStoreService.Models
     public class Cart
     {
         public Guid CartId { get; set; }
-        public EntityType EntityTpe { get; set; }
         public CartStatus CartStatus { get; set; }
         public DateTime? OrderCompletionDate { get; set; }
         public Boolean IsBookmarked { get; set; }
