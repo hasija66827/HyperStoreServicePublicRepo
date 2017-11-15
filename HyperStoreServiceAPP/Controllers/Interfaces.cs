@@ -12,7 +12,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public interface ICart {
         IHttpActionResult CompleteTheOrderInLiveCart(Guid userId);
-        IHttpActionResult UpdateLiveCartMetadata(UpdateLiveCartDTO updateLiveCartDTO);
+        IHttpActionResult UpdateLiveCartMetadata(Guid userId, UpdateLiveCartDTO updateLiveCartDTO);
     }
 
     public interface ICartProduct {

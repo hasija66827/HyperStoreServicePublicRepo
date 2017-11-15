@@ -273,6 +273,10 @@
     <Compile Include="Migrations\201711120950196_updatingrpTopp.Designer.cs">
       <DependentUpon>201711120950196_updatingrpTopp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711151841548_making bookmarknull.cs" />
+    <Compile Include="Migrations\201711151841548_making bookmarknull.Designer.cs">
+      <DependentUpon>201711151841548_making bookmarknull.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartProduct.cs" />
@@ -387,6 +391,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711120950196_updatingrpTopp.resx">
       <DependentUpon>201711120950196_updatingrpTopp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711151841548_making bookmarknull.resx">
+      <DependentUpon>201711151841548_making bookmarknull.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

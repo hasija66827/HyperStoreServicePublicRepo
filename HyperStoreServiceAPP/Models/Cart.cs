@@ -17,7 +17,7 @@ namespace HyperStoreService.Models
     {
         public Guid CartId { get; set; }
         public CartStatus CartStatus { get; set; }
-        public Boolean IsBookmarked { get; set; }
+        public Boolean? IsBookmarked { get; set; }
         public DateTime? OrderCompletionDate { get; set; }
         public DateTime? PreferedDeliveryTime { get; set; }
 

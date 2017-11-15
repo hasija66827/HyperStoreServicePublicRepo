@@ -22,16 +22,16 @@ namespace HyperStoreServiceAPP.DTO.CartManagementDTO
     /// </summary>
     public class UpdateLiveCartDTO : PersonDTO
     {
-        private Boolean _IsBookMark;
-        public Boolean IsBookMark { get { return this._IsBookMark; } }
+        private Boolean? _IsBookMark;
+        public Boolean? IsBookMark { get { return this._IsBookMark; } }
 
-        private DateTime _deliveryTime;
-        public DateTime DeliveryTime { get { return this._deliveryTime; } }
+        private DateTime? _PreferedDeliveryTime;
+        public DateTime? PreferedDeliveryTime { get { return this._PreferedDeliveryTime; } }
 
-        public UpdateLiveCartDTO(Guid? personId, Boolean isBookMark, DateTime deliveryTime) : base(personId)
+        public UpdateLiveCartDTO(Guid? personId, Boolean? isBookMark, DateTime? preferedDeliveryTime) : base(personId)
         {
             _IsBookMark = isBookMark;
-            _deliveryTime = deliveryTime;
+            _PreferedDeliveryTime = preferedDeliveryTime;
         }
     }
 
