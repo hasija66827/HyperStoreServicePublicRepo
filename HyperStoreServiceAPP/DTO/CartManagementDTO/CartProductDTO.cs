@@ -6,12 +6,13 @@ using System.Web;
 
 namespace HyperStoreServiceAPP.DTO.CartManagementDTO
 {
-    public class PersonProductsDTO
+    public class PersonProductDTO
     {
         [Required]
         public Guid? PersonId { get; set; }
 
         [Required]
-        public List<ProductPurchased> ProductsPurchased { get; set; }     
+        public Guid? ProductId { get; set; }
+
     }
 }

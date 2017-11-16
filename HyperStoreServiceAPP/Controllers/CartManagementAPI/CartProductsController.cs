@@ -57,7 +57,45 @@ namespace HyperStoreServiceAPP.Controllers.CartManagementAPI
 
         }
 
-        public IHttpActionResult UpdateTheProductsInLiveCart(Guid userId, PersonProductsDTO PersonProductsDTO)
+        [HttpPost]
+        public async Task<IHttpActionResult> AddProductInLiveCart(Guid userId, PersonProductDTO personProductsDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (personProductsDTO == null)
+                throw new Exception("personproductDTO should not have been null.");
+
+            db = UtilityAPI.RetrieveDBContext(userId);
+
+            var liveCart = _RetrievesLiveCart((Guid)personProductsDTO.PersonId);
+
+            if (liveCart == null)
+                throw new Exception("Live cart should not have been null.");
+
+            var IsProductExistInLiveCart = db.CartProducts.Where(cp => cp.CartId == liveCart.CartId &&
+                                                                       cp.ProductId == personProductsDTO.ProductId)
+                                                           .Count() > 0;
+
+            if (IsProductExistInLiveCart == true)
+               return BadRequest("Product already exists in live cart.");
+
+            var cartProduct = new CartProduct()
+            {
+                CartProductId = Guid.NewGuid(),
+                CartId = liveCart.CartId,
+                ProductId = personProductsDTO.ProductId,
+                PotentielPurchasePrice = 0,
+                PotentielQuantityPurhcased = 0,             
+            };
+
+            db.CartProducts.Add(cartProduct);
+            await db.SaveChangesAsync();
+
+            return Ok(cartProduct);
+        }
+
+        public Task<IHttpActionResult> RemoveProductFromLiveCart(Guid userId, PersonProductDTO PersonProductsDTO)
         {
             throw new NotImplementedException();
         }
