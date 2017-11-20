@@ -14,9 +14,22 @@ namespace HyperStoreServiceAPP.Controllers.CartManagementAPI
     {
         private HyperStoreServiceContext db;
 
-        public IHttpActionResult CompleteTheOrderInLiveCart(Guid userId)
+        [HttpPost]
+        public IHttpActionResult CompleteTheOrderInLiveCart(Guid userId, Guid id)
         {
-            throw new NotImplementedException();
+            var personId = id;
+
+            db = UtilityAPI.RetrieveDBContext(userId);
+
+            var liveCart = _RetrievesLiveCart(personId);
+            if (liveCart == null)
+                throw new Exception(String.Format("No live cart exist for the person with id {0}", id));
+
+            //TODO: Try to place the order sucha that the stock is also updated automatically.
+            liveCart.CartStatus = CartStatus.OrderCompleted;
+            db.Entry(liveCart).State = EntityState.Modified;
+            db.SaveChangesAsync();
+            return Ok(liveCart);
         }
 
         [HttpPut]

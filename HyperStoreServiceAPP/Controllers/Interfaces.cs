@@ -11,7 +11,7 @@ using System.Web.Http;
 namespace HyperStoreServiceAPP.Controllers
 {
     public interface ICart {
-        IHttpActionResult CompleteTheOrderInLiveCart(Guid userId);
+        IHttpActionResult CompleteTheOrderInLiveCart(Guid userId, Guid id);
         IHttpActionResult UpdateLiveCartMetadata(Guid userId, UpdateLiveCartDTO updateLiveCartDTO);
     }
 

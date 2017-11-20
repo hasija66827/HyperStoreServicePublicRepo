@@ -10,6 +10,7 @@ namespace HyperStoreService.Models
     public enum CartStatus
     {
         OrderInitiated,
+        OrderConfirmed,
         OrderCompleted
     }
 
