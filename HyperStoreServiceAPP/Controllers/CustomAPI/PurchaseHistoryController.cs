@@ -68,6 +68,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                                        {
                                                            Product = ph.Product,
                                                            LatestPurchaseDate = ph.LatestPurchaseDate,
+                                                           Rating = ph.Rating,
                                                            ExpiredByDays = DbFunctions.DiffDays(DateTime.Now, ph.LatestPurchaseDate) - ph.ExpiryDays
                                                        }).OrderByDescending(rpc => rpc.ExpiredByDays);
             return recommendedProduct;
@@ -81,6 +82,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                                         .Select(ph => new RecommendedProductForSupplier()
                                                         {
                                                             Product = ph.Product,
+                                                            Rating = ph.Rating,
                                                             LatestPurchaseDate = ph.LatestPurchaseDate,
                                                             DeficientByNumber = (double)(ph.Product.Threshold - ph.Product.TotalQuantity)
                                                         }).OrderByDescending(rpc => rpc.DeficientByNumber);

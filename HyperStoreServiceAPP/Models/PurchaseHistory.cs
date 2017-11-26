@@ -13,6 +13,8 @@ namespace HyperStoreService.Models
 
         public DateTime LatestPurchaseDate { get; set; }
 
+        public float Rating { get; set; }
+
         public int? ExpiryDays { get; set; }
 
         [Required]

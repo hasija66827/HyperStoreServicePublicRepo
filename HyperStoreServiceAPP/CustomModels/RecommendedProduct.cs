@@ -9,6 +9,7 @@ namespace HyperStoreService.CustomModels
     public class RecommendedProduct
     {
         public Product Product { get; set; }
+        public float Rating { get; set; }
         public DateTime LatestPurchaseDate { get; set; }
     }
 

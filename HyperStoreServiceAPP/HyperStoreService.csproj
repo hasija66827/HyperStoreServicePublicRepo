@@ -249,6 +249,10 @@
     <Compile Include="Migrations\201711261024070_init.Designer.cs">
       <DependentUpon>201711261024070_init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711262034365_addingRatingInPurchaseHistory.cs" />
+    <Compile Include="Migrations\201711262034365_addingRatingInPurchaseHistory.Designer.cs">
+      <DependentUpon>201711262034365_addingRatingInPurchaseHistory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartProduct.cs" />
@@ -348,6 +352,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201711261024070_init.resx">
       <DependentUpon>201711261024070_init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711262034365_addingRatingInPurchaseHistory.resx">
+      <DependentUpon>201711262034365_addingRatingInPurchaseHistory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
