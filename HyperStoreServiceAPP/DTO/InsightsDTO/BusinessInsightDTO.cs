@@ -5,18 +5,18 @@ using System.Web;
 
 namespace HyperStoreServiceAPP.DTO.InsightsDTO
 {
-    public class SalesInsightsDTO : InsightsDTO
+    public class BusinessInsightDTO : InsightsDTO
     {
-        public SalesInsightsDTO(IRange<DateTime> dateRange) : base(dateRange) { }
+        public BusinessInsightDTO(IRange<DateTime> dateRange) : base(dateRange) { }
     }
 
-    public class SalesInsight
+    public class BusinessInsight
     {
-        public List<SalesOrderInsight> SalesOrderInsight;
+        public List<OrderInsight> OrderInsight;
         public List<TransactionInsight> TransactionInsight;
     }
 
-    public class SalesOrderInsight
+    public class OrderInsight
     {
         public decimal? MoneyIn;
         public decimal? MoneyOut;
@@ -31,5 +31,4 @@ namespace HyperStoreServiceAPP.DTO.InsightsDTO
         public decimal? MoneyOut;
         public DateTime? Date;
     }
-
 }

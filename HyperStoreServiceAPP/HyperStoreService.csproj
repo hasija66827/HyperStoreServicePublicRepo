@@ -212,7 +212,7 @@
     <Compile Include="Controllers\CartManagementAPI\CartProductsController.cs" />
     <Compile Include="Controllers\CartManagementAPI\CartsController.cs" />
     <Compile Include="Controllers\InsightsAPI\CustomerInsightsController.cs" />
-    <Compile Include="Controllers\InsightsAPI\SalesInsightsController.cs" />
+    <Compile Include="Controllers\InsightsAPI\BusinessInsightsController.cs" />
     <Compile Include="Controllers\DumpCustomAPI\CustomerPurchaseTrendController.cs" />
     <Compile Include="Controllers\CustomAPI\PriceQuotedBySupplierController.cs" />
     <Compile Include="Controllers\DumpCustomAPI\ProductConsumptionTrendController.cs" />
@@ -233,7 +233,7 @@
     <Compile Include="CustomModels\RecommendedProduct.cs" />
     <Compile Include="DTO\InsightsDTO\CustomerInsightsDTO.cs" />
     <Compile Include="DTO\InsightsDTO\InsightsDTO.cs" />
-    <Compile Include="DTO\InsightsDTO\SalesInsightDTO.cs" />
+    <Compile Include="DTO\InsightsDTO\BusinessInsightDTO.cs" />
     <Compile Include="DTO\InsightsDTO\SusceptibleProductsDTO.cs" />
     <Compile Include="DTO\ProductDTO.cs" />
     <Compile Include="DTO\RecommendedProductDTO\RecommendedProductDTO.cs" />
@@ -245,6 +245,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="CustomModels\CustomerPurchaseTrend.cs" />
+    <Compile Include="Migrations\201711261024070_init.cs" />
+    <Compile Include="Migrations\201711261024070_init.Designer.cs">
+      <DependentUpon>201711261024070_init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartProduct.cs" />
     <Compile Include="Models\DeficientStock.cs" />
@@ -339,6 +344,11 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201711261024070_init.resx">
+      <DependentUpon>201711261024070_init.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -30,8 +30,8 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             db = UtilityAPI.RetrieveDBContext(userId);
 
             var newCustomers = db.Persons.Where(c => c.EntityType == DTO.EntityType.Customer &&
-                                                    c.FirstVisited >= parameter.DateRange.LB.Date &&
-                                                    c.FirstVisited <= parameter.DateRange.UB.Date)
+                                                    (DbFunctions.TruncateTime(c.FirstVisited) >= parameter.DateRange.LB.Date &&
+                                                    DbFunctions.TruncateTime(c.FirstVisited) <= parameter.DateRange.UB.Date))
                                             .OrderByDescending(c => c.NetWorth)
                                             .ToList();
 

@@ -11,13 +11,13 @@ using System.Web.Http.Description;
 
 namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
-    public class SalesInsightsController : ApiController
+    public class BusinessInsightsController : ApiController
     {
         private HyperStoreServiceContext db;
 
         [HttpGet]
-        [ResponseType(typeof(SalesInsight))]
-        public IHttpActionResult GetSalesInsights(Guid userId, SalesInsightsDTO parameter)
+        [ResponseType(typeof(BusinessInsight))]
+        public IHttpActionResult GetBusinessInsight(Guid userId, BusinessInsightDTO parameter)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
 
@@ -32,10 +32,10 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                                                  DbFunctions.TruncateTime(t.TransactionDate) <= parameter.DateRange.UB.Date)
                                                     .GroupBy(t => DbFunctions.TruncateTime(t.TransactionDate)).ToList();
 
-            var salesInsight = new SalesInsight();
-            salesInsight.SalesOrderInsight = orderGroups.Select(orderGrp => ComputeSalesOrderInsights(orderGrp)).ToList();
-            salesInsight.TransactionInsight = transactionGroups.Select(transactionGrp => ComputeExplicitTransactionInsights(transactionGrp)).ToList();
-            return Ok(salesInsight);
+            var businessInsight = new BusinessInsight();
+            businessInsight.OrderInsight = orderGroups.Select(orderGrp => ComputeSalesOrderInsights(orderGrp)).ToList();
+            businessInsight.TransactionInsight = transactionGroups.Select(transactionGrp => ComputeExplicitTransactionInsights(transactionGrp)).ToList();
+            return Ok(businessInsight);
         }
 
         private TransactionInsight ComputeExplicitTransactionInsights(IGrouping<DateTime?, Transaction> transactionGrp)
@@ -54,9 +54,9 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return transactionInsights;
         }
 
-        private SalesOrderInsight ComputeSalesOrderInsights(IGrouping<DateTime?, Order> orderGrp)
+        private OrderInsight ComputeSalesOrderInsights(IGrouping<DateTime?, Order> orderGrp)
         {
-            var salesOrderInsights = new SalesOrderInsight();
+            var salesOrderInsights = new OrderInsight();
 
             salesOrderInsights.Date = orderGrp.Key;
 
