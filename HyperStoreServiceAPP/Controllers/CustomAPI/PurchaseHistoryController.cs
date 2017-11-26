@@ -25,7 +25,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         }
 
         [HttpGet]
-        public async Task<IHttpActionResult> GetRecommendedProduct(Guid userId, Guid id)
+        public async Task<IHttpActionResult> GetRecommendedProducts(Guid userId, Guid id)
         {
             db = UtilityAPI.RetrieveDBContext(userId);
 
@@ -35,7 +35,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                 return Ok(_GetRecommendedProductForSupplier(person.PersonId));
             else
                 return Ok(_GetRecommendedProductForCustomer(person.PersonId));
-        } 
+        }
 
         [HttpPut]
         public async Task<IHttpActionResult> SetReminderForProduct(Guid userId, SetReminderDTO setReminderDTO)
@@ -67,6 +67,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                                        .Select(ph => new RecommendedProductForCustomer()
                                                        {
                                                            Product = ph.Product,
+                                                           LatestPurchaseDate = ph.LatestPurchaseDate,
                                                            ExpiredByDays = DbFunctions.DiffDays(DateTime.Now, ph.LatestPurchaseDate) - ph.ExpiryDays
                                                        }).OrderByDescending(rpc => rpc.ExpiredByDays);
             return recommendedProduct;
@@ -80,6 +81,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                                         .Select(ph => new RecommendedProductForSupplier()
                                                         {
                                                             Product = ph.Product,
+                                                            LatestPurchaseDate = ph.LatestPurchaseDate,
                                                             DeficientByNumber = (double)(ph.Product.Threshold - ph.Product.TotalQuantity)
                                                         }).OrderByDescending(rpc => rpc.DeficientByNumber);
             return recommendedProduct;

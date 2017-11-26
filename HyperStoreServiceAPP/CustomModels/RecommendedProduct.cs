@@ -6,16 +6,19 @@ using System.Web;
 
 namespace HyperStoreService.CustomModels
 {
-    public class RecommendedProductForSupplier
+    public class RecommendedProduct
     {
         public Product Product { get; set; }
-        public double DeficientByNumber { get; set; }
+        public DateTime LatestPurchaseDate { get; set; }
     }
 
-    public class RecommendedProductForCustomer
+    public class RecommendedProductForCustomer : RecommendedProduct
     {
-        public Product Product { get; set; }
         public double? ExpiredByDays { get; set; }
     }
 
+    public class RecommendedProductForSupplier : RecommendedProduct
+    {
+        public double DeficientByNumber { get; set; }
+    }
 }

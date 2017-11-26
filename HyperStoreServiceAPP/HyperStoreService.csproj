@@ -245,39 +245,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="CustomModels\CustomerPurchaseTrend.cs" />
-    <Compile Include="Migrations\201710292045500_init.cs" />
-    <Compile Include="Migrations\201710292045500_init.Designer.cs">
-      <DependentUpon>201710292045500_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201710301856503_addingfirstvisitedInPerson.cs" />
-    <Compile Include="Migrations\201710301856503_addingfirstvisitedInPerson.Designer.cs">
-      <DependentUpon>201710301856503_addingfirstvisitedInPerson.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711041858380_addingEntityTypeInTransaction.cs" />
-    <Compile Include="Migrations\201711041858380_addingEntityTypeInTransaction.Designer.cs">
-      <DependentUpon>201711041858380_addingEntityTypeInTransaction.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711111305266_CartManagement.cs" />
-    <Compile Include="Migrations\201711111305266_CartManagement.Designer.cs">
-      <DependentUpon>201711111305266_CartManagement.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711111840430_updatingcart.cs" />
-    <Compile Include="Migrations\201711111840430_updatingcart.Designer.cs">
-      <DependentUpon>201711111840430_updatingcart.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711112013064_cartmanagementtwo.cs" />
-    <Compile Include="Migrations\201711112013064_cartmanagementtwo.Designer.cs">
-      <DependentUpon>201711112013064_cartmanagementtwo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711120950196_updatingrpTopp.cs" />
-    <Compile Include="Migrations\201711120950196_updatingrpTopp.Designer.cs">
-      <DependentUpon>201711120950196_updatingrpTopp.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201711151841548_making bookmarknull.cs" />
-    <Compile Include="Migrations\201711151841548_making bookmarknull.Designer.cs">
-      <DependentUpon>201711151841548_making bookmarknull.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartProduct.cs" />
     <Compile Include="Models\DeficientStock.cs" />
@@ -371,30 +338,7 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201710292045500_init.resx">
-      <DependentUpon>201710292045500_init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710301856503_addingfirstvisitedInPerson.resx">
-      <DependentUpon>201710301856503_addingfirstvisitedInPerson.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711041858380_addingEntityTypeInTransaction.resx">
-      <DependentUpon>201711041858380_addingEntityTypeInTransaction.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711111305266_CartManagement.resx">
-      <DependentUpon>201711111305266_CartManagement.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711111840430_updatingcart.resx">
-      <DependentUpon>201711111840430_updatingcart.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711112013064_cartmanagementtwo.resx">
-      <DependentUpon>201711112013064_cartmanagementtwo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711120950196_updatingrpTopp.resx">
-      <DependentUpon>201711120950196_updatingrpTopp.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201711151841548_making bookmarknull.resx">
-      <DependentUpon>201711151841548_making bookmarknull.cs</DependentUpon>
-    </EmbeddedResource>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

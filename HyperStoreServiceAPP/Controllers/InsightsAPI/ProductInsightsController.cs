@@ -23,7 +23,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// <param name="parameter"></param>
         /// <returns>The collection of product with the number of days it had hit the zero stock.</returns>
         [HttpGet]
-        [ResponseType(typeof(IEnumerable<SusceptibleProductsInsight>))]
+        [ResponseType(typeof(SusceptibleProductsInsight))]
         public IHttpActionResult GetSusceptibleProducts(Guid userId, SusceptibleProductsInsightDTO parameter)
         {
             if (!ModelState.IsValid)
@@ -43,6 +43,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             var compareDays = Comparer<int>.Create((p1, p2) => p2 - p1);
             var priorityQueue = new PriorityQueue<int, Product>(susceptibleProducts, compareDays);
             var topSusceptibleProducts = priorityQueue.DequeRange((int)parameter.NumberOfRecords);
+
 
             var susceptibleProductsInsight = new SusceptibleProductsInsight(susceptibleProductGrps.Count, topSusceptibleProducts);
 

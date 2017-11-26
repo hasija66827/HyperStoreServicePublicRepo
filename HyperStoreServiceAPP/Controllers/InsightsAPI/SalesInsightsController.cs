@@ -24,12 +24,12 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             if (parameter == null)
                 return BadRequest("Parameter should not have been null");
 
-            var orderGroups = db.Orders.Where(o => o.OrderDate >= parameter.DateRange.LB.Date &&
-                                                    o.OrderDate <= parameter.DateRange.UB.Date)
+            var orderGroups = db.Orders.Where(o => DbFunctions.TruncateTime(o.OrderDate) >= parameter.DateRange.LB.Date &&
+                                                    DbFunctions.TruncateTime(o.OrderDate) <= parameter.DateRange.UB.Date)
                                         .GroupBy(o => DbFunctions.TruncateTime(o.OrderDate)).ToList();
 
-            var transactionGroups = db.Transactions.Where(t => t.TransactionDate >= parameter.DateRange.LB.Date&&
-                                                                t.TransactionDate<=parameter.DateRange.UB.Date)
+            var transactionGroups = db.Transactions.Where(t => DbFunctions.TruncateTime(t.TransactionDate) >= parameter.DateRange.LB.Date &&
+                                                                 DbFunctions.TruncateTime(t.TransactionDate) <= parameter.DateRange.UB.Date)
                                                     .GroupBy(t => DbFunctions.TruncateTime(t.TransactionDate)).ToList();
 
             var salesInsight = new SalesInsight();
