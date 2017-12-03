@@ -16,24 +16,9 @@ namespace HyperStoreService.HyperStoreService.CustomModels
         }
     }
 
-    public class ProductDeficiencyHitTrend
-    {
-        public DayOfWeek Day { get; set; }
-        // Number of days hit of the particular @Day of the week like on all mondays.
-        public int TotalDaysHit { get; set; }
-        public ProductDeficiencyHitTrend(DayOfWeek day, int numberOfDaysHit)
-        {
-            this.Day = day;
-            this.TotalDaysHit = numberOfDaysHit;
-        }
-    }
-
-    public class ProductConsumptionDeficientTrend
+    public class AveragaeConsumptionOfProductInDayOfWeek
     {
         public DayOfWeek Day { get; set; }
         public float AvgConsumption { get; set; }
-        [Range(0, 1)]
-        public float AvgHitRate { get; set; }
-        public ProductConsumptionDeficientTrend() { }
     }
 }

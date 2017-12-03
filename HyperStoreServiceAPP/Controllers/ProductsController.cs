@@ -167,9 +167,10 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(productMetadata);
         }
 
+
         protected override void Dispose(bool disposing)
         {
-             if (disposing && db!=null)
+            if (disposing && db != null)
             {
                 db.Dispose();
             }

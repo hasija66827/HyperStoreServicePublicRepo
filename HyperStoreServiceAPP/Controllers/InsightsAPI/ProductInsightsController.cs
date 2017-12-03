@@ -9,6 +9,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Product_EstimiatedConsumption = System.Collections.Generic.Dictionary<System.Guid, System.Collections.Generic.Dictionary<System.DayOfWeek, double>>;
+using HyperStoreServiceAPP.InMemoryStorage;
+using HyperStoreService.HyperStoreService.CustomModels;
 
 namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
@@ -54,6 +57,14 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         {
             var product = new Product() { ProductId = (Guid)item.Key };
             return new KeyValuePair<int, Product>(item.Count(), product);
+        }
+
+        [HttpGet]
+        [ResponseType(typeof(ProductConsumptionTrend))]
+        public async Task<IHttpActionResult> GetProductConsumptionTrend(Guid userId, Guid productId)
+        {
+            var productConsumptionTrend = await ProductConsumptionAnalytics.GetProductConsumptionTrend(userId, productId);
+            return Ok(productConsumptionTrend);
         }
 
         protected override void Dispose(bool disposing)
