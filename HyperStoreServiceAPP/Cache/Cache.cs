@@ -27,8 +27,7 @@ namespace HyperStoreServiceAPP.InMemoryStorage
         public async Task<T> GetValue()
         {
             if (this._value == null || _lastUpdated.AddHours(_refreshInterval) <= DateTime.Now)
-            {
-               
+            {               
                 _value = await _ComputeValue.Invoke(_userId);
                 _lastUpdated = DateTime.Now;
             }

@@ -5,14 +5,11 @@ using System.Linq;
 using System.Web;
 namespace HyperStoreService.HyperStoreService.CustomModels
 {
-    public class ProductConsumptionTrend
+    public class MapDay_ProductEstConsumption
     {
-        public DayOfWeek Day { get; set; }
-        public float TotalQuantityConsumed { get; set; }
-        public ProductConsumptionTrend(DayOfWeek day, float quantity)
-        {
-            this.Day = day;
-            this.TotalQuantityConsumed = quantity;
+        public Dictionary<DayOfWeek, float> ProductEstConsumption { get; set; }
+        public MapDay_ProductEstConsumption() {
+            ProductEstConsumption = new Dictionary<DayOfWeek, float>();
         }
     }
 
