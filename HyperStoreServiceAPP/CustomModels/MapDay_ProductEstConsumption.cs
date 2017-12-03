@@ -12,10 +12,4 @@ namespace HyperStoreService.HyperStoreService.CustomModels
             ProductEstConsumption = new Dictionary<DayOfWeek, float>();
         }
     }
-
-    public class AveragaeConsumptionOfProductInDayOfWeek
-    {
-        public DayOfWeek Day { get; set; }
-        public float AvgConsumption { get; set; }
-    }
 }

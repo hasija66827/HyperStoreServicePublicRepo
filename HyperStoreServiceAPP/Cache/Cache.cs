@@ -6,6 +6,11 @@ using System.Web;
 
 namespace HyperStoreServiceAPP.InMemoryStorage
 {
+    class RefreshInterval
+    {
+        public const int ProductEstimatedConsumption = 24;
+    }
+
     public delegate Task<T> ComputeValue<T>(Guid userId);
     public class Cache<T>
     {
@@ -27,7 +32,7 @@ namespace HyperStoreServiceAPP.InMemoryStorage
         public async Task<T> GetValue()
         {
             if (this._value == null || _lastUpdated.AddHours(_refreshInterval) <= DateTime.Now)
-            {               
+            {
                 _value = await _ComputeValue.Invoke(_userId);
                 _lastUpdated = DateTime.Now;
             }

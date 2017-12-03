@@ -26,12 +26,12 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
         [HttpGet]
         [ResponseType(typeof(MapDay_ProductEstConsumption))]
-        public async Task<MapDay_ProductEstConsumption> GetProductConsumptionTrend(Guid userId, Guid id)
+        public async Task<IHttpActionResult> Get(Guid userId, Guid id)
         {
             var cache = CollectionOfCache<Map_Product_MapDayProductEstConsumption>.GetCache(userId);
             if (cache == null)
             {
-                cache = new Cache<Map_Product_MapDayProductEstConsumption>(userId, 0, ComputeProductConsumptionTrend);
+                cache = new Cache<Map_Product_MapDayProductEstConsumption>(userId, RefreshInterval.ProductEstimatedConsumption, ComputeProductConsumptionTrend);
                 var IsInserted = CollectionOfCache<Map_Product_MapDayProductEstConsumption>.InsertCache(userId, cache);
                 if (!IsInserted)
                     throw new Exception("Unable to insert into cache.");
@@ -40,7 +40,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             var product_EstimatedConsumption = await cache.GetValue();
             MapDay_ProductEstConsumption productConsumptionTrend;
             product_EstimatedConsumption.TryGetValue(id, out productConsumptionTrend);
-            return productConsumptionTrend;
+            return Ok(productConsumptionTrend);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         }
 
         /// <summary>
-        /// Input is the Day of Week and collection of CustomerOrderProduct of the given key:Day Of Week.
+        /// Input is the Day of Week and collection of ProductConsumption of the given key:Day Of Week.
         /// </summary>
         /// <param name="items"></param>
         /// <returns>(DayOfWeek, AverageConsumptionOfProduct)</returns>
@@ -144,6 +144,5 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             }
             base.Dispose(disposing);
         }
-
     }
 }
