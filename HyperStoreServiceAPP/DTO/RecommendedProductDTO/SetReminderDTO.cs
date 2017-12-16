@@ -26,6 +26,5 @@ namespace HyperStoreServiceAPP.DTO.RecommendedProductDTO
             _personId = personId;
             _expireInDays = expireInDays;
         }
-
     }
 }

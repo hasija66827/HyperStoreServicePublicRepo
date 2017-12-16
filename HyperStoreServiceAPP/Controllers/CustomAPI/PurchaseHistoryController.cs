@@ -31,7 +31,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
             var person = await db.Persons.FindAsync(id);
 
-            if (person.EntityType == DTO.EntityType.Supplier)
+            if (person.EntityType == EntityType.Supplier)
                 return Ok(_GetRecommendedProductForSupplier(person.PersonId));
             else
                 return Ok(_GetRecommendedProductForCustomer(person.PersonId));
@@ -74,17 +74,18 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return recommendedProduct;
         }
 
+        //TODO: Add Condition of consumption rate
         private IQueryable<RecommendedProductForSupplier> _GetRecommendedProductForSupplier(Guid supplierId)
         {
             var recommendedProduct = db.PurchaseHistory.Where(ph => ph.PersonId == supplierId)
                                                         .Include(ph => ph.Product)
-                                                        .Where(ph => ph.Product.TotalQuantity <= ph.Product.Threshold)
+                                                        
                                                         .Select(ph => new RecommendedProductForSupplier()
                                                         {
                                                             Product = ph.Product,
                                                             Rating = ph.Rating,
                                                             LatestPurchaseDate = ph.LatestPurchaseDate,
-                                                            DeficientByNumber = (double)(ph.Product.Threshold - ph.Product.TotalQuantity)
+                                                            DeficientByNumber = (ph.Product.TotalQuantity)
                                                         }).OrderByDescending(rpc => rpc.DeficientByNumber);
             return recommendedProduct;
         }

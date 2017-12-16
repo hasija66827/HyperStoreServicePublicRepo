@@ -29,7 +29,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
             db = UtilityAPI.RetrieveDBContext(userId);
 
-            var newCustomers = db.Persons.Where(c => c.EntityType == DTO.EntityType.Customer &&
+            var newCustomers = db.Persons.Where(c => c.EntityType == EntityType.Customer &&
                                                     (DbFunctions.TruncateTime(c.FirstVisited) >= parameter.DateRange.LB.Date &&
                                                     DbFunctions.TruncateTime(c.FirstVisited) <= parameter.DateRange.UB.Date))
                                             .OrderByDescending(c => c.NetWorth)
@@ -52,7 +52,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
             db = UtilityAPI.RetrieveDBContext(userId);
 
-            var detachedCustomers = db.Persons.Where(c => c.EntityType == DTO.EntityType.Customer &&
+            var detachedCustomers = db.Persons.Where(c => c.EntityType == EntityType.Customer &&
                                                         (DbFunctions.TruncateTime(c.LastVisited) > parameter.DateRange.UB.Date ||
                                                          DbFunctions.TruncateTime(c.LastVisited) < parameter.DateRange.LB.Date))
                                                     .OrderByDescending(c => c.NetWorth)

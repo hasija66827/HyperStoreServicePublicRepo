@@ -22,7 +22,7 @@ namespace HyperStoreServiceAPP.Controllers
         #region Read
         [HttpGet]
         [ResponseType(typeof(List<Order>))]
-        public async Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteria SOFC)
+        public async Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteriaDTO SOFC)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -160,7 +160,7 @@ namespace HyperStoreServiceAPP.Controllers
                 var product = await db.Products.FindAsync(productPurchased.ProductId);
                 if (product == null)
                     throw new Exception(String.Format("Product with id {0} not found.", productPurchased.ProductId));
-                BillAmount += productPurchased.PurchasePricePerUnit * productPurchased.QuantityPurchased;
+                BillAmount += productPurchased.PurchasePricePerUnit * (decimal)productPurchased.QuantityPurchased;
             }
             var errorDiff = orderDetail.BillingSummaryDTO.BillAmount - BillAmount;
             if (!Utility.IsErrorAcceptable(errorDiff))
@@ -226,7 +226,7 @@ namespace HyperStoreServiceAPP.Controllers
             return supplierOrder;
         }
 
-        private async Task<List<Product>> _UpdateStockOfProductsAsync(List<ProductPurchased> productsPurchased, EntityType? entityType, Guid? personId)
+        private async Task<List<Product>> _UpdateStockOfProductsAsync(List<ProductPurchasedDTO> productsPurchased, EntityType? entityType, Guid? personId)
         {
             List<Product> products = new List<Product>();
             try
@@ -244,19 +244,19 @@ namespace HyperStoreServiceAPP.Controllers
             return products;
         }
 
-        private async Task<Product> _UpdateProductStockAsync(ProductPurchased productPurchased, EntityType? entityType, Guid? personId)
+        private async Task<Product> _UpdateProductStockAsync(ProductPurchasedDTO productPurchased, EntityType? entityType, Guid? personId)
         {
             var product = await db.Products.FindAsync(productPurchased.ProductId);
             if (product == null)
                 throw new Exception(String.Format("Product with id {0} not found while updating the stock.", productPurchased.ProductId));
             if (entityType == EntityType.Supplier)
             {
-                product.TotalQuantity += (decimal)productPurchased.QuantityPurchased;
+                product.TotalQuantity += (float)productPurchased.QuantityPurchased;
                 product.LatestSupplierId = personId;
             }
             else
             {
-                product.TotalQuantity -= (decimal)productPurchased.QuantityPurchased;
+                product.TotalQuantity -= (float)productPurchased.QuantityPurchased;
                 if (product.TotalQuantity < DeficientStockHit.DeficientStockCriteria)
                 {
                     _AddProductToDeficientStockHit(product);
@@ -266,7 +266,7 @@ namespace HyperStoreServiceAPP.Controllers
             return product;
         }
 
-        private void _AddIntoOrderProduct(List<ProductPurchased> productsPurchased, Guid supplierOrderId)
+        private void _AddIntoOrderProduct(List<ProductPurchasedDTO> productsPurchased, Guid supplierOrderId)
         {
             // Not checking if product exists or not because it has been already checked by updateProductStock.
             foreach (var productPurchased in productsPurchased)

@@ -32,7 +32,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                            .Where(sop => sop.ProductId == productId)
                                            .Include(sop => sop.Order)
                                            .Include(sop => sop.Order.Person)
-                                           .Where(sop=>sop.Order.EntityType==DTO.EntityType.Supplier)
+                                           .Where(sop=>sop.Order.EntityType==EntityType.Supplier)
                                            .Select(s => new PriceQuotedBySupplier()
                                            {
                                                OrderDate = s.Order.OrderDate,

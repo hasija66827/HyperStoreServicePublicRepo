@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HyperStoreService.HyperStoreService.CustomModels;
+using HyperStoreService.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -30,7 +32,7 @@ namespace HyperStoreServiceAPP.DTO
         public List<Guid?> TagIds { get; set; }
     }
 
-    public class ProductFilterCriteria
+    public class ProductFilterCriteriaDTO
     {
         public Guid? ProductId { get; set; }
         public List<Guid?> TagIds { get; set; }
@@ -45,18 +47,32 @@ namespace HyperStoreServiceAPP.DTO
 
         [Required]
         [QuantityRange]
-        public IRange<decimal?> QuantityRange { get; set; }
+        public IRange<float?> QuantityRange { get; set; }
 
         [Required]
-        public bool? IncludeDeficientItemsOnly { get; set; }
+        [ConsumptionDayRange]
+        public IRange<int?> ConsumptionDayRange { get; set; }
     }
 
     public sealed class QuantityRangeAttribute : ValidationAttribute
     {
         public override bool IsValid(object value)
         {
-            var quantityRange = value as IRange<decimal?>;
+            if (value == null)
+                return false;
+            var quantityRange = value as IRange<float?>;
             return (quantityRange.LB <= quantityRange.UB);
+        }
+    }
+
+    public sealed class ConsumptionDayRangeAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            if (value == null)
+                return false;
+            var consumptionDayRange = value as IRange<int?>;
+            return (consumptionDayRange.LB <= consumptionDayRange.UB);
         }
     }
 
@@ -64,22 +80,17 @@ namespace HyperStoreServiceAPP.DTO
     {
         public override bool IsValid(object value)
         {
+            if (value == null)
+                return false;
             var discountPerRange = value as IRange<decimal?>;
             bool valid = (discountPerRange.LB <= discountPerRange.UB && discountPerRange.LB >= 0 && discountPerRange.UB <= 100);
             return valid;
         }
     }
 
-    public class IRange<T>
-    {
-        [Required]
-        public T LB { get; set; }
-        [Required]
-        public T UB { get; set; }
-        public IRange(T lb, T ub)
-        {
-            LB = lb;
-            UB = ub;
-        }
+    public class ProductInsight {
+        public Product Product { get; set; }
+        public MapDay_ProductEstConsumption MapDay_ProductEstConsumption { get; set; }
+        public DateTime ProductExtinctionDate { get; set; }
     }
 }

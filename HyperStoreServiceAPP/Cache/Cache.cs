@@ -29,6 +29,10 @@ namespace HyperStoreServiceAPP.InMemoryStorage
             this._value = default(T);
         }
 
+        /// <summary>
+        /// if cache is stale or it does not have any value then it computes the value by invoking the delegate.
+        /// </summary>
+        /// <returns></returns>
         public async Task<T> GetValue()
         {
             if (this._value == null || _lastUpdated.AddHours(_refreshInterval) <= DateTime.Now)

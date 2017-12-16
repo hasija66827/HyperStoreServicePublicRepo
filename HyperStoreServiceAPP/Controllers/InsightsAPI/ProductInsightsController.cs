@@ -1,4 +1,5 @@
-﻿using HyperStoreService.Models;
+﻿using HyperStoreService.HyperStoreService.CustomModels;
+using HyperStoreService.Models;
 using HyperStoreServiceAPP.DTO.InsightsDTO;
 using PriorityQueueDemo;
 using System;
@@ -50,13 +51,20 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             return Ok(susceptibleProductsInsight);
         }
 
+        [HttpGet]
+        [ResponseType(typeof(MapDay_ProductEstConsumption))]
+        public async Task<IHttpActionResult> GetProductConsumptionTrend(Guid userId, Guid id)
+        {
+            var mapDay_ProductEstConsumption = await ProductConsumptionInsights.GetProductConsumptionTrend(userId, id);
+            return Ok(mapDay_ProductEstConsumption);
+        }
+
         private KeyValuePair<int, Product> CountDaysHitOfTheProduct(IGrouping<Guid?, DeficientStockHit> item)
         {
             var product = new Product() { ProductId = (Guid)item.Key };
             return new KeyValuePair<int, Product>(item.Count(), product);
         }
 
-   
         protected override void Dispose(bool disposing)
         {
             if (disposing && db != null)

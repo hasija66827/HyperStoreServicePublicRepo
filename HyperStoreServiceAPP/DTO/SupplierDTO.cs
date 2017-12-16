@@ -28,7 +28,7 @@ namespace HyperStoreServiceAPP.DTO
         public int? Rating { get; set; }
     }
 
-    public class SupplierFilterCriteria
+    public class SupplierFilterCriteriaDTO
     {
         [Required]
         public EntityType? EntityType { get; set; }

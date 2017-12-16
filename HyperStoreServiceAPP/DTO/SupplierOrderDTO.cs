@@ -9,7 +9,7 @@ namespace HyperStoreServiceAPP.DTO
     public class SupplierOrderDTO
     {
         [Required]
-        public List<ProductPurchased> ProductsPurchased { get; set; }
+        public List<ProductPurchasedDTO> ProductsPurchased { get; set; }
 
         [Required]
         public Guid? SupplierId { get; set; }
@@ -31,14 +31,14 @@ namespace HyperStoreServiceAPP.DTO
         public EntityType? EntityType { get; set; }
     }
 
-    public class ProductPurchased
+    public class ProductPurchasedDTO
     {
         [Required]
         public Guid? ProductId { get; set; }
 
         [Required]
         [Range(0, float.MaxValue)]
-        public decimal? QuantityPurchased { get; set; }
+        public float? QuantityPurchased { get; set; }
 
         [Required]
         public decimal? PurchasePricePerUnit { get; set; }
@@ -53,10 +53,10 @@ namespace HyperStoreServiceAPP.DTO
         public int? TotalItems { get; set; }
 
         [Required]
-        public decimal? TotalQuantity { get; set; }
+        public float? TotalQuantity { get; set; }
     }
 
-    public class SupplierOrderFilterCriteria
+    public class SupplierOrderFilterCriteriaDTO
     {
         public Guid? SupplierId { get; set; }
 

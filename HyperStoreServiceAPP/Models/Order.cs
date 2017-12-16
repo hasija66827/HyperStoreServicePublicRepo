@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using HyperStoreServiceAPP.DTO;
+using HyperStoreServiceAPP;
 
 namespace HyperStoreService.Models
 {

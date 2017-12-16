@@ -23,7 +23,7 @@ namespace HyperStoreServiceAPP.Controllers
         // GET: api/Suppliers
         [HttpGet]
         [ResponseType(typeof(List<Person>))]
-        public async Task<IHttpActionResult> Get(Guid userId, SupplierFilterCriteria sfc)
+        public async Task<IHttpActionResult> Get(Guid userId, SupplierFilterCriteriaDTO sfc)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

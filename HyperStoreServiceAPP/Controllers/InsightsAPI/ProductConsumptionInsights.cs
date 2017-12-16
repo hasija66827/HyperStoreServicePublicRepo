@@ -10,10 +10,11 @@ using System.Data.Entity;
 using HyperStoreService.Models;
 using System.Web.Http;
 using System.Web.Http.Description;
+using HyperStoreServiceAPP.DTO;
 
 namespace HyperStoreServiceAPP.Controllers.CustomAPI
 {
-    public class ProductConsumptionInsightsController : ApiController
+    public class ProductConsumptionInsights
     {
         private class ProductConsumption
         {
@@ -22,11 +23,15 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             public decimal QuantityPurchased;
         }
 
-        private HyperStoreServiceContext db;
 
-        [HttpGet]
-        [ResponseType(typeof(MapDay_ProductEstConsumption))]
-        public async Task<IHttpActionResult> Get(Guid userId, Guid id)
+
+        /// <summary>
+        /// Returns the average consumption of product on each day of week by analysing order history of product.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        public static async Task<MapDay_ProductEstConsumption> GetProductConsumptionTrend(Guid userId, Guid productId)
         {
             var cache = CollectionOfCache<Map_Product_MapDayProductEstConsumption>.GetCache(userId);
             if (cache == null)
@@ -39,8 +44,63 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
             var product_EstimatedConsumption = await cache.GetValue();
             MapDay_ProductEstConsumption productConsumptionTrend;
-            product_EstimatedConsumption.TryGetValue(id, out productConsumptionTrend);
-            return Ok(productConsumptionTrend);
+            product_EstimatedConsumption.TryGetValue(productId, out productConsumptionTrend);
+            return productConsumptionTrend;
+        }
+
+        private static async Task<float> GetProductUnitConsumedPerWeek(Guid userId, Guid productId)
+        {
+            var productEstConsumption = (await GetProductConsumptionTrend(userId, productId)).ProductEstConsumption;
+            var prodEstConsumptionInWeek = productEstConsumption.Sum(p => p.Value);
+            return prodEstConsumptionInWeek;
+        }
+
+
+        /// <summary>
+        /// returns true if the product will be fully consumed between start day and end day.
+        /// else returns false if product will be fully consumed less than start day or greater than end day. 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="productId"></param>
+        /// <param name="currentQuantity"></param>
+        /// <param name="startDay"></param>
+        /// <param name="endDay"></param>
+        /// <returns></returns>
+        public static async Task<bool> IsProductConsumed(Guid userId, Guid productId, float currentQuantity, IRange<int?> ConsumptionDayRange)
+        {
+            var x = await GetProductUnitConsumedInNext(userId, productId, (int)ConsumptionDayRange.LB);
+            var y = await GetProductUnitConsumedInNext(userId, productId, (int)ConsumptionDayRange.UB + 1);
+            if (x < currentQuantity && currentQuantity <= y)
+                return true;
+            return false;
+        }
+
+
+        /// <summary>
+        /// Returns the date, the product is expected to completely extinct.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="productId"></param>
+        /// <param name="currentQuantity"></param>
+        /// <returns></returns>
+        public static async Task<DateTime> GetProductStockCompletionDate(Guid userId, Guid productId, float currentQuantity)
+        {
+            var unitsConsumedPerWeek = await GetProductUnitConsumedPerWeek(userId, productId);
+            var noOfWeeks = Math.Floor(currentQuantity / unitsConsumedPerWeek);
+            var remainingQuantity = currentQuantity - noOfWeeks * unitsConsumedPerWeek;
+
+            var currentDayIndex = (int)DateTime.Now.DayOfWeek;
+            var prodEstConsumption = (await GetProductConsumptionTrend(userId, productId)).ProductEstConsumption;
+            int day;
+            for (day = 0; day < 7; day++)
+            {
+                if (remainingQuantity <= 0)
+                    break;
+                float estConsumption;
+                prodEstConsumption.TryGetValue((DayOfWeek)((day + currentDayIndex) % 7), out estConsumption);
+                remainingQuantity -= estConsumption;
+            }
+            return DateTime.Now.AddDays(7 * noOfWeeks + day - 1);
         }
 
         /// <summary>
@@ -49,12 +109,12 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        private async Task<Map_Product_MapDayProductEstConsumption> ComputeProductConsumptionTrend(Guid userId)
+        private static async Task<Map_Product_MapDayProductEstConsumption> ComputeProductConsumptionTrend(Guid userId)
         {
-            db = UtilityAPI.RetrieveDBContext(userId);
+            var db = UtilityAPI.RetrieveDBContext(userId);
             var startingOrderDate = DateTime.Now.AddMonths(-2).Date;
             var query = db.OrderProducts.Include(cop => cop.Order)
-                         .Where(cop => cop.Order.EntityType == DTO.EntityType.Customer &&
+                         .Where(cop => cop.Order.EntityType == EntityType.Customer &&
                                 cop.Order.OrderDate >= startingOrderDate && cop.Order.OrderDate < DbFunctions.TruncateTime(DateTime.Now))
                         .Select(cop => new ProductConsumption()
                         {
@@ -64,10 +124,10 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                         });
 
             var groups = await query.GroupBy(pc => pc.ProductId).ToListAsync();
-            var x = groups.Select(productId_cop => AggregateProductConsumptionByDayOfWeek(productId_cop));
+            var Product_MapDayProductEstConsumption = groups.Select(productId_cop => AggregateProductConsumptionByDayOfWeek(productId_cop));
 
             var product_EstimiatedConsumption = new Map_Product_MapDayProductEstConsumption();
-            foreach (var group in x)
+            foreach (var group in Product_MapDayProductEstConsumption)
                 product_EstimiatedConsumption.Add((Guid)group.Key, group.Value);
             db.Dispose();
             return product_EstimiatedConsumption;
@@ -78,7 +138,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// </summary>
         /// <param name="productId_productConsumption"></param>
         /// <returns>(productId, productConsumptionTrend)</returns>
-        private KeyValuePair<Guid?, MapDay_ProductEstConsumption> AggregateProductConsumptionByDayOfWeek(IGrouping<Guid, ProductConsumption> productId_productConsumption)
+        private static KeyValuePair<Guid?, MapDay_ProductEstConsumption> AggregateProductConsumptionByDayOfWeek(IGrouping<Guid, ProductConsumption> productId_productConsumption)
         {
             var groups = productId_productConsumption.GroupBy(pc => pc.OrderDate.DayOfWeek)
                                                         .Select(items => AggregateQuantityOfDayOfWeek(items));
@@ -96,7 +156,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// </summary>
         /// <param name="items"></param>
         /// <returns>(DayOfWeek, AverageConsumptionOfProduct)</returns>
-        private KeyValuePair<DayOfWeek, float> AggregateQuantityOfDayOfWeek(IGrouping<DayOfWeek, ProductConsumption> items)
+        private static KeyValuePair<DayOfWeek, float> AggregateQuantityOfDayOfWeek(IGrouping<DayOfWeek, ProductConsumption> items)
         {
             var distinctNumberOfTheDay = items.Distinct(new ProductConsumptionEqualityComparer()).Count();
             return new KeyValuePair<DayOfWeek, float>(items.Key, items.Sum(pc => ((float)pc.QuantityPurchased / distinctNumberOfTheDay)));
@@ -123,26 +183,39 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             }
         }
 
+
+        //TODO: It can be replaced by GetProductStock Completion Date.
         /// <summary>
-        /// Will the propduct consumed fully in the number of days specified.
-        /// This will help us to place the order to supplier according to the consumption rate of our product.
+        /// Retruns the number of units product will be consumed in give noOfDays startubg frin today.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="productId"></param>
-        /// <param name="numberOfDays"></param>
+        /// <param name="noOfDays"></param>
         /// <returns></returns>
-        public async Task<bool> WillProductBeConsumed(Guid userId, Guid productId, int numberOfDays)
+        private static async Task<float> GetProductUnitConsumedInNext(Guid userId, Guid productId, int noOfDays)
         {
-            return true;
+            var currentDayIndex = (int)DateTime.Now.DayOfWeek;
+            float[] scalerVector = new float[7];
+            for (int i = 0; i < 7; i++)
+                scalerVector[i] = noOfDays / 7;
+
+            var remainingDays = noOfDays % 7;
+
+            for (int i = 0; i < remainingDays; i++)
+                scalerVector[(i + currentDayIndex) % 7] += 1;
+
+            var productEstConsumption = (await GetProductConsumptionTrend(userId, productId)).ProductEstConsumption;
+
+            float totalConsumption = 0;
+            for (int i = 0; i < 7; i++)
+            {
+                float consumptionInTheDay = 0;
+                productEstConsumption.TryGetValue((DayOfWeek)i, out consumptionInTheDay);
+                totalConsumption += scalerVector[i] * consumptionInTheDay;
+            }
+            return totalConsumption;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && db != null)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+
     }
 }

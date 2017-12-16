@@ -35,7 +35,7 @@ namespace HyperStoreServiceAPP.Controllers
 
     public interface IProduct
     {
-        Task<IHttpActionResult> Get(Guid userId, ProductFilterCriteria filterProductCriteria);
+        Task<IHttpActionResult> Get(Guid userId, ProductFilterCriteriaDTO filterProductCriteria);
         IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Post(Guid userId, ProductDTO product);
         Task<IHttpActionResult> GetProductMetadata(Guid userId);
@@ -48,14 +48,14 @@ namespace HyperStoreServiceAPP.Controllers
 
     public interface IOrder
     {
-        Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteria SOFC);
+        Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteriaDTO SOFC);
         IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Post(Guid userId, SupplierOrderDTO orderDetail);
     }
 
     public interface IPerson
     {
-        Task<IHttpActionResult> Get(Guid userId, SupplierFilterCriteria sfc);
+        Task<IHttpActionResult> Get(Guid userId, SupplierFilterCriteriaDTO sfc);
         IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Put(Guid userId, Guid id, SupplierDTO supplierDTO);
         Task<IHttpActionResult> Post(Guid userId, SupplierDTO supplierDTO);

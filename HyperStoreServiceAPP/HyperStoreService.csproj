@@ -230,7 +230,7 @@
     <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="DTO\CartManagementDTO\CartManagementDTO.cs" />
     <Compile Include="DTO\CartManagementDTO\CartProductDTO.cs" />
-    <Compile Include="DTO\DTO.cs" />
+    <Compile Include="DTO\UtilityDTO.cs" />
     <Compile Include="CustomModels\ProductMetadata.cs" />
     <Compile Include="CustomModels\RecommendedProduct.cs" />
     <Compile Include="DTO\InsightsDTO\CustomerInsightsDTO.cs" />
@@ -238,7 +238,7 @@
     <Compile Include="DTO\InsightsDTO\BusinessInsightDTO.cs" />
     <Compile Include="DTO\InsightsDTO\SusceptibleProductsDTO.cs" />
     <Compile Include="DTO\ProductDTO.cs" />
-    <Compile Include="DTO\RecommendedProductDTO\RecommendedProductDTO.cs" />
+    <Compile Include="DTO\RecommendedProductDTO\SetReminderDTO.cs" />
     <Compile Include="DTO\SupplierDTO.cs" />
     <Compile Include="DTO\SupplierOrderDTO.cs" />
     <Compile Include="DTO\SupplierTransactionDTO.cs" />
@@ -254,6 +254,10 @@
     <Compile Include="Migrations\201711262034365_addingRatingInPurchaseHistory.cs" />
     <Compile Include="Migrations\201711262034365_addingRatingInPurchaseHistory.Designer.cs">
       <DependentUpon>201711262034365_addingRatingInPurchaseHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712100712234_updatingDatatypeOfQuantity.cs" />
+    <Compile Include="Migrations\201712100712234_updatingDatatypeOfQuantity.Designer.cs">
+      <DependentUpon>201712100712234_updatingDatatypeOfQuantity.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cart.cs" />
@@ -358,6 +362,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711262034365_addingRatingInPurchaseHistory.resx">
       <DependentUpon>201711262034365_addingRatingInPurchaseHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712100712234_updatingDatatypeOfQuantity.resx">
+      <DependentUpon>201712100712234_updatingDatatypeOfQuantity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

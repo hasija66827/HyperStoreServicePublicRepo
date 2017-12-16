@@ -44,11 +44,11 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
             transactionInsights.Date = transactionGrp.Key;
 
-            transactionInsights.MoneyIn = transactionGrp.Where(t => t.EntityType == DTO.EntityType.Customer &&
+            transactionInsights.MoneyIn = transactionGrp.Where(t => t.EntityType == EntityType.Customer &&
                                                                     t.IsCredit == true)
                                                                     .Sum(t => (decimal?)t.TransactionAmount);
 
-            transactionInsights.MoneyOut = transactionGrp.Where(t => t.EntityType == DTO.EntityType.Supplier &&
+            transactionInsights.MoneyOut = transactionGrp.Where(t => t.EntityType == EntityType.Supplier &&
                                                                     t.IsCredit == false)
                                                                     .Sum(t => (decimal?)t.TransactionAmount);
             return transactionInsights;
@@ -60,14 +60,14 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
 
             salesOrderInsights.Date = orderGrp.Key;
 
-            salesOrderInsights.MoneyIn = orderGrp.Where(ord => ord.EntityType == DTO.EntityType.Customer)
+            salesOrderInsights.MoneyIn = orderGrp.Where(ord => ord.EntityType == EntityType.Customer)
                                                         .Sum(ord => (decimal?)ord.PayedAmount);
-            salesOrderInsights.MoneyOut = orderGrp.Where(ord => ord.EntityType == DTO.EntityType.Supplier)
+            salesOrderInsights.MoneyOut = orderGrp.Where(ord => ord.EntityType == EntityType.Supplier)
                                                         .Sum(ord => (decimal?)ord.PayedAmount);
 
-            salesOrderInsights.TotalSales = orderGrp.Where(ord => ord.EntityType == DTO.EntityType.Customer)
+            salesOrderInsights.TotalSales = orderGrp.Where(ord => ord.EntityType == EntityType.Customer)
                                                         .Sum(ord => (decimal?)ord.BillAmount);
-            salesOrderInsights.TotalPurchase = orderGrp.Where(ord => ord.EntityType == DTO.EntityType.Supplier)
+            salesOrderInsights.TotalPurchase = orderGrp.Where(ord => ord.EntityType == EntityType.Supplier)
                                                         .Sum(ord => (decimal?)ord.BillAmount);
 
             return salesOrderInsights;

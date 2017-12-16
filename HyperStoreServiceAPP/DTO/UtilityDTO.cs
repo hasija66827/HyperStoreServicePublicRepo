@@ -29,20 +29,6 @@ namespace HyperStoreServiceAPP.DTO
     }
     #endregion 
 
-   public sealed class DateRangeAttribute : ValidationAttribute
-    {
-        public override bool IsValid(object value)
-        {
-            if (value == null)
-                return false;
-            var dateRange = value as IRange<DateTime>;
-            return dateRange.LB <= dateRange.UB;
-        }
-    }
-    public enum EntityType
-    {
-        Customer,
-        Supplier
-    }
-
+   
+   
 }

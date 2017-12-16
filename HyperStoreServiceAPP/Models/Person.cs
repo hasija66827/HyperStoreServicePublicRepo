@@ -1,4 +1,5 @@
-﻿using HyperStoreServiceAPP.DTO;
+﻿using HyperStoreServiceAPP;
+using HyperStoreServiceAPP.DTO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

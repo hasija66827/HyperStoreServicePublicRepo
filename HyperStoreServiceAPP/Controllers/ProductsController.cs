@@ -13,6 +13,7 @@ using HyperStoreService.Models;
 using System.ComponentModel.DataAnnotations;
 using HyperStoreServiceAPP.CustomModels;
 using HyperStoreServiceAPP.DTO;
+using HyperStoreServiceAPP.Controllers.CustomAPI;
 
 namespace HyperStoreServiceAPP.Controllers
 {
@@ -23,48 +24,77 @@ namespace HyperStoreServiceAPP.Controllers
         #region Read
         [HttpGet]
         [ResponseType(typeof(List<Product>))]
-        public async Task<IHttpActionResult> Get(Guid userId, ProductFilterCriteria pfc)
+        public async Task<IHttpActionResult> Get(Guid userId, ProductFilterCriteriaDTO pfc)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
             db = UtilityAPI.RetrieveDBContext(userId);
 
+            var query = await ConstructQuery(pfc);
+            var queryResult = await query.ToListAsync();
+
+            if (pfc != null && pfc.FilterProductQDT != null)
+                queryResult = await FilterProductByConsumptionDayRange(queryResult, userId, pfc.FilterProductQDT.ConsumptionDayRange);
+
+            List<ProductInsight> productInsights = new List<ProductInsight>();
+            foreach (var product in queryResult)
+            {
+                var productInsight = new ProductInsight()
+                {
+                    Product = product,
+                    ProductExtinctionDate = await ProductConsumptionInsights.GetProductStockCompletionDate(userId, (Guid)product.ProductId, product.TotalQuantity),
+                    MapDay_ProductEstConsumption = await ProductConsumptionInsights.GetProductConsumptionTrend(userId, (Guid)product.ProductId)
+                };
+                productInsights.Add(productInsight);
+            }
+            return Ok(productInsights);
+        }
+
+        private async Task<IQueryable<Product>> ConstructQuery(ProductFilterCriteriaDTO pfc)
+        {
             IQueryable<Product> query = db.Products;
             if (pfc == null)
-                return Ok(await query.ToListAsync());
-            IEnumerable<Product> result;
-            try
+                return query;
+
+            var productId = pfc.ProductId;
+            if (productId != null)
             {
-                var productId = pfc.ProductId;
-                if (productId != null)
-                {
-                    query = query.Where(p => p.ProductId == productId);
-                }
-
-                var tagIds = pfc.TagIds;
-                if (tagIds != null && tagIds.Count() != 0)
-                {
-                    var productIds_tag = await RetrieveProductIdsAsync(tagIds);
-                    query = query.Where(p => productIds_tag.Contains(p.ProductId));
-                }
-
-                var filterProductQDT = pfc.FilterProductQDT;
-                if (filterProductQDT != null)
-                {
-                    var discountPerRange = filterProductQDT.DiscountPerRange;
-                    var quantity = filterProductQDT.QuantityRange;
-                    query = query.Where(p => p.DiscountPer >= discountPerRange.LB &&
-                                                                p.DiscountPer <= discountPerRange.UB &&
-                                                                p.TotalQuantity >= quantity.LB &&
-                                                                p.TotalQuantity <= quantity.UB);
-                    if (filterProductQDT.IncludeDeficientItemsOnly == true)
-                        query = query.Where(p => p.TotalQuantity <= p.Threshold);
-                }
-                result = await query.ToListAsync();
+                query = query.Where(p => p.ProductId == productId);
             }
-            catch (Exception e)
-            { throw e; }
-            return Ok(result);
+
+            var tagIds = pfc.TagIds;
+            if (tagIds != null && tagIds.Count() != 0)
+            {
+                var productIds_tag = await RetrieveProductIdsAsync(tagIds);
+                query = query.Where(p => productIds_tag.Contains(p.ProductId));
+            }
+
+            var filterProductQDT = pfc.FilterProductQDT;
+            if (filterProductQDT != null)
+            {
+                var discountPerRange = filterProductQDT.DiscountPerRange;
+                var quantity = filterProductQDT.QuantityRange;
+                query = query.Where(p => p.DiscountPer >= discountPerRange.LB &&
+                                                            p.DiscountPer <= discountPerRange.UB &&
+                                                            p.TotalQuantity >= quantity.LB &&
+                                                            p.TotalQuantity <= quantity.UB);
+            }
+            return query;
+        }
+
+
+        private async Task<List<Product>> FilterProductByConsumptionDayRange(List<Product> queryResult, Guid userId, IRange<int?> consumptionDayRange)
+        {
+            List<Product> products = new List<Product>();
+            foreach (var product in queryResult)
+            {
+                var IsProductConsumed = await ProductConsumptionInsights.IsProductConsumed(userId, (Guid)product.ProductId, product.TotalQuantity,
+                                                                                          consumptionDayRange);
+                if (IsProductConsumed)
+                    products.Add(product);
+            }
+            return products;
         }
 
         [HttpGet]
@@ -160,7 +190,7 @@ namespace HyperStoreServiceAPP.Controllers
                 var maxDiscountPer = await db.Products.MaxAsync(p => p.DiscountPer);
                 productMetadata = new ProductMetadata()
                 {
-                    QuantityRange = new IRange<decimal>(minQty, maxQty),
+                    QuantityRange = new IRange<float>(minQty, maxQty),
                     DiscountPerRange = new IRange<decimal?>(minDiscountPer, maxDiscountPer)
                 };
             }

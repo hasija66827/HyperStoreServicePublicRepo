@@ -9,11 +9,11 @@ namespace HyperStoreService.Models
 {
     public class DeficientStockHit
     {
-        public static readonly decimal DeficientStockCriteria = 1;
+        public static readonly float DeficientStockCriteria = 1;
         public Guid? DeficientStockHitId { get; set; }
 
         [Required]
-        public decimal? QuantitySnapshot { get; set; }
+        public float? QuantitySnapshot { get; set; }
 
         [Required]
         [Index("IX_ProductIdAndTimeStamp", IsUnique = true, Order = 1)]

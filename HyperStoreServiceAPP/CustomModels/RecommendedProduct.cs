@@ -20,6 +20,6 @@ namespace HyperStoreService.CustomModels
 
     public class RecommendedProductForSupplier : RecommendedProduct
     {
-        public double DeficientByNumber { get; set; }
+        public float DeficientByNumber { get; set; }
     }
 }
