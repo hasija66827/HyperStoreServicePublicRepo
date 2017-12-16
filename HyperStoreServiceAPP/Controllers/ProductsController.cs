@@ -34,7 +34,7 @@ namespace HyperStoreServiceAPP.Controllers
             var query = await ConstructQuery(pfc);
             var queryResult = await query.ToListAsync();
 
-            if (pfc != null && pfc.FilterProductQDT != null)
+            if (pfc != null && pfc.FilterProductQDT != null && pfc.ShowNonInventoryProductOnly == false)
                 queryResult = await FilterProductByConsumptionDayRange(queryResult, userId, pfc.FilterProductQDT.ConsumptionDayRange);
 
             List<ProductInsight> productInsights = new List<ProductInsight>();
@@ -43,7 +43,7 @@ namespace HyperStoreServiceAPP.Controllers
                 var productInsight = new ProductInsight()
                 {
                     Product = product,
-                    ProductExtinctionDate = await ProductConsumptionInsights.GetProductStockCompletionDate(userId, (Guid)product.ProductId, product.TotalQuantity),
+                    ProductExtinctionDate = product.TotalQuantity == null ? null : await ProductConsumptionInsights.GetProductStockCompletionDate(userId, (Guid)product.ProductId, (float)product.TotalQuantity),
                     MapDay_ProductEstConsumption = await ProductConsumptionInsights.GetProductConsumptionTrend(userId, (Guid)product.ProductId)
                 };
                 productInsights.Add(productInsight);
@@ -74,25 +74,40 @@ namespace HyperStoreServiceAPP.Controllers
             if (filterProductQDT != null)
             {
                 var discountPerRange = filterProductQDT.DiscountPerRange;
-                var quantity = filterProductQDT.QuantityRange;
-                query = query.Where(p => p.DiscountPer >= discountPerRange.LB &&
-                                                            p.DiscountPer <= discountPerRange.UB &&
-                                                            p.TotalQuantity >= quantity.LB &&
-                                                            p.TotalQuantity <= quantity.UB);
+                query = query.Where(p => p.DiscountPer >= discountPerRange.LB && p.DiscountPer <= discountPerRange.UB);
+                if (pfc.ShowNonInventoryProductOnly == true)
+                {
+                    query = query.Where(p => p.TotalQuantity == null);
+                }
+                else
+                {
+                    var quantity = filterProductQDT.QuantityRange;
+                    query = query.Where(p => p.TotalQuantity >= quantity.LB && p.TotalQuantity <= quantity.UB);
+                }
             }
             return query;
         }
 
-
+        /// <summary>
+        /// Filter the inventory product by consumptionDays.
+        /// It does not include non inventory product in its result set.
+        /// </summary>
+        /// <param name="queryResult"></param>
+        /// <param name="userId"></param>
+        /// <param name="consumptionDayRange"></param>
+        /// <returns></returns>
         private async Task<List<Product>> FilterProductByConsumptionDayRange(List<Product> queryResult, Guid userId, IRange<int?> consumptionDayRange)
         {
             List<Product> products = new List<Product>();
             foreach (var product in queryResult)
             {
-                var IsProductConsumed = await ProductConsumptionInsights.IsProductConsumed(userId, (Guid)product.ProductId, product.TotalQuantity,
-                                                                                          consumptionDayRange);
-                if (IsProductConsumed)
-                    products.Add(product);
+                if (product.TotalQuantity != null)
+                {
+                    var IsProductConsumed = await ProductConsumptionInsights.IsProductConsumed(userId, (Guid)product.ProductId, (float)product.TotalQuantity,
+                                                                                                                                    consumptionDayRange);
+                    if (IsProductConsumed)
+                        products.Add(product);
+                }
             }
             return products;
         }
@@ -131,16 +146,20 @@ namespace HyperStoreServiceAPP.Controllers
             Product product = new Product()
             {
                 ProductId = newProductId,
-                TotalQuantity = 0,
                 Code = productDTO.Code,
                 CGSTPer = productDTO.CGSTPer,
                 DiscountPer = productDTO.DiscountPer,
+                HSN = productDTO.HSN,
                 MRP = productDTO.MRP,
                 Name = productDTO.Name,
-                HSN = productDTO.HSN,
                 SGSTPer = productDTO.SGSTPer,
                 Threshold = productDTO.Threshold
             };
+
+            if (productDTO.IsNonInventoryProduct == true)
+                product.TotalQuantity = null;
+            else
+                product.TotalQuantity = 0;
 
             try
             {
@@ -190,7 +209,7 @@ namespace HyperStoreServiceAPP.Controllers
                 var maxDiscountPer = await db.Products.MaxAsync(p => p.DiscountPer);
                 productMetadata = new ProductMetadata()
                 {
-                    QuantityRange = new IRange<float>(minQty, maxQty),
+                    QuantityRange = new IRange<float?>(minQty, maxQty),
                     DiscountPerRange = new IRange<decimal?>(minDiscountPer, maxDiscountPer)
                 };
             }

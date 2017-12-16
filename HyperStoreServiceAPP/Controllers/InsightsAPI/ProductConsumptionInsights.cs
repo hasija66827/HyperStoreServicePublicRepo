@@ -23,8 +23,6 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             public decimal QuantityPurchased;
         }
 
-
-
         /// <summary>
         /// Returns the average consumption of product on each day of week by analysing order history of product.
         /// </summary>
@@ -43,14 +41,16 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
             }
 
             var product_EstimatedConsumption = await cache.GetValue();
-            MapDay_ProductEstConsumption productConsumptionTrend;
+            MapDay_ProductEstConsumption productConsumptionTrend = null;
             product_EstimatedConsumption.TryGetValue(productId, out productConsumptionTrend);
             return productConsumptionTrend;
         }
 
-        private static async Task<float> GetProductUnitConsumedPerWeek(Guid userId, Guid productId)
+        private static async Task<float?> GetProductUnitConsumedPerWeek(Guid userId, Guid productId)
         {
-            var productEstConsumption = (await GetProductConsumptionTrend(userId, productId)).ProductEstConsumption;
+            var productEstConsumption = (await GetProductConsumptionTrend(userId, productId))?.ProductEstConsumption;
+            if (productEstConsumption == null)
+                return null;
             var prodEstConsumptionInWeek = productEstConsumption.Sum(p => p.Value);
             return prodEstConsumptionInWeek;
         }
@@ -68,13 +68,16 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// <returns></returns>
         public static async Task<bool> IsProductConsumed(Guid userId, Guid productId, float currentQuantity, IRange<int?> ConsumptionDayRange)
         {
-            var x = await GetProductUnitConsumedInNext(userId, productId, (int)ConsumptionDayRange.LB);
-            var y = await GetProductUnitConsumedInNext(userId, productId, (int)ConsumptionDayRange.UB + 1);
-            if (x < currentQuantity && currentQuantity <= y)
+            var extinctionDate = await GetProductStockCompletionDate(userId, productId, currentQuantity);
+            if (extinctionDate == null)
                 return true;
-            return false;
+            var LBDate = DateTime.Now.AddDays((int)ConsumptionDayRange.LB);
+            var UBDate = DateTime.Now.AddDays((int)ConsumptionDayRange.UB);
+            if (extinctionDate?.Date >= LBDate.Date && extinctionDate?.Date <= UBDate.Date)
+                return true;
+            else
+                return false;
         }
-
 
         /// <summary>
         /// Returns the date, the product is expected to completely extinct.
@@ -83,10 +86,12 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         /// <param name="productId"></param>
         /// <param name="currentQuantity"></param>
         /// <returns></returns>
-        public static async Task<DateTime> GetProductStockCompletionDate(Guid userId, Guid productId, float currentQuantity)
+        public static async Task<DateTime?> GetProductStockCompletionDate(Guid userId, Guid productId, float currentQuantity)
         {
             var unitsConsumedPerWeek = await GetProductUnitConsumedPerWeek(userId, productId);
-            var noOfWeeks = Math.Floor(currentQuantity / unitsConsumedPerWeek);
+            if (unitsConsumedPerWeek == null)
+                return null;
+            var noOfWeeks = Math.Floor((float)currentQuantity / (float)unitsConsumedPerWeek);
             var remainingQuantity = currentQuantity - noOfWeeks * unitsConsumedPerWeek;
 
             var currentDayIndex = (int)DateTime.Now.DayOfWeek;
@@ -182,40 +187,6 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                 return hCode.GetHashCode();
             }
         }
-
-
-        //TODO: It can be replaced by GetProductStock Completion Date.
-        /// <summary>
-        /// Retruns the number of units product will be consumed in give noOfDays startubg frin today.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="productId"></param>
-        /// <param name="noOfDays"></param>
-        /// <returns></returns>
-        private static async Task<float> GetProductUnitConsumedInNext(Guid userId, Guid productId, int noOfDays)
-        {
-            var currentDayIndex = (int)DateTime.Now.DayOfWeek;
-            float[] scalerVector = new float[7];
-            for (int i = 0; i < 7; i++)
-                scalerVector[i] = noOfDays / 7;
-
-            var remainingDays = noOfDays % 7;
-
-            for (int i = 0; i < remainingDays; i++)
-                scalerVector[(i + currentDayIndex) % 7] += 1;
-
-            var productEstConsumption = (await GetProductConsumptionTrend(userId, productId)).ProductEstConsumption;
-
-            float totalConsumption = 0;
-            for (int i = 0; i < 7; i++)
-            {
-                float consumptionInTheDay = 0;
-                productEstConsumption.TryGetValue((DayOfWeek)i, out consumptionInTheDay);
-                totalConsumption += scalerVector[i] * consumptionInTheDay;
-            }
-            return totalConsumption;
-        }
-
 
     }
 }

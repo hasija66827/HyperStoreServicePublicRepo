@@ -259,6 +259,10 @@
     <Compile Include="Migrations\201712100712234_updatingDatatypeOfQuantity.Designer.cs">
       <DependentUpon>201712100712234_updatingDatatypeOfQuantity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712161542159_updatingDatatypeOfProductT_TotalQuantity.cs" />
+    <Compile Include="Migrations\201712161542159_updatingDatatypeOfProductT_TotalQuantity.Designer.cs">
+      <DependentUpon>201712161542159_updatingDatatypeOfProductT_TotalQuantity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartProduct.cs" />
@@ -365,6 +369,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712100712234_updatingDatatypeOfQuantity.resx">
       <DependentUpon>201712100712234_updatingDatatypeOfQuantity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712161542159_updatingDatatypeOfProductT_TotalQuantity.resx">
+      <DependentUpon>201712161542159_updatingDatatypeOfProductT_TotalQuantity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

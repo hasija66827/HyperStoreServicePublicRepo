@@ -85,7 +85,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
                                                             Product = ph.Product,
                                                             Rating = ph.Rating,
                                                             LatestPurchaseDate = ph.LatestPurchaseDate,
-                                                            DeficientByNumber = (ph.Product.TotalQuantity)
+                                                            DeficientByNumber = 0
                                                         }).OrderByDescending(rpc => rpc.DeficientByNumber);
             return recommendedProduct;
         }
