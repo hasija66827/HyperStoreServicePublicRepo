@@ -34,7 +34,7 @@ namespace HyperStoreServiceAPP.Controllers
             var query = await ConstructQuery(pfc);
             var queryResult = await query.ToListAsync();
 
-            if (pfc != null && pfc.FilterProductQDT != null && pfc.ShowNonInventoryProductOnly == false)
+            if (pfc != null && pfc.FilterProductQDT != null && pfc.FilterProductQDT.ShowInventoryProductsOnly == true)
                 queryResult = await FilterProductByConsumptionDayRange(queryResult, userId, pfc.FilterProductQDT.ConsumptionDayRange);
 
             List<ProductInsight> productInsights = new List<ProductInsight>();
@@ -75,14 +75,14 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 var discountPerRange = filterProductQDT.DiscountPerRange;
                 query = query.Where(p => p.DiscountPer >= discountPerRange.LB && p.DiscountPer <= discountPerRange.UB);
-                if (pfc.ShowNonInventoryProductOnly == true)
-                {
-                    query = query.Where(p => p.TotalQuantity == null);
-                }
-                else
+                if (filterProductQDT.ShowInventoryProductsOnly == true)
                 {
                     var quantity = filterProductQDT.QuantityRange;
                     query = query.Where(p => p.TotalQuantity >= quantity.LB && p.TotalQuantity <= quantity.UB);
+                }
+                else
+                {
+                    query = query.Where(p => p.TotalQuantity == null);             
                 }
             }
             return query;
@@ -153,7 +153,6 @@ namespace HyperStoreServiceAPP.Controllers
                 MRP = productDTO.MRP,
                 Name = productDTO.Name,
                 SGSTPer = productDTO.SGSTPer,
-                Threshold = productDTO.Threshold
             };
 
             if (productDTO.IsNonInventoryProduct == true)
