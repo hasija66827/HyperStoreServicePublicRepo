@@ -117,7 +117,7 @@ namespace HyperStoreServiceAPP.Controllers.CustomAPI
         private static async Task<Map_Product_MapDayProductEstConsumption> ComputeProductConsumptionTrend(Guid userId)
         {
             var db = UtilityAPI.RetrieveDBContext(userId);
-            var startingOrderDate = DateTime.Now.AddMonths(-2).Date;
+            var startingOrderDate = DateTime.Now.AddMonths(-1).Date;
             var query = db.OrderProducts.Include(cop => cop.Order)
                          .Where(cop => cop.Order.EntityType == EntityType.Customer &&
                                 cop.Order.OrderDate >= startingOrderDate && cop.Order.OrderDate < DbFunctions.TruncateTime(DateTime.Now))
