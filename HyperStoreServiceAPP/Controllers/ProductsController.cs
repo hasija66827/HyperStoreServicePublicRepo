@@ -82,7 +82,7 @@ namespace HyperStoreServiceAPP.Controllers
                 }
                 else
                 {
-                    query = query.Where(p => p.TotalQuantity == null);             
+                    query = query.Where(p => p.TotalQuantity == null);
                 }
             }
             return query;
@@ -209,7 +209,9 @@ namespace HyperStoreServiceAPP.Controllers
                 productMetadata = new ProductMetadata()
                 {
                     QuantityRange = new IRange<float?>(minQty, maxQty),
-                    DiscountPerRange = new IRange<decimal?>(minDiscountPer, maxDiscountPer)
+                    DiscountPerRange = new IRange<decimal?>(minDiscountPer, maxDiscountPer),
+                    DayRange = new IRange<int?>(-1, 30),
+                    //TODO: remove constants
                 };
             }
             return Ok(productMetadata);

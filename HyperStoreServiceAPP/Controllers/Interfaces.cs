@@ -50,7 +50,7 @@ namespace HyperStoreServiceAPP.Controllers
     {
         Task<IHttpActionResult> Get(Guid userId, SupplierOrderFilterCriteriaDTO SOFC);
         IHttpActionResult GetTotalRecordsCount(Guid userId);
-        Task<IHttpActionResult> Post(Guid userId, SupplierOrderDTO orderDetail);
+        Task<IHttpActionResult> Post(Guid userId, OrderDTO orderDetail);
     }
 
     public interface IPerson
@@ -65,7 +65,7 @@ namespace HyperStoreServiceAPP.Controllers
     public interface ITransaction
     {
         Task<IHttpActionResult> Get(Guid userId, SupplierTransactionFilterCriteria transactionFilterCriteria);
-        Task<IHttpActionResult> Post(Guid userId, SupplierTransactionDTO transactionDTO);
+        Task<IHttpActionResult> Post(Guid userId, TransactionDTO transactionDTO);
     }
 
     public interface ICustomerPurchaseTrend

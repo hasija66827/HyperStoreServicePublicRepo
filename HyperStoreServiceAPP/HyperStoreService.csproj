@@ -57,14 +57,30 @@
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.0\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.0\lib\net40\Microsoft.Data.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Spatial, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.6.0\lib\net40\System.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Http.OData, Version=5.3.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.OData.5.3.1\lib\net45\System.Web.Http.OData.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
@@ -222,6 +238,7 @@
     <Compile Include="Controllers\CustomAPI\PurchaseHistoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Interfaces.cs" />
+    <Compile Include="Controllers\PaymentOptionsController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Controllers\OrderProductsController.cs" />
     <Compile Include="Controllers\OrdersController.cs" />
@@ -267,12 +284,17 @@
     <Compile Include="Migrations\201712170914027_removingthreshold.Designer.cs">
       <DependentUpon>201712170914027_removingthreshold.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712231936158_adding payment option.cs" />
+    <Compile Include="Migrations\201712231936158_adding payment option.Designer.cs">
+      <DependentUpon>201712231936158_adding payment option.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartProduct.cs" />
     <Compile Include="Models\DeficientStock.cs" />
     <Compile Include="Models\HyperStoreServiceContext.cs" />
     <Compile Include="CustomModels\PriceQuotedBySupplier.cs" />
+    <Compile Include="Models\PaymentOption.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\ProductTag.cs" />
     <Compile Include="CustomModels\MapDay_ProductEstConsumption.cs" />
@@ -379,6 +401,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712170914027_removingthreshold.resx">
       <DependentUpon>201712170914027_removingthreshold.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712231936158_adding payment option.resx">
+      <DependentUpon>201712231936158_adding payment option.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -6,13 +6,13 @@ using System.Web;
 
 namespace HyperStoreServiceAPP.DTO
 {
-    public class SupplierOrderDTO
+    public class OrderDTO
     {
         [Required]
         public List<ProductPurchasedDTO> ProductsPurchased { get; set; }
 
         [Required]
-        public Guid? SupplierId { get; set; }
+        public Guid? PersonId { get; set; }
 
         [Required]
         public DateTime? DueDate { get; set; }
@@ -29,6 +29,9 @@ namespace HyperStoreServiceAPP.DTO
 
         [Required]
         public EntityType? EntityType { get; set; }
+
+        [Required]
+        public Guid? PaymentOptionId { get; set; }
     }
 
     public class ProductPurchasedDTO

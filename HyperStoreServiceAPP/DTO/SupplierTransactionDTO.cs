@@ -15,19 +15,22 @@ namespace HyperStoreServiceAPP.DTO
         public Guid? SupplierId { get; set; }
     }
 
-    public class SupplierTransactionDTO
+    public class TransactionDTO
     {
         [Required]
         public bool? IsCredit { get; set; }
 
         [Required]
-        public Guid? SupplierId { get; set; }
+        public Guid? PersonId { get; set; }
 
         [Required]
         [Range(0, 98765432198765)]
         public decimal? TransactionAmount { get; set; }
 
         public string Description { get; set; }
+
+        [Required]
+        public Guid? PaymentOptionId { get; set; }
         /// <summary>
         /// 1. Updates the wallet balance of the supplier.
         /// 2. Creates a transaction entity associated with the supplier.
@@ -36,12 +39,12 @@ namespace HyperStoreServiceAPP.DTO
         /// <returns>Retruns the newly creaated transaction with the customer included in it.</returns>
         public async Task<Transaction> CreateNewTransactionAsync(HyperStoreServiceContext db)
         {
-            var supplier = await db.Persons.FindAsync(this.SupplierId);
-            var walletSnapshot = this.UpdateWalletBalanceAsync(db, supplier);
-            var transaction = this.AddNewTransaction(db, supplier.EntityType, (decimal)walletSnapshot);
+            var person = await db.Persons.FindAsync(this.PersonId);
+            var walletSnapshot = this.UpdateWalletBalanceAsync(db, person);
+            var transaction = this.AddNewTransaction(db, person.EntityType, (decimal)walletSnapshot);
             List<Order> settleUpOrders;
-            if (transaction.IsCredit == false && supplier.EntityType == EntityType.Supplier ||
-                transaction.IsCredit == true && supplier.EntityType == EntityType.Customer)
+            if (transaction.IsCredit == false && person.EntityType == EntityType.Supplier ||
+                transaction.IsCredit == true && person.EntityType == EntityType.Customer)
                 settleUpOrders = SettleUpOrders(transaction, db);
             return transaction;
         }
@@ -54,11 +57,11 @@ namespace HyperStoreServiceAPP.DTO
         /// <returns>The wallet snapshot which was before this function updates it.</returns>
         private decimal UpdateWalletBalanceAsync(HyperStoreServiceContext db, Person supplier)
         {
-            Guid supplierId = (Guid)this.SupplierId;
+            Guid supplierId = (Guid)this.PersonId;
             decimal transactionAmount = (decimal)this.TransactionAmount;
             bool IsCredit = (bool)this.IsCredit;
             if (supplier == null)
-                throw new Exception(String.Format("Supplier with id {0} not found while updating its wallet balance", this.SupplierId));
+                throw new Exception(String.Format("Supplier with id {0} not found while updating its wallet balance", this.PersonId));
             var walletSnapshot = supplier.WalletBalance;
             if (IsCredit == true)
                 supplier.WalletBalance += transactionAmount;
@@ -78,15 +81,16 @@ namespace HyperStoreServiceAPP.DTO
         {
             var transaction = new Transaction
             {
+                EntityType = entityType,
+                IsCredit = (bool)this.IsCredit,
+                OrderNo = this.Description,
+                PaymentOptionId = this.PaymentOptionId,
+                PersonId = (Guid)this.PersonId,
                 TransactionId = Guid.NewGuid(),
                 TransactionNo = Utility.GenerateSupplierTransactionNo(),
                 TransactionDate = DateTime.Now,
                 TransactionAmount = (decimal)this.TransactionAmount,
-                OrderNo = this.Description,
-                IsCredit = (bool)this.IsCredit,
-                PersonId = (Guid)this.SupplierId,
                 WalletSnapshot = walletSnapshot,
-                EntityType = entityType
             };
 
             db.Transactions.Add(transaction);

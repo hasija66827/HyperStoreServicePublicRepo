@@ -17,7 +17,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public partial class TransactionsController : ApiController, ITransaction
     {
-        private HyperStoreServiceContext db ;
+        private HyperStoreServiceContext db;
 
         // GET: api/Transactions/5
         [ResponseType(typeof(List<Transaction>))]
@@ -32,12 +32,13 @@ namespace HyperStoreServiceAPP.Controllers
 
             var supplierId = transactionFilterCriteria.SupplierId;
             var transactions = await db.Transactions.Where(t => t.PersonId == supplierId)
-                                                             .OrderByDescending(t => t.TransactionDate).ToListAsync();
-            Person supplier;
+                                                    .Include(t => t.PaymentOption)
+                                                    .OrderByDescending(t => t.TransactionDate).ToListAsync();
+            Person person;
             if (transactions == null || transactions.Count() == 0)
             {
-                supplier = await db.Persons.FindAsync(supplierId);
-                if (supplier == null)
+                person = await db.Persons.FindAsync(supplierId);
+                if (person == null)
                     return BadRequest(String.Format("Supplier of id {0} does not exists", supplierId));
             }
             return Ok(transactions);
@@ -46,7 +47,7 @@ namespace HyperStoreServiceAPP.Controllers
         // POST: api/Transactions
         [ResponseType(typeof(Transaction))]
         [HttpPost]
-        public async Task<IHttpActionResult> Post(Guid userId, SupplierTransactionDTO transactionDTO)
+        public async Task<IHttpActionResult> Post(Guid userId, TransactionDTO transactionDTO)
         {
             if (transactionDTO == null)
                 return BadRequest("TransactionDTO cannot be null, on creating transaction for supplier");
@@ -54,7 +55,7 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             db = UtilityAPI.RetrieveDBContext(userId);
 
             try
@@ -71,7 +72,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         protected override void Dispose(bool disposing)
         {
-             if (disposing && db!=null)
+            if (disposing && db != null)
             {
                 db.Dispose();
             }

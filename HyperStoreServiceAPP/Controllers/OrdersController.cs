@@ -42,7 +42,8 @@ namespace HyperStoreServiceAPP.Controllers
                                                              order.DueDate <= SOFC.DueDateRange.UB.Date &&
                                                              order.EntityType == SOFC.EntityType
                                                              )
-                                                             .Include(so => so.Person);
+                                                             .Include(ord => ord.Person)
+                                                             .Include(ord => ord.PaymentOption);
                 if (SOFC.SupplierId != null)
                 {
                     query = query.Where(order => order.PersonId == SOFC.SupplierId);
@@ -88,7 +89,7 @@ namespace HyperStoreServiceAPP.Controllers
         /// <returns>Using wallet amount</returns>
         [ResponseType(typeof(decimal))]
         [HttpPost]
-        public async Task<IHttpActionResult> Post(Guid userId, SupplierOrderDTO orderDetail)
+        public async Task<IHttpActionResult> Post(Guid userId, OrderDTO orderDetail)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -112,26 +113,27 @@ namespace HyperStoreServiceAPP.Controllers
 
             try
             {
-                var supplierOrder = _CreateNewPersonOrderAsync(orderDetail);
+                var order = _CreateNewPersonOrderAsync(orderDetail);
 
-                SupplierTransactionDTO transactionDTO = new SupplierTransactionDTO
+                TransactionDTO transactionDTO = new TransactionDTO
                 {
                     IsCredit = orderDetail.EntityType == EntityType.Supplier ? true : false,
-                    SupplierId = orderDetail.SupplierId,
+                    PersonId = orderDetail.PersonId,
                     TransactionAmount = billAmount - payingAmount,
-                    Description = supplierOrder.OrderNo,
+                    Description = order.OrderNo,
+                    PaymentOptionId = null,
                 };
                 var transaction = await transactionDTO.CreateNewTransactionAsync(db);
 
-                var supplierOrderTransaction = _CreateNewOrderTransaction(supplierOrder, transaction);
+                var supplierOrderTransaction = _CreateNewOrderTransaction(order, transaction);
 
-                var products = await _UpdateStockOfProductsAsync(orderDetail.ProductsPurchased, orderDetail.EntityType, orderDetail.SupplierId);
+                var products = await _UpdateStockOfProductsAsync(orderDetail.ProductsPurchased, orderDetail.EntityType, orderDetail.PersonId);
 
-                _AddIntoOrderProduct(orderDetail.ProductsPurchased, supplierOrder.OrderId);
+                _AddIntoOrderProduct(orderDetail.ProductsPurchased, order.OrderId);
 
-                await _UpdatePersonNetWorthAsync((Guid)orderDetail.SupplierId, (decimal)orderDetail.BillingSummaryDTO.BillAmount);
+                await _UpdatePersonNetWorthAsync((Guid)orderDetail.PersonId, (decimal)orderDetail.BillingSummaryDTO.BillAmount);
                 var productIds = orderDetail.ProductsPurchased.Select(pp => pp.ProductId).ToList();
-                await _UpdatePurchaseHistoryAsync((Guid)orderDetail.SupplierId, productIds);
+                await _UpdatePurchaseHistoryAsync((Guid)orderDetail.PersonId, productIds);
 
                 await db.SaveChangesAsync();
                 return Ok(transactionDTO.TransactionAmount);
@@ -143,7 +145,7 @@ namespace HyperStoreServiceAPP.Controllers
         }
         #endregion
 
-        private async Task<bool> _ValidateBillingSummary(SupplierOrderDTO orderDetail)
+        private async Task<bool> _ValidateBillingSummary(OrderDTO orderDetail)
         {
             if (orderDetail.BillingSummaryDTO.TotalItems != orderDetail.ProductsPurchased.Count)
                 return false;
@@ -197,12 +199,12 @@ namespace HyperStoreServiceAPP.Controllers
             return orderTransaction;
         }
 
-        private Order _CreateNewPersonOrderAsync(SupplierOrderDTO orderDetail)
+        private Order _CreateNewPersonOrderAsync(OrderDTO orderDetail)
         {
             var billAmount = orderDetail.BillingSummaryDTO.BillAmount;
             var payingAmount = (decimal)orderDetail.PayingAmount;
 
-            var supplierOrder = new Order
+            var order = new Order
             {
                 EntityType = orderDetail.EntityType,
                 OrderId = Guid.NewGuid(),
@@ -213,12 +215,13 @@ namespace HyperStoreServiceAPP.Controllers
                 PayedAmount = payingAmount,
                 SettledPayedAmount = payingAmount,
                 OrderNo = Utility.GenerateSupplierOrderNo(),
-                PersonId = (Guid)orderDetail.SupplierId,
+                PersonId = (Guid)orderDetail.PersonId,
                 TotalItems = (int)orderDetail.BillingSummaryDTO.TotalItems,
                 TotalQuantity = (decimal)orderDetail.BillingSummaryDTO.TotalQuantity,
+                PaymentOptionId = orderDetail.PaymentOptionId,
             };
-            db.Orders.Add(supplierOrder);
-            return supplierOrder;
+            db.Orders.Add(order);
+            return order;
         }
 
         private async Task<List<Product>> _UpdateStockOfProductsAsync(List<ProductPurchasedDTO> productsPurchased, EntityType? entityType, Guid? personId)

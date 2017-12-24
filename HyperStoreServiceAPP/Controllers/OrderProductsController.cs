@@ -15,7 +15,7 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public class OrderProductsController : ApiController, IOrderProduct
     {
-        private HyperStoreServiceContext db ;
+        private HyperStoreServiceContext db;
 
         // GET: api/SupplierOrderProducts/5
         [ResponseType(typeof(List<OrderProduct>))]
@@ -30,7 +30,8 @@ namespace HyperStoreServiceAPP.Controllers
             {
                 var query = db.OrderProducts
                                 .Where(sop => sop.OrderId == id)
-                                .Include(sop => sop.Product);
+                                .Include(op => op.Product);
+
                 queryResult = await query.ToListAsync();
             }
             catch (Exception e)
@@ -42,7 +43,7 @@ namespace HyperStoreServiceAPP.Controllers
 
         protected override void Dispose(bool disposing)
         {
-             if (disposing && db!=null)
+            if (disposing && db != null)
             {
                 db.Dispose();
             }

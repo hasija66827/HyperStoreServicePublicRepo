@@ -23,8 +23,13 @@ namespace HyperStoreService.Models
         public DateTime TransactionDate { get; set; }
         public decimal TransactionAmount { get; set; }
         public decimal WalletSnapshot { get; set; }
+
         public Guid PersonId { get; set; }
         public Person Person { get; set; }
+
+        public Guid? PaymentOptionId { get; set; }
+        public PaymentOption PaymentOption { get; set; }
+
         public Transaction() {
         }
     }

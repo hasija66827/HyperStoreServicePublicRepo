@@ -47,5 +47,7 @@ namespace HyperStoreService.Models
 
         public System.Data.Entity.DbSet<CartProduct> CartProducts { get; set; }
 
+        public System.Data.Entity.DbSet<PaymentOption> PaymentOptions{ get; set; }
+
     }
 }
