@@ -1,4 +1,5 @@
 ﻿using HyperStoreService.Models;
+using HyperStoreServiceAPP.CustomModels;
 using HyperStoreServiceAPP.DTO;
 using HyperStoreServiceAPP.DTO.CartManagementDTO;
 using HyperStoreServiceAPP.DTO.RecommendedProductDTO;
@@ -56,10 +57,9 @@ namespace HyperStoreServiceAPP.Controllers
     public interface IPerson
     {
         Task<IHttpActionResult> Get(Guid userId, SupplierFilterCriteriaDTO sfc);
-        IHttpActionResult GetTotalRecordsCount(Guid userId);
         Task<IHttpActionResult> Put(Guid userId, Guid id, SupplierDTO supplierDTO);
         Task<IHttpActionResult> Post(Guid userId, SupplierDTO supplierDTO);
-        Task<IHttpActionResult> GetWalletBalanceRange(Guid userId);
+        Task<IHttpActionResult> GetPersonMetadata(Guid userId, PersonMetadataDTO personMetadataDTO);
     }
 
     public interface ITransaction

@@ -12,6 +12,7 @@ using System.Web.Http.Description;
 using HyperStoreService.Models;
 using System.ComponentModel.DataAnnotations;
 using HyperStoreServiceAPP.DTO;
+using HyperStoreServiceAPP.CustomModels;
 
 namespace HyperStoreServiceAPP.Controllers
 {
@@ -61,29 +62,37 @@ namespace HyperStoreServiceAPP.Controllers
             return Ok(supplier);
         }
 
-        [HttpGet]
-        [ResponseType(typeof(Int32))]
-        public IHttpActionResult GetTotalRecordsCount(Guid userId)
+
+        private async Task<IRange<double>> _GetWalletBalanceRange(EntityType? entityType)
         {
-            db = UtilityAPI.RetrieveDBContext(userId);
-            return Ok(db.Persons.Count());
+            IRange<double> walletBalanceRange = null;
+            if (db.Persons.Count() != 0)
+            {
+                var minWalletBalance = await db.Persons.Where(p => p.EntityType == entityType).MinAsync(w => w.WalletBalance);
+                var maxWalletBalance = await db.Persons.Where(p => p.EntityType == entityType).MaxAsync(w => w.WalletBalance);
+                walletBalanceRange = new IRange<double>((double)minWalletBalance, (double)maxWalletBalance);
+            }
+            return walletBalanceRange;
         }
 
         [HttpGet]
-        [ResponseType(typeof(IRange<decimal?>))]
-        public async Task<IHttpActionResult> GetWalletBalanceRange(Guid userId)
+        [ResponseType(typeof(PersonMetadata))]
+        public async Task<IHttpActionResult> GetPersonMetadata(Guid userId, PersonMetadataDTO personMetadataDTO)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             db = UtilityAPI.RetrieveDBContext(userId);
-            IRange<decimal?> walletBalanceRange = null;
-            if (db.Persons.Count() != 0)
+            var personMetdata = new PersonMetadata()
             {
-                var minWalletBalance = await db.Persons.MinAsync(w => w.WalletBalance);
-                var maxWalletBalance = await db.Persons.MaxAsync(w => w.WalletBalance);
-                walletBalanceRange = new IRange<decimal?>(minWalletBalance, maxWalletBalance);
-            }
-            return Ok(walletBalanceRange);
+                WalletBalanceRange = await _GetWalletBalanceRange(personMetadataDTO.EntityType),
+                TotalRecords = db.Persons.Where(p => p.EntityType == personMetadataDTO.EntityType).Count(),
+            };
+            return Ok(personMetdata);
         }
         #endregion
+
+
 
         // PUT: api/Suppliers/5
         [HttpPut]

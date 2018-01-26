@@ -21,7 +21,7 @@ namespace HyperStoreServiceAPP.Controllers
         [HttpGet]
         public IQueryable<PaymentOption> Get()
         {
-            return db.PaymentOptions;
+            return db.PaymentOptions.OrderBy(p=>p.Name);
         }
 
         // GET: api/PaymentOptions/5

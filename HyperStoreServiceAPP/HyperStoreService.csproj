@@ -245,6 +245,7 @@
     <Compile Include="Controllers\PersonsController.cs" />
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Controllers\TransactionsController.cs" />
+    <Compile Include="CustomModels\PersonMetadata.cs" />
     <Compile Include="DTO\CartManagementDTO\CartManagementDTO.cs" />
     <Compile Include="DTO\CartManagementDTO\CartProductDTO.cs" />
     <Compile Include="DTO\UtilityDTO.cs" />
