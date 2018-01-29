@@ -15,10 +15,6 @@ namespace HyperStoreService.Models
         // For more information refer to the documentation:
         // http://msdn.microsoft.com/en-us/data/jj591621.aspx
 
-        public HyperStoreServiceContext() : base("name=9970377274DBConnection")
-        {
-        }
-
         public HyperStoreServiceContext(string name) : base(name)
         {
         }
@@ -28,11 +24,11 @@ namespace HyperStoreService.Models
         public System.Data.Entity.DbSet<ProductTag> ProductTags { get; set; }
 
         public System.Data.Entity.DbSet<Person> Persons { get; set; }
-      
+
         public System.Data.Entity.DbSet<Order> Orders { get; set; }
-      
+
         public System.Data.Entity.DbSet<OrderProduct> OrderProducts { get; set; }
- 
+
         public System.Data.Entity.DbSet<Transaction> Transactions { get; set; }
 
         public System.Data.Entity.DbSet<OrderTransaction> OrderTransactions { get; set; }
@@ -43,11 +39,11 @@ namespace HyperStoreService.Models
 
         public System.Data.Entity.DbSet<PurchaseHistory> PurchaseHistory { get; set; }
 
-        public System.Data.Entity.DbSet<Cart>Carts { get; set; }
+        public System.Data.Entity.DbSet<Cart> Carts { get; set; }
 
         public System.Data.Entity.DbSet<CartProduct> CartProducts { get; set; }
 
-        public System.Data.Entity.DbSet<PaymentOption> PaymentOptions{ get; set; }
+        public System.Data.Entity.DbSet<PaymentOption> PaymentOptions { get; set; }
 
     }
 }

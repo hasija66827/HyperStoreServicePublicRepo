@@ -15,68 +15,40 @@ namespace HyperStoreServiceAPP.Controllers
 {
     public class PaymentOptionsController : ApiController
     {
-        private HyperStoreServiceContext db = new HyperStoreServiceContext();
+        private HyperStoreServiceContext db;
 
         // GET: api/PaymentOptions
         [HttpGet]
-        public IQueryable<PaymentOption> Get()
+        public IQueryable<PaymentOption> Get(Guid userId)
         {
-            return db.PaymentOptions.OrderBy(p=>p.Name);
+            db = UtilityAPI.RetrieveDBContext(userId);
+            return db.PaymentOptions.OrderBy(p => p.Name);
         }
 
         // GET: api/PaymentOptions/5
         [ResponseType(typeof(PaymentOption))]
-        public async Task<IHttpActionResult> GetPaymentOption(Guid id)
+        public async Task<IHttpActionResult> GetPaymentOption(Guid userId, Guid id)
         {
+            if (id == null)
+                return BadRequest("PaymentId should not be null");
+
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             PaymentOption paymentOption = await db.PaymentOptions.FindAsync(id);
             if (paymentOption == null)
             {
                 return NotFound();
             }
-
             return Ok(paymentOption);
-        }
-
-        // PUT: api/PaymentOptions/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutPaymentOption(Guid id, PaymentOption paymentOption)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != paymentOption.PaymentOptionId)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(paymentOption).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PaymentOptionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/PaymentOptions
         [ResponseType(typeof(PaymentOption))]
         [HttpPost]
-        public async Task<IHttpActionResult> Post(PaymentOption paymentOption)
+        public async Task<IHttpActionResult> Post(Guid userId, PaymentOption paymentOption)
         {
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -105,8 +77,10 @@ namespace HyperStoreServiceAPP.Controllers
 
         // DELETE: api/PaymentOptions/5
         [ResponseType(typeof(PaymentOption))]
-        public async Task<IHttpActionResult> DeletePaymentOption(Guid id)
+        public async Task<IHttpActionResult> DeletePaymentOption(Guid userId, Guid id)
         {
+            db = UtilityAPI.RetrieveDBContext(userId);
+
             PaymentOption paymentOption = await db.PaymentOptions.FindAsync(id);
             if (paymentOption == null)
             {
